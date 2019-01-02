@@ -6,12 +6,17 @@ import { AppComponent } from './app.component';
 
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { FormsModule } from '@angular/forms';
+import { LoginComponent } from './login/login.component';
+
+import { FacebookModule } from 'ngx-facebook';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginComponent
   ],
   imports: [
+    FacebookModule.forRoot(),
     BrowserModule,
     BrowserAnimationsModule,
     MDBBootstrapModule.forRoot(),

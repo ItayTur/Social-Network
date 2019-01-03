@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FacebookService, LoginResponse, InitParams, LoginOptions   } from 'ngx-facebook';
+import { FacebookLoginService } from "../core/facebook-login.service";
 
 @Component({
   selector: 'app-login',
@@ -8,7 +9,7 @@ import { FacebookService, LoginResponse, InitParams, LoginOptions   } from 'ngx-
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private FB: FacebookService) {
+  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService) {
     let initParams: InitParams = {
       appId: '1183102151855520',
       xfbml: true,
@@ -50,6 +51,7 @@ export class LoginComponent implements OnInit {
         let array = response.authResponse.grantedScopes.split(',');
         if(array.length === 2) {
           console.log(response);
+          this.fbLoginService.login(response);
         } else {
            alert('You need to provide all the facebook permissions to use the app.' + array.length);
         }

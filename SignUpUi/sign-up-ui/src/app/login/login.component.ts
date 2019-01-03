@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FacebookService, LoginResponse, InitParams  } from 'ngx-facebook';
+import { FacebookService, LoginResponse, InitParams, LoginOptions   } from 'ngx-facebook';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,7 @@ export class LoginComponent implements OnInit {
       version: 'v3.2'
     };
 
-    FB.init(initParams);
+    this.FB.init(initParams);
   }
 
   ngOnInit() {
@@ -39,10 +39,23 @@ export class LoginComponent implements OnInit {
   }
 
   facebookLogin() {
-    alert("submit login to facebook");
-    console.log("submit login with facebook");
-    this.FB.login()
-      .then((response: LoginResponse) => console.log(response))
+    debugger;
+    const loginOptions: LoginOptions = {
+      enable_profile_selector: true,
+      return_scopes: true,
+      scope: 'email,public_profile',
+      auth_type: 'rerequest'
+    };
+    this.FB.login(loginOptions).then((response: LoginResponse) => {
+        let array = response.authResponse.grantedScopes.split(',');
+        if(array.length === 2) {
+          console.log(response);
+        } else {
+           alert('You need to provide all the facebook permissions to use the app.' + array.length);
+        }
+     })
       .catch((error: any) => console.error(error));
   }
+
+
 }

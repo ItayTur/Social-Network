@@ -76,7 +76,7 @@ namespace DAL.Repositories
             }
         }
 
-        public bool CheckIfEmailIsFree(string email)
+        public bool IsEmailFree(string email)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {

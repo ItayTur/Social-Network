@@ -14,6 +14,7 @@ namespace Common.Models
         public string Token { get; set; }
         public string UserEmail { get; set; }
         public DateTime CreationTime { get; set; }
+        public DateTime ExpiredTime { get; set; }
 
         public LoginTokenModel()
         {
@@ -24,6 +25,7 @@ namespace Common.Models
         {
             UserEmail = email;
             CreationTime = DateTime.Now;
+            ExpiredTime = CreationTime.AddMinutes(15);
             Token = Guid.NewGuid().ToString();
         }
     }

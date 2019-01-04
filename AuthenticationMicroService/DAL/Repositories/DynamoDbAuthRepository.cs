@@ -12,19 +12,21 @@ namespace DAL.Repositories
 {
     public class DynamoDbAuthRepository : IAuthRepository
     {
+        /*
         public string AddFacebookLoginAndLogin(string facebookToken)
         {
             throw new NotImplementedException();
         }
 
-        public string AddUsernamePasswordLoginAndLogin(string email, string password)
+        public AuthModel AddAuthByUsernamePassword(AuthModel newUser)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                AssertEmailIsFree(dbContext, email);
-                var newUser = new AuthModel() { Email = email, Password = password };
+                //AssertEmailIsFree(dbContext, email);
+                //var newUser = new AuthModel() { Email = email, Password = password };
                 dbContext.Save(newUser);
-                return LoginByUsernamePassword(email, password);
+                return dbContext.Load(newUser);
+                //return LoginByUsernamePassword(email, password);
             }
         }
 
@@ -48,9 +50,12 @@ namespace DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public bool ValidateAccessToken(string accessToken)
+        public LoginTokenModel GetAccessToken(string accessToken)
         {
-            throw new NotImplementedException();
+            using (DynamoDbContext dbContext = new DynamoDbContext())
+            {
+                return dbContext.Load<LoginTokenModel>(accessToken);
+            }
         }
 
         private void AssertEmailIsFree(DynamoDbContext dbContext, string email)
@@ -60,6 +65,38 @@ namespace DAL.Repositories
             {
                 throw new DuplicateKeyException(duplicateUser);
             }
+        }*/
+        public AuthModel Add(AuthModel newUser)
+        {
+            using (DynamoDbContext dbContext = new DynamoDbContext())
+            {
+                dbContext.Save(newUser);
+                var savedNewUser = dbContext.Load<AuthModel>(newUser.Email);
+                return savedNewUser;
+            }
+        }
+
+        public bool CheckIfEmailIsFree(string email)
+        {
+            using (DynamoDbContext dbContext = new DynamoDbContext())
+            {
+                var auth = dbContext.Load<AuthModel>(email);
+                return auth == null;
+            }
+        }
+
+        public AuthModel GetAuthByEmail(string email)
+        {
+            using (DynamoDbContext dbContext = new DynamoDbContext())
+            {
+                var user = dbContext.Load<AuthModel>(email);
+                return user;
+            }
+        }
+
+        public void Update(AuthModel updatedUser)
+        {
+            throw new NotImplementedException();
         }
     }
 }

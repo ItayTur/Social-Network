@@ -76,7 +76,7 @@ namespace BL.Managers
 
         private void VerifyEmailIsFree(string email)
         {
-            if (!_authRepository.CheckIfEmailIsFree(email))
+            if (!_authRepository.IsEmailFree(email))
             {
                 throw new DuplicateKeyException(email,"Email already exists");
             }

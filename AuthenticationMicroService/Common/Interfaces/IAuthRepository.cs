@@ -15,6 +15,6 @@ namespace Common.Interfaces
 
         AuthModel Add(AuthModel newUser);
 
-        bool CheckIfEmailIsFree(string email);
+        bool IsEmailFree(string email);
     }
 }

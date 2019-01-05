@@ -14,8 +14,8 @@ namespace BL.Managers
 {
     public class AuthManager : IAuthManager
     {
-        IAuthRepository _authRepository;
-        ILoginTokenManager _loginTokenManager;
+        private readonly IAuthRepository _authRepository;
+        private readonly ILoginTokenManager _loginTokenManager;
 
         public AuthManager(IAuthRepository authRepository, ILoginTokenManager loginTokenManager)
         {

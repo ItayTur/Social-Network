@@ -41,5 +41,29 @@ namespace AuthenticationApi.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("api/Auth/Login")]
+        public IHttpActionResult LoginUsernamePassword(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                return BadRequest("One of the parameters was missing");
+            }
+
+            try
+            {
+                var token = _authManager.LoginUserByUserPassword(email, password);
+                return Ok(token);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest("Incorrect email address and / or password");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Internal server error");
+            }
+        }
     }
 }

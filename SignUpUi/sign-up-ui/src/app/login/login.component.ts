@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { FacebookService, LoginResponse, InitParams, LoginOptions   } from 'ngx-facebook';
 import { FacebookLoginService } from "../core/facebook-login.service";
+import { AuthenticateUserService } from "../core/authenticate-user.service";
+import {MatSnackBar} from '@angular/material';
+
+
 
 @Component({
   selector: 'app-login',
@@ -9,7 +14,9 @@ import { FacebookLoginService } from "../core/facebook-login.service";
 })
 export class LoginComponent implements OnInit {
 
-  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService) {
+  loginForm: FormGroup;
+
+  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService, private auth: AuthenticateUserService, public snackBar: MatSnackBar) {
     let initParams: InitParams = {
       appId: '1183102151855520',
       xfbml: true,
@@ -20,6 +27,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loginForm = new FormGroup({password: new FormControl(null, Validators.required), email: new FormControl(null, [Validators.required, Validators.email])});
+
     (window as any).fbAsyncInit = function() {
       this.FB.init({
         appId      : '1183102151855520',
@@ -37,6 +46,28 @@ export class LoginComponent implements OnInit {
        js.src = "https://connect.facebook.net/en_US/sdk.js";
        fjs.parentNode.insertBefore(js, fjs);
      }(document, 'script', 'facebook-jssdk'));
+  }
+  
+  get input() { return this.loginForm.get('password'); }
+
+  openSnackBar(message: string, action: string, duration: number) {
+    this.snackBar.open(message, action || "close", {
+      duration: duration || 2000,
+    });
+  }
+
+  onSubmit() { 
+    this.auth.login(this.loginForm.get('email').value, this.loginForm.get('password').value)
+    .subscribe(res=>{
+      console.log(res); // make sure you get data here.
+   },
+   (err)=>{
+     let errorMessage = err.error.Message;
+     if (err.error.Message == "Internal server error"){
+       errorMessage = "Oops, something went wrong. Please try again later";
+     }
+     console.log(this.openSnackBar(errorMessage, "", 10000))}
+   );
   }
 
   facebookLogin() {

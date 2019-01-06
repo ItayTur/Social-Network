@@ -23,25 +23,27 @@
             <mdb-card-body class="px-lg-5 pt-0">
 
               <!-- Form -->
-              <form class="text-center" style="color: #757575;">
+              <form class="text-center" style="color: #757575;" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
                 <!-- Email -->
                 <div class="md-form">
-                  <input type="email" id="materialLoginFormEmail" class="form-control" mdbInputDirective>
+                  <input mdbInput mdbValidate type="email" id="materialLoginFormEmail" class="form-control" formControlName="email"  >
                   <label for="materialLoginFormEmail">E-mail</label>
+                  <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">Please enter a valid email address</mdb-error>
                 </div>
 
                 <!-- Password -->
                 <div class="md-form">
-                  <input type="password" id="materialLoginFormPassword" class="form-control" mdbInputDirective>
+                  <input type="password" id="materialLoginFormPassword" class="form-control" mdbInput mdbValidate formControlName="password">
                   <label for="materialLoginFormPassword">Password</label>
+                  <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">Password is required</mdb-error>
                 </div>
 
 
 
                 <!-- Sign in button -->
                 <button mdbBtn color="info" outline="true" rounded="true" block="true" class="my-4 waves-effect z-depth-0"
-                  mdbWavesEffect type="submit">Sign in</button>
+                  mdbWavesEffect type="submit" [disabled]="!loginForm.valid">Sign in</button>
 
                 <!-- Register -->
                 <p>Not a member?

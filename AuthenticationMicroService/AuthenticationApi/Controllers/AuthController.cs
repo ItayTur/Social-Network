@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Common.Dtos;
+using Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Linq;
@@ -19,16 +20,16 @@ namespace AuthenticationApi.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult RegisterUsernamePassword(string email, string password)
+        public IHttpActionResult RegisterUsernamePassword([FromBody] AuthDto authDto)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (DtoNotValid(authDto))
             {
                 return BadRequest("One of the parameters was missing");
             }
 
             try
             {
-                var token = _authManager.RegisterUserByUsernamePasswordAndLogin(email, password);
+                var token = _authManager.RegisterUserByUsernamePasswordAndLogin(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (DuplicateKeyException ex)
@@ -41,5 +42,38 @@ namespace AuthenticationApi.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("api/Auth/Login")]
+        public IHttpActionResult LoginUsernamePassword([FromBody] AuthDto authDto)
+        {
+            if (DtoNotValid(authDto))
+            {
+                return BadRequest("One of the parameters was missing");
+            }
+
+            try
+            {
+                var token = _authManager.LoginUserByUserPassword(authDto.Email, authDto.Password);
+                return Ok(token);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest("Incorrect email address and / or password");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Internal server error");
+            }
+        }
+
+        private bool DtoNotValid(AuthDto authDto)
+        {
+            if (authDto == null || string.IsNullOrWhiteSpace(authDto.Email) || string.IsNullOrWhiteSpace(authDto.Password))
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

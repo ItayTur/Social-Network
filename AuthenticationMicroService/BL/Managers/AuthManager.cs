@@ -14,8 +14,8 @@ namespace BL.Managers
 {
     public class AuthManager : IAuthManager
     {
-        IAuthRepository _authRepository;
-        ILoginTokenManager _loginTokenManager;
+        private readonly IAuthRepository _authRepository;
+        private readonly ILoginTokenManager _loginTokenManager;
 
         public AuthManager(IAuthRepository authRepository, ILoginTokenManager loginTokenManager)
         {
@@ -76,7 +76,7 @@ namespace BL.Managers
 
         private void VerifyEmailIsFree(string email)
         {
-            if (!_authRepository.CheckIfEmailIsFree(email))
+            if (!_authRepository.IsEmailFree(email))
             {
                 throw new DuplicateKeyException(email,"Email already exists");
             }

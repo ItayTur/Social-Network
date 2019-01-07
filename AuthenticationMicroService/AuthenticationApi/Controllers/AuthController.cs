@@ -22,7 +22,7 @@ namespace AuthenticationApi.Controllers
         [HttpPost]
         public IHttpActionResult RegisterUsernamePassword([FromBody] AuthDto authDto)
         {
-            if (!IsAuthDtoNotNull(authDto))
+            if (DtoNotValid(authDto))
             {
                 return BadRequest("One of the parameters was missing");
             }

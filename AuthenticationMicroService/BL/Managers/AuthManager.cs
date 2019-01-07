@@ -21,7 +21,11 @@ namespace BL.Managers
         private readonly string _identityUrl;
 
 
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="authRepository"></param>
+        /// <param name="loginTokenManager"></param>
         public AuthManager(IAuthRepository authRepository, ILoginTokenManager loginTokenManager)
         {
             _authRepository = authRepository;
@@ -30,14 +34,23 @@ namespace BL.Managers
         }
 
 
-
+        /// <summary>
+        /// Blocks a user from entering the app.
+        /// </summary>
+        /// <param name="email"></param>
         public void BlockUser(string email)
         {
             throw new NotImplementedException();
         }
 
 
-
+        /// <summary>
+        /// Changes the password in case of user forget.
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="currentPassword"></param>
+        /// <param name="oldPassword"></param>
+        /// <returns>If the password did changes, false otherwise.</returns>
         public bool ChangePassword(string accessToken, string currentPassword, string oldPassword)
         {
             throw new NotImplementedException();
@@ -229,14 +242,20 @@ namespace BL.Managers
             //return new HttpResponseMessage();
         }
 
-        
 
+        
+        /// <summary>
+        /// Logins the user associated with the specified email and password.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public string LoginUserByUserPassword(string email, string password)
         {
             try
             {
                 var auth = _authRepository.GetAuthByEmail(email);
-                VerifyPasswordVsAuth(auth, password);
+                VerifyAuthPassword(auth, password);
                 return _loginTokenManager.Add(email);
             }
             catch (Exception ex)
@@ -246,6 +265,14 @@ namespace BL.Managers
             }
         }
 
+
+
+        /// <summary>
+        /// Registers the email and the password to the auth table.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns>The access token associated with the specified email and password.</returns>
         public string RegisterUserByUsernamePasswordAndLogin(string email, string password)
         {
             try
@@ -267,6 +294,12 @@ namespace BL.Managers
             }
         }
 
+
+
+        /// <summary>
+        /// Verfies the email occupation. Throws an exception other wise.
+        /// </summary>
+        /// <param name="email"></param>
         private void VerifyEmailIsFree(string email)
         {
             if (!_authRepository.IsEmailFree(email))
@@ -275,7 +308,13 @@ namespace BL.Managers
             }
         }
 
-        private void VerifyPasswordVsAuth(AuthModel auth, string password)
+        
+        /// <summary>
+        /// Verfies the auth password. Throws an exception if not valid.
+        /// </summary>
+        /// <param name="auth"></param>
+        /// <param name="password"></param>
+        private void VerifyAuthPassword(AuthModel auth, string password)
         {
             if (auth == null || !SecurePasswordHasher.Verify(password, auth.Password))
             {

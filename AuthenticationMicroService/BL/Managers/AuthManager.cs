@@ -4,6 +4,7 @@ using Common.Exceptions;
 using Common.Interfaces;
 using Common.Loggers;
 using Common.Models;
+using Facebook;
 using System;
 using System.Configuration;
 using System.Data.Linq;
@@ -49,14 +50,14 @@ namespace BL.Managers
         /// </summary>
         /// <param name="facebookToken"></param>
         /// <returns>The app token</returns>
-        public async Task<string> FacebookSignIn(string facebookToken)
+        public string FacebookSignIn(string facebookToken)
         {
             using (HttpClient httpClient = new HttpClient())
             {
-                HttpResponseMessage response = await GetUserByFacebookToken(facebookToken, httpClient);
+                HttpResponseMessage response = GetUserByFacebookToken(facebookToken, httpClient).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    var facebookUserDto = await response.Content.ReadAsAsync<FacebookUserDto>();
+                    var facebookUserDto = response.Content.ReadAsAsync<FacebookUserDto>().Result;
                     var userEmail = facebookUserDto.email;
                     var appToken = _loginTokenManager.Add(userEmail);
                     if (_authRepository.IsEmailFree(userEmail))
@@ -191,7 +192,7 @@ namespace BL.Managers
                 using (HttpClient httpClient = new HttpClient())
                 {
 
-                    var response = await httpClient.PostAsJsonAsync(_identityUrl, user);
+                    var response = await httpClient.PostAsJsonAsync(_identityUrl, user).ConfigureAwait(continueOnCapturedContext: false);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Identity server could not add the user");
@@ -216,10 +217,16 @@ namespace BL.Managers
         /// <returns>An HttpResponseMessage with the user details or the reason why it failed.</returns>
         private async Task<HttpResponseMessage> GetUserByFacebookToken(string facebookToken, HttpClient httpClient)
         {
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", facebookToken);
-            var facebookApiLink = "https://graph.facebook.com/v3.2/me?fields=id,name,email,first_name,last_name,address";
-            var response = await httpClient.GetAsync(facebookApiLink);
-            return response;
+            
+           httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", facebookToken);
+            httpClient.BaseAddress = new Uri("https://graph.facebook.com/v3.2/");
+            httpClient.DefaultRequestHeaders
+            .Accept
+            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return httpClient.GetAsync($"me?fields=id,name,email,first_name,last_name").Result;
+            //return response;
+            //.Content.ReadAsStringAsync().Result;
+            //return new HttpResponseMessage();
         }
 
         

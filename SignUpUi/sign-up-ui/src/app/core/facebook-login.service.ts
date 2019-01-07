@@ -21,10 +21,9 @@ export class FacebookLoginService {
 
   constructor(private httpClient: HttpClient) { }
   login(auth: any): Observable<any> {
-    console.log(auth);
     let facebookToken: FacebookTokenModel = new FacebookTokenModel(auth.authResponse.accessToken);
     return this.httpClient.post(this.facebookLoginApi, facebookToken, httpOptions)
-      .pipe(retry(3),catchError(this.handleError));
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: any) {

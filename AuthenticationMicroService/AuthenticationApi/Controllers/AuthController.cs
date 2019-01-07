@@ -22,7 +22,7 @@ namespace AuthenticationApi.Controllers
         {
             try
             {
-                var appToken = _authManager.FacebookSignIn(accessToken.AccessToken);
+                var appToken =  _authManager.FacebookSignIn(accessToken.AccessToken);
                 return Ok(appToken);
             }
             catch (ArgumentException e)

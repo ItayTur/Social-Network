@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dtos\AccessTokenDto.cs" />
     <Compile Include="Dtos\FacebookUserDto.cs" />
     <Compile Include="Exceptions\AddAuthToDbException.cs" />
     <Compile Include="Exceptions\AddUserToDbException.cs" />

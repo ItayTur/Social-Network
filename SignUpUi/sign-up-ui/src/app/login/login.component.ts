@@ -9,6 +9,7 @@ import { FacebookLoginService } from "../core/facebook-login.service";
 })
 export class LoginComponent implements OnInit {
 
+
   constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService) {
     let initParams: InitParams = {
       appId: '1183102151855520',
@@ -40,20 +41,19 @@ export class LoginComponent implements OnInit {
   }
 
   facebookLogin() {
-    debugger;
     const loginOptions: LoginOptions = {
       enable_profile_selector: true,
       return_scopes: true,
       scope: 'email,public_profile',
       auth_type: 'rerequest'
     };
-    this.FB.login(loginOptions).then((response: LoginResponse) => {
-        let array = response.authResponse.grantedScopes.split(',');
+    this.FB.login(loginOptions).then((token: LoginResponse) => {
+        let array = token.authResponse.grantedScopes.split(',');
         if(array.length === 2) {
-          console.log(response);
-          this.fbLoginService.login(response);
+          this.fbLoginService.login(token)
+            .subscribe((response)=>console.log(response));
         } else {
-           alert('You need to provide all the facebook permissions to use the app.' + array.length);
+           alert('You need to provide all the facebook permissions to use the app.');
         }
      })
       .catch((error: any) => console.error(error));

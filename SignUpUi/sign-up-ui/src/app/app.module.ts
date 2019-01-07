@@ -11,7 +11,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 
 import { FacebookModule } from 'ngx-facebook';
+import { CookieService } from 'ngx-cookie-service';
 import { CoreModule } from './core/core.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -28,9 +30,10 @@ import { CoreModule } from './core/core.module';
     CoreModule,
     HttpClientModule,
     ReactiveFormsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    AppRoutingModule
   ],
-  providers: [],
+  providers: [CookieService],
   bootstrap: [AppComponent],
   schemas: [ NO_ERRORS_SCHEMA ]
 })

@@ -35,6 +35,7 @@
       <HintPath>..\packages\AWSSDK.2.3.55.2\lib\net45\AWSSDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -44,6 +45,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dtos\AccessTokenDto.cs" />
+    <Compile Include="Dtos\FacebookUserDto.cs" />
+    <Compile Include="Exceptions\AddAuthToDbException.cs" />
+    <Compile Include="Exceptions\AddUserToDbException.cs" />
     <Compile Include="Dtos\AuthDto.cs" />
     <Compile Include="Interfaces\Helpers\ILogsRepository.cs" />
     <Compile Include="Interfaces\IAuthManager.cs" />

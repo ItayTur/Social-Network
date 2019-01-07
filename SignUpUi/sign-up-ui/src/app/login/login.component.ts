@@ -6,8 +6,6 @@ import { AuthenticateUserService } from "../core/authenticate-user.service";
 import { SnackBarService } from "../core/snack-bar.service";
 import { CookieService } from 'ngx-cookie-service';
 
-
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -65,24 +63,21 @@ export class LoginComponent implements OnInit {
   }
 
   facebookLogin() {
-    debugger;
     const loginOptions: LoginOptions = {
       enable_profile_selector: true,
       return_scopes: true,
       scope: 'email,public_profile',
       auth_type: 'rerequest'
     };
-    this.FB.login(loginOptions).then((response: LoginResponse) => {
-      let array = response.authResponse.grantedScopes.split(',');
-      if (array.length === 2) {
-        console.log(response);
-        this.fbLoginService.login(response);
-      } else {
-        alert('You need to provide all the facebook permissions to use the app.' + array.length);
-      }
-    })
+    this.FB.login(loginOptions).then((token: LoginResponse) => {
+        let array = token.authResponse.grantedScopes.split(',');
+        if(array.length === 2) {
+          this.fbLoginService.login(token)
+            .subscribe((appToken)=>this.cookieService.set("authToken",appToken,1));
+        } else {
+           alert('You need to provide all the facebook permissions to use the app.');
+        }
+     })
       .catch((error: any) => console.error(error));
   }
-
-
 }

@@ -21,7 +21,7 @@ namespace Common.Models
 
         }
 
-        public AuthModel(string email, string password)
+        public AuthModel(string email, string password = null)
         {
             Email = email;
             Password = password;

@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +26,8 @@ namespace Common.Models
         {
             UserEmail = email;
             CreationTime = DateTime.Now;
-            ExpiredTime = CreationTime.AddMinutes(15);
+            int AccessTokenMinutes = int.Parse(ConfigurationManager.AppSettings["AccessTokenMinutes"]);
+            ExpiredTime = CreationTime.AddMinutes(AccessTokenMinutes);
             Token = Guid.NewGuid().ToString();
         }
     }

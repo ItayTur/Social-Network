@@ -47,7 +47,7 @@ namespace AuthenticationApi.Controllers
         [Route("api/Auth/Login")]
         public IHttpActionResult LoginUsernamePassword([FromBody] AuthDto authDto)
         {
-            if (!IsAuthDtoNotNull(authDto))
+            if (DtoNotValid(authDto))
             {
                 return BadRequest("One of the parameters was missing");
             }
@@ -67,7 +67,7 @@ namespace AuthenticationApi.Controllers
             }
         }
 
-        private bool IsAuthDtoNotNull(AuthDto authDto)
+        private bool DtoNotValid(AuthDto authDto)
         {
             if (authDto == null || string.IsNullOrWhiteSpace(authDto.Email) || string.IsNullOrWhiteSpace(authDto.Password))
             {

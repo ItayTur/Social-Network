@@ -23,7 +23,7 @@ export class FacebookLoginService {
   login(auth: any): Observable<any> {
     let facebookToken: FacebookTokenModel = new FacebookTokenModel(auth.authResponse.accessToken);
     return this.httpClient.post(this.facebookLoginApi, facebookToken, httpOptions)
-      .pipe(catchError(this.handleError));
+      .pipe(retry(3), catchError(this.handleError));
   }
 
   private handleError(error: any) {

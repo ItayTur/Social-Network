@@ -49,6 +49,7 @@
     <Compile Include="Dtos\FacebookUserDto.cs" />
     <Compile Include="Exceptions\AddAuthToDbException.cs" />
     <Compile Include="Exceptions\AddUserToDbException.cs" />
+    <Compile Include="Dtos\AuthDto.cs" />
     <Compile Include="Interfaces\Helpers\ILogsRepository.cs" />
     <Compile Include="Interfaces\IAuthManager.cs" />
     <Compile Include="Interfaces\IAuthRepository.cs" />

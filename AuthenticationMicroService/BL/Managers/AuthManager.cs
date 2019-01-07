@@ -20,7 +20,6 @@ namespace BL.Managers
         private readonly ILoginTokenManager _loginTokenManager;
         private readonly string _identityUrl;
 
-
         /// <summary>
         /// Constructor.
         /// </summary>

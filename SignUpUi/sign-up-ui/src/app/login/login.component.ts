@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { FacebookService, LoginResponse, InitParams, LoginOptions   } from 'ngx-facebook';
 import { FacebookLoginService } from "../core/facebook-login.service";
 import { AuthenticateUserService } from "../core/authenticate-user.service";
-import {MatSnackBar} from '@angular/material';
+import { SnackBarService } from "../core/snack-bar.service";
 
 
 
@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
 
-  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService, private auth: AuthenticateUserService, public snackBar: MatSnackBar) {
+  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService, private auth: AuthenticateUserService, private snackBar: SnackBarService) {
     let initParams: InitParams = {
       appId: '1183102151855520',
       xfbml: true,
@@ -49,24 +49,15 @@ export class LoginComponent implements OnInit {
   }
   
   get input() { return this.loginForm.get('password'); }
-
-  openSnackBar(message: string, action: string, duration: number) {
-    this.snackBar.open(message, action || "close", {
-      duration: duration || 2000,
-    });
-  }
+  
 
   onSubmit() { 
     this.auth.login(this.loginForm.get('email').value, this.loginForm.get('password').value)
     .subscribe(res=>{
       console.log(res); // make sure you get data here.
    },
-   (err)=>{
-     let errorMessage = err.error.Message;
-     if (err.error.Message == "Internal server error"){
-       errorMessage = "Oops, something went wrong. Please try again later";
-     }
-     console.log(this.openSnackBar(errorMessage, "", 10000))}
+   (err)=>{     
+     this.snackBar.openSnackBar(err, "", 10000);}
    );
   }
 

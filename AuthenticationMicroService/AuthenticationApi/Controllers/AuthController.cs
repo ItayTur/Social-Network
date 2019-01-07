@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Common.Dtos;
+using Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.Linq;
@@ -19,16 +20,16 @@ namespace AuthenticationApi.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult RegisterUsernamePassword(string email, string password)
+        public IHttpActionResult RegisterUsernamePassword([FromBody] AuthDto authDto)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (!IsAuthDtoNotNull(authDto))
             {
                 return BadRequest("One of the parameters was missing");
             }
 
             try
             {
-                var token = _authManager.RegisterUserByUsernamePasswordAndLogin(email, password);
+                var token = _authManager.RegisterUserByUsernamePasswordAndLogin(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (DuplicateKeyException ex)
@@ -44,16 +45,16 @@ namespace AuthenticationApi.Controllers
 
         [HttpPost]
         [Route("api/Auth/Login")]
-        public IHttpActionResult LoginUsernamePassword(string email, string password)
+        public IHttpActionResult LoginUsernamePassword([FromBody] AuthDto authDto)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (!IsAuthDtoNotNull(authDto))
             {
                 return BadRequest("One of the parameters was missing");
             }
 
             try
             {
-                var token = _authManager.LoginUserByUserPassword(email, password);
+                var token = _authManager.LoginUserByUserPassword(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (ArgumentException ex)
@@ -64,6 +65,15 @@ namespace AuthenticationApi.Controllers
             {
                 return BadRequest("Internal server error");
             }
+        }
+
+        private bool IsAuthDtoNotNull(AuthDto authDto)
+        {
+            if (authDto == null || string.IsNullOrWhiteSpace(authDto.Email) || string.IsNullOrWhiteSpace(authDto.Password))
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

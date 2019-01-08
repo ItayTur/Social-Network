@@ -89,9 +89,9 @@ namespace AuthenticationApi.Controllers
         {
             if (authDto == null || string.IsNullOrWhiteSpace(authDto.Email) || string.IsNullOrWhiteSpace(authDto.Password))
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
     }
 }

@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes }  from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login/login.component';
+import { NewsFeedComponent } from './news-feed/news-feed.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const appRoutes: Routes = [
-  { path: 'login',        component: LoginComponent },
-  { path: '',   redirectTo: '/login', pathMatch: 'full' },
-  //{ path: '**', component: PageNotFoundComponent }
+  { path: 'news-feed', component: NewsFeedComponent },
+  { path: 'login', component: LoginComponent },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({

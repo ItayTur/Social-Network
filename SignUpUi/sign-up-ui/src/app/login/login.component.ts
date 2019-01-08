@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FacebookService, LoginResponse, InitParams, LoginOptions } from 'ngx-facebook';
 import { FacebookLoginService } from "../core/facebook-login.service";
 import { AuthenticateUserService } from "../core/authenticate-user.service";
@@ -15,7 +16,9 @@ export class LoginComponent implements OnInit {
   cookieValue = 'UNKNOWN';
   loginForm: FormGroup;
 
-  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService, private auth: AuthenticateUserService, private snackBar: SnackBarService, private cookieService: CookieService) {
+  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService, 
+    private auth: AuthenticateUserService, private snackBar: SnackBarService, private cookieService: CookieService, 
+    private router:Router) {
     let initParams: InitParams = {
       appId: '1183102151855520',
       xfbml: true,
@@ -54,7 +57,7 @@ export class LoginComponent implements OnInit {
     this.auth.login(this.loginForm.get('email').value, this.loginForm.get('password').value)
       .subscribe(appToken => {
         this.cookieService.set('authToken', appToken, 1);
-        //redirect to news feed
+        this.router.navigate(['/news-feed']);
       },
         (err) => {
           this.snackBar.openSnackBar(err, "", 10000);
@@ -74,8 +77,9 @@ export class LoginComponent implements OnInit {
         if(array.length === 2) {
           this.fbLoginService.login(token)
             .subscribe((appToken)=>this.cookieService.set("authToken",appToken,1));
+            this.router.navigate(['/news-feed']);
         } else {
-           alert('You need to provide all the facebook permissions to use the app.');
+          this.snackBar.openSnackBar('You need to provide all the facebook permissions to use the app.', "", 10000);   
         }
      })
       .catch((error: any) => console.error(error));

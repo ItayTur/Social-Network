@@ -79,9 +79,19 @@ namespace BL.Managers
         /// Deletes the user associated with the specified id.
         /// </summary>
         /// <param name="id"></param>
-        public void Delete(string id)
+        public async Task Delete(string id, string token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await VerfiyToken(token);
+                _usersRepository.Delete(id);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

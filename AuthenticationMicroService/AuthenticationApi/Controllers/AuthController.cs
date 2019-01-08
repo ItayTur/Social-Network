@@ -2,6 +2,7 @@
 using Common.Interfaces;
 using System;
 using System.Data.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -18,11 +19,11 @@ namespace AuthenticationApi.Controllers
 
         [HttpPost]
         [Route("api/Auth/FacebookSignIn")]
-        public IHttpActionResult FacebookSignIn([FromBody]AccessTokenDto accessToken)
+        public async Task<IHttpActionResult> FacebookSignIn([FromBody]AccessTokenDto accessToken)
         {
             try
             {
-                var appToken =  _authManager.FacebookSignIn(accessToken.AccessToken);
+                var appToken =  await _authManager.FacebookSignIn(accessToken.AccessToken);
                 return Ok(appToken);
             }
             catch (ArgumentException e)

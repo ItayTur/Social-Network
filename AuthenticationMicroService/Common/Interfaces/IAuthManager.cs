@@ -22,7 +22,7 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="token"></param>
         /// <returns>Access token</returns>
-        string FacebookSignIn(string facebookToken);
+        Task<string> FacebookSignIn(string facebookToken);
 
         bool ChangePassword(string accessToken, string currentPassword, string oldPassword);
 

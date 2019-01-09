@@ -10,6 +10,14 @@ namespace Common.Interfaces
     public interface IUsersManager
     {
         /// <summary>
+        /// Gets a user by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="token"></param>
+        /// <returns>User</returns>
+        Task<UserModel> Get(string id, string token);
+
+        /// <summary>
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>

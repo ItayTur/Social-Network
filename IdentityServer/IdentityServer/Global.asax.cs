@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using BL.Managers;
+using Common.Interfaces;
 using DAL.Repositories;
 using SimpleInjector;
 using SimpleInjector.Integration.WebApi;
@@ -21,6 +22,7 @@ namespace IdentityServer
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             //SimpleInjector registrations.
+            container.Register<IUsersManager, UsersManager>(Lifestyle.Singleton);
             container.Register<IUsersRepository, DynamoDbUsersRepository>(Lifestyle.Singleton);
 
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);

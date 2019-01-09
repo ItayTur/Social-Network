@@ -27,6 +27,29 @@ namespace BL.Managers
         }
 
         /// <summary>
+        /// Gets a user by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="token"></param>
+        /// <returns>User</returns>
+        public async Task<UserModel> Get(string id, string token)
+        {
+            try
+            {
+                //await VerfiyToken(token);
+                return _usersRepository.Get(id);
+            }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
+        /// <summary>
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>
@@ -93,5 +116,7 @@ namespace BL.Managers
                 throw;
             }
         }
+
+        
     }
 }

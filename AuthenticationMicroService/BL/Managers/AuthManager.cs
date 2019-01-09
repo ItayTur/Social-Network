@@ -62,19 +62,19 @@ namespace BL.Managers
         /// </summary>
         /// <param name="facebookToken"></param>
         /// <returns>The app token</returns>
-        public string FacebookSignIn(string facebookToken)
+        public async Task<string> FacebookSignIn(string facebookToken)
         {
             using (HttpClient httpClient = new HttpClient())
             {
-                HttpResponseMessage response = GetUserByFacebookToken(facebookToken, httpClient).Result;
+                HttpResponseMessage response = GetUserByFacebookToken(facebookToken, httpClient);
                 if (response.IsSuccessStatusCode)
                 {
-                    var facebookUserDto = response.Content.ReadAsAsync<FacebookUserDto>().Result;
+                    var facebookUserDto = await response.Content.ReadAsAsync<FacebookUserDto>();
                     var userEmail = facebookUserDto.email;
                     var appToken = _loginTokenManager.Add(userEmail);
                     if (_authRepository.IsEmailFree(userEmail))
                     {
-                        AddUserToDatabase(facebookUserDto, userEmail, appToken);
+                        await AddUserToDatabase(facebookUserDto, userEmail, appToken);
                     }
                     return appToken;
 
@@ -94,7 +94,7 @@ namespace BL.Managers
         /// <param name="facebookUserDto"></param>
         /// <param name="userEmail"></param>
         /// <param name="appToken"></param>
-        private void AddUserToDatabase(FacebookUserDto facebookUserDto, string userEmail, string appToken)
+        private async Task AddUserToDatabase(FacebookUserDto facebookUserDto, string userEmail, string appToken)
         {
             try
             {
@@ -116,7 +116,8 @@ namespace BL.Managers
                         isAddUserFail = true;
                     }
                 }
-                RollbackSuccededTask(isAddAuthFail, isAddUserFail, userEmail);
+                await RollbackSuccededTask(isAddAuthFail, isAddUserFail, userEmail);
+                throw new Exception();
             }
             
         }
@@ -128,7 +129,7 @@ namespace BL.Managers
         /// </summary>
         /// <param name="isAddAuthFail"></param>
         /// <param name="isAddUserFail"></param>
-        private async void RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, string userEmail)
+        private async Task RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, string userEmail)
         {
             if (isAddAuthFail && !isAddUserFail)
             {
@@ -153,7 +154,7 @@ namespace BL.Managers
                 var response = await httpClient.DeleteAsync(_identityUrl+$"/{userEmail}");
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new Exception("Identity server could not remove the user");
+                    throw new ArgumentException("Identity server could not remove the user");
                 }
             }
         }
@@ -227,7 +228,7 @@ namespace BL.Managers
         /// <param name="facebookToken"></param>
         /// <param name="httpClient"></param>
         /// <returns>An HttpResponseMessage with the user details or the reason why it failed.</returns>
-        private async Task<HttpResponseMessage> GetUserByFacebookToken(string facebookToken, HttpClient httpClient)
+        private HttpResponseMessage GetUserByFacebookToken(string facebookToken, HttpClient httpClient)
         {
             
            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", facebookToken);
@@ -236,9 +237,6 @@ namespace BL.Managers
             .Accept
             .Add(new MediaTypeWithQualityHeaderValue("application/json"));
             return httpClient.GetAsync($"me?fields=id,name,email,first_name,last_name").Result;
-            //return response;
-            //.Content.ReadAsStringAsync().Result;
-            //return new HttpResponseMessage();
         }
 
 

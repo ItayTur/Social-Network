@@ -7,27 +7,25 @@ using System.Threading.Tasks;
 
 namespace Common.Models
 {
-    [DynamoDBTable("Auth")]
-    public class AuthModel
+    [DynamoDBTable("FacebookAuth")]
+    public class FacebookAuthModel  
     {
         [DynamoDBHashKey]
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string FacebookId { get; set; }
         public string UserId { get; set; }
         public bool IsBLocked { get; set; }
         public bool IsDeleted { get; set; }
 
-        public AuthModel()
+
+        public FacebookAuthModel()
         {
 
         }
 
-        public AuthModel(string email, string password, string userId)
+        public FacebookAuthModel(string facebookId, string userId)
         {
-            Email = email;
-            Password = password;
+            FacebookId = facebookId;
             UserId = userId;
         }
     }
-
 }

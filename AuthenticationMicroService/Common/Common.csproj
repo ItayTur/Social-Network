@@ -62,6 +62,7 @@
     <Compile Include="Logers\LoggerFactory.cs" />
     <Compile Include="Logers\MultiLogger.cs" />
     <Compile Include="Models\AuthModel.cs" />
+    <Compile Include="Models\FacebookAuthModel.cs" />
     <Compile Include="Models\LoginTokenModel.cs" />
     <Compile Include="Models\LogModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

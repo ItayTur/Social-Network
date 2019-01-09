@@ -18,11 +18,11 @@ namespace BL.Managers
             _loginTokenRepository = loginTokenRepository;
         }
 
-        public string Add(string email)
+        public string Add(string userId)
         {
             try
             {
-                var loginToken = new LoginTokenModel(email);
+                var loginToken = new LoginTokenModel(userId);
                 var savedLoginToken = _loginTokenRepository.AddLoginToken(loginToken);
                 return savedLoginToken.Token;
             }

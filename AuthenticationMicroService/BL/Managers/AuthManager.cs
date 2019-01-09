@@ -177,11 +177,12 @@ namespace BL.Managers
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        private Task AddUserToAuthDb(string userEmail)
+        private Task AddUserToAuthDb(string facebookId)
         {
             try
             {
-                return Task.Run(() => _authRepository.Add(new AuthModel(userEmail)));
+                string userId = GenerateUserId();
+                return Task.Run(() => _authRepository.Add(new FacebookAuthModel(facebookId, userId)));
             }
             catch (Exception e)
             {
@@ -253,7 +254,7 @@ namespace BL.Managers
             {
                 var auth = _authRepository.GetAuthByEmail(email);
                 VerifyAuthPassword(auth, password);
-                return _loginTokenManager.Add(email);
+                return _loginTokenManager.Add(auth.UserId);
             }
             catch (Exception ex)
             {
@@ -275,9 +276,10 @@ namespace BL.Managers
             try
             {
                 VerifyEmailIsFree(email);
-                AuthModel auth = new AuthModel(email, SecurePasswordHasher.Hash(password));
+                string userId = GenerateUserId();
+                AuthModel auth = new AuthModel(email, SecurePasswordHasher.Hash(password), userId);
                 _authRepository.Add(auth);
-                return _loginTokenManager.Add(email);
+                return _loginTokenManager.Add(userId);
             }
             catch (DuplicateKeyException ex)
             {
@@ -289,6 +291,15 @@ namespace BL.Managers
                 LoggerFactory.GetInstance().AllLogger().Log(ex.Message);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Generates user id.
+        /// </summary>
+        /// <returns></returns>
+        private string GenerateUserId()
+        {
+            return Guid.NewGuid().ToString();
         }
 
 

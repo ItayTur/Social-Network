@@ -13,22 +13,31 @@ namespace Common.Models
     {
         [DynamoDBHashKey]
         public string Token { get; set; }
-        public string UserEmail { get; set; }
+        public string Id { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime ExpiredTime { get; set; }
+        public LoginTypes LoginType { get; set; }
 
         public LoginTokenModel()
         {
 
         }
 
-        public LoginTokenModel(string email)
+        public LoginTokenModel(string id, LoginTypes loginType)
         {
-            UserEmail = email;
+            Id = id;
+            LoginType = loginType;
             CreationTime = DateTime.Now;
             int AccessTokenMinutes = int.Parse(ConfigurationManager.AppSettings["AccessTokenMinutes"]);
             ExpiredTime = CreationTime.AddMinutes(AccessTokenMinutes);
             Token = Guid.NewGuid().ToString();
+        }
+
+        [Flags]
+        public enum LoginTypes
+        {
+            UserPassword = 0,
+            Facebook = 1
         }
     }
 }

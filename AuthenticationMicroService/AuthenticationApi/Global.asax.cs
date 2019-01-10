@@ -27,8 +27,10 @@ namespace AuthenticationApi
 
             //SimpleInjector registrations.
             container.Register<IAuthRepository, DynamoDbAuthRepository>(Lifestyle.Singleton);
+            container.Register<IFacebookAuthRepository, DynamoDbFacebookAuthRepository>(Lifestyle.Singleton);
             container.Register<ILoginTokenRepository, DynamoDbLoginTokenRepository>(Lifestyle.Singleton);
             container.Register<IAuthManager, AuthManager>(Lifestyle.Singleton);
+            container.Register<IFacebookAuthManager, FacebookAuthManager>(Lifestyle.Singleton);
             container.Register<ILoginTokenManager, LoginTokenManager>(Lifestyle.Singleton);
 
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);

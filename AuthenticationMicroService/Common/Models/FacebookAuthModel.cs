@@ -19,7 +19,6 @@ namespace Common.Models
 
         public FacebookAuthModel()
         {
-
         }
 
         public FacebookAuthModel(string facebookId, string userId)

@@ -11,10 +11,12 @@ namespace AuthenticationApi.Controllers
     public class AuthController : ApiController
     {
         private IAuthManager _authManager;
+        private IFacebookAuthManager _facebookAuthManager;
 
-        public AuthController(IAuthManager authManager)
+        public AuthController(IAuthManager authManager, IFacebookAuthManager facebookAuthManager)
         {
             _authManager = authManager;
+            _facebookAuthManager = facebookAuthManager;
         }
 
         [HttpPost]
@@ -23,7 +25,7 @@ namespace AuthenticationApi.Controllers
         {
             try
             {
-                var appToken =  await _authManager.FacebookSignIn(accessToken.AccessToken);
+                var appToken =  await _facebookAuthManager.SignIn(accessToken.AccessToken);
                 return Ok(appToken);
             }
             catch (ArgumentException e)
@@ -49,7 +51,7 @@ namespace AuthenticationApi.Controllers
 
             try
             {
-                var token = _authManager.RegisterUserByUsernamePasswordAndLogin(authDto.Email, authDto.Password);
+                var token = _authManager.RegisterUserAndLogin(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (DuplicateKeyException ex)
@@ -73,7 +75,7 @@ namespace AuthenticationApi.Controllers
 
             try
             {
-                var token = _authManager.LoginUserByUserPassword(authDto.Email, authDto.Password);
+                var token = _authManager.LoginUser(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (ArgumentException ex)

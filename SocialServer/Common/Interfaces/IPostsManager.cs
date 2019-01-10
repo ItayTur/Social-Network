@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using Common.Dtos;
+using Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Common.Interfaces
 {
-    public interface IPostsRepository
+    public interface IPostsManager
     {
         /// <summary>
         /// Adds a post to the database. 
@@ -15,6 +16,6 @@ namespace Common.Interfaces
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        Task Add(string posterId, PostModel post, ICollection<string> tagIds);
+        Task Add( NewPostDto newPostDto);
     }
 }

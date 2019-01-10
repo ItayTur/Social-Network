@@ -8,6 +8,7 @@ namespace Common.Models
 {
     public class PostModel
     {
+        public string Id { get; set; }
         public string Content { get; set; }
         public string ImgUrl { get; set; }
         public DateTime DateTime { get; set; }

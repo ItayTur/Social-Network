@@ -3,16 +3,15 @@ using Common.Models;
 using DAL.Data;
 using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DAL.Repositories
 {
-    public class DynamoDbAuthRepository : IAuthRepository
+    public class DynamoDbFacebookAuthRepository : IFacebookAuthRepository
     {
-        public void Add(AuthModel newUser)
+        public void Add(FacebookAuthModel newUser)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
@@ -20,35 +19,30 @@ namespace DAL.Repositories
             }
         }
 
-        public bool IsEmailFree(string email)
+        public void Delete(string facebookId)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                var auth = dbContext.Load<AuthModel>(email);
-                return auth == null;
+                dbContext.Delete<FacebookAuthModel>(facebookId);
+                //TODO: log
             }
         }
 
-        public AuthModel GetAuthByEmail(string email)
+        public FacebookAuthModel GetAuthByFacebookId(string facebookId)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                var user = dbContext.Load<AuthModel>(email);
+                var user = dbContext.Load<FacebookAuthModel>(facebookId);
                 return user;
             }
         }
 
-        public void Update(AuthModel updatedUser)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(string userEmail)
+        public bool IsFacebookIdFree(string facebookId)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                dbContext.Delete<AuthModel>(userEmail);
-                //TODO: log
+                var auth = dbContext.Load<FacebookAuthModel>(facebookId);
+                return auth == null;
             }
         }
     }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Common.Models.LoginTokenModel;
 
 namespace BL.Managers
 {
@@ -18,11 +19,11 @@ namespace BL.Managers
             _loginTokenRepository = loginTokenRepository;
         }
 
-        public string Add(string email)
+        public string Add(string userId, LoginTypes loginType)
         {
             try
             {
-                var loginToken = new LoginTokenModel(email);
+                var loginToken = new LoginTokenModel(userId, loginType);
                 var savedLoginToken = _loginTokenRepository.AddLoginToken(loginToken);
                 return savedLoginToken.Token;
             }

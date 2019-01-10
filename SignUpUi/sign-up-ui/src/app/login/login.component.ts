@@ -16,9 +16,9 @@ export class LoginComponent implements OnInit {
   cookieValue = 'UNKNOWN';
   loginForm: FormGroup;
 
-  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService, 
-    private auth: AuthenticateUserService, private snackBar: SnackBarService, private cookieService: CookieService, 
-    private router:Router) {
+  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService,
+    private auth: AuthenticateUserService, private snackBar: SnackBarService, private cookieService: CookieService,
+    private router: Router) {
     let initParams: InitParams = {
       appId: '1183102151855520',
       xfbml: true,
@@ -73,15 +73,21 @@ export class LoginComponent implements OnInit {
       auth_type: 'rerequest'
     };
     this.FB.login(loginOptions).then((token: LoginResponse) => {
-        let array = token.authResponse.grantedScopes.split(',');
-        if(array.length === 2) {
-          this.fbLoginService.login(token)
-            .subscribe((appToken)=>this.cookieService.set("authToken",appToken,1));
+      let array = token.authResponse.grantedScopes.split(',');
+      if (array.length === 2) {
+        this.fbLoginService.login(token)
+          .subscribe((appToken) => {
+            this.cookieService.set("authToken", appToken, 1);
             this.router.navigate(['/news-feed']);
-        } else {
-          this.snackBar.openSnackBar('You need to provide all the facebook permissions to use the app.', "", 10000);   
-        }
-     })
+          },
+            (err) => {
+              this.snackBar.openSnackBar(err, "", 10000);
+            }
+          );
+      } else {
+        this.snackBar.openSnackBar('You need to provide all the facebook permissions to use the app.', "", 10000);
+      }
+    })
       .catch((error: any) => console.error(error));
   }
 }

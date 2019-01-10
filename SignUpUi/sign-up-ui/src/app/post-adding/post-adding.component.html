@@ -2,33 +2,30 @@
   <div class="justify-content-center">
     <mdb-card>
       <!-- Default form contact -->
-      <form class="text-center border border-light p-5">
-
-        <p class="h4 mb-4">Contact us</p>
+      <form #postForm="ngForm" class="text-center border border-light p-5">
 
         <!-- Content -->
         <div class="form-group">
-          <textarea class="form-control rounded-0" id="contentId" rows="3" placeholder="Message"></textarea>
+          <textarea #spy name="Content" [(ngModel)]="post.Content" class="form-control rounded-0" id="contentId" rows="3" placeholder="What's on your mind..." required></textarea>
         </div>
-
         <!-- tags -->
-        <input type="text" id="tagsId" class="form-control mb-4" placeholder="Tags">
+        <input name="Tags" [(ngModel)]="post.Tags" type="text" id="tagsId" class="form-control mb-4" placeholder="Tags">
 
         <!-- images -->
         <div class="file-field md-form">
-          <div class="btn btn-primary btn-sm float-left">
-            <span>Choose file</span>
-            <input class="file-input" type="file">
+          <div class="btn btn-info btn-sm float-center">
+            <span>Choose pics</span>
+            <input  class="form-control file-input" type="file" (change)="onFileChanged($event)">
           </div>
           <div class="file-path-wrapper">
-            <input class="file-path validate" type="text" placeholder="Upload your file">
+            <input  name = "Pics"  class="file-path validate" type="text" placeholder="Upload your file">
           </div>
         </div>
         
 
 
         <!-- Send button -->
-        <button class="btn btn-info btn-block" type="submit">Send</button>
+        <button class="btn btn-info btn-block" type="submit">Post</button>
 
      
       <!-- Default form contact -->
@@ -36,4 +33,9 @@
     </mdb-card>
   </div>
 </div>
+
+
+
+
+
 

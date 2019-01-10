@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Post } from "./post.model";
 
 
 
@@ -10,10 +11,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PostAddingComponent implements OnInit {
 
-  
+  post: Post = new Post("","","",new Date());
+  pics: any;
   constructor() { }
 
-  
+  onFileChanged(event) {
+    const file = event.target.files[0];
+  }
+
+  onSubmit() {
+
+  }
 
   ngOnInit() {
 

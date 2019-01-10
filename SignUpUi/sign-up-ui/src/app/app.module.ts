@@ -10,13 +10,13 @@ import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { NewsFeedComponent } from './news-feed/news-feed.component';
+import { PostAddingComponent } from './post-adding/post-adding.component';
 
 import { FacebookModule } from 'ngx-facebook';
 import { CookieService } from 'ngx-cookie-service';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { PostAddingComponent } from './post-adding/post-adding.component';
 
 @NgModule({
   declarations: [

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Post } from "./post.model";
-
+import { PostAddingService } from "../core/post-adding.service";
+import { SnackBarService } from '../core/snack-bar.service';
 
 
 
@@ -13,7 +14,7 @@ export class PostAddingComponent implements OnInit {
 
   post: Post = new Post("","",new Date());
   imgSrc: string | ArrayBuffer;
-  constructor() { }
+  constructor(private postAddingService: PostAddingService, private snackBarService: SnackBarService) { }
 
   onFileChanged(event) {
 
@@ -26,7 +27,9 @@ export class PostAddingComponent implements OnInit {
   }
 
   onSubmit() {
-
+    debugger;
+    this.postAddingService.AddPost(this.post).subscribe(success=> { console.log(success); },
+    (err)=> { this.snackBarService.openSnackBar(err, "", 10000); });
   }
 
   ngOnInit() {

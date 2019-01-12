@@ -6,7 +6,7 @@
 
         <!-- Content -->
         <div class="form-group">
-          <textarea #spy name="Content" [(ngModel)]="post.Content" class="form-control rounded-0" id="contentId" rows="3" placeholder="What's on your mind..." required></textarea>
+          <textarea name="Content" [(ngModel)]="post.Content" class="form-control rounded-0" id="contentId" rows="3" placeholder="What's on your mind..." required></textarea>
         </div>
         <!-- tags -->
         <input name="Tags" [(ngModel)]="post.Tags" type="text" id="tagsId" class="form-control mb-4" placeholder="Tags">
@@ -18,12 +18,13 @@
             <input  class="form-control file-input" type="file" (change)="onFileChanged($event)">
           </div>
         </div>
-        <img id=uploaded-img [src]="imgSrc" class="rounded mx-auto d-block" style="width: 200px" *ngIf="imgSrc">
+        <img id=uploaded-img [src]="imgSrc" class="rounded mx-auto d-block" style="width: 200px" [alt]="post.pic.name" *ngIf="imgSrc">
         <br>
 
 
+
         <!-- Send button -->
-        <button class="btn btn-info btn-block" type="submit">Post</button>
+        <button [disabled]="!postForm.form.valid" class="btn btn-info btn-block" type="submit" (click)="onSubmit()">Post</button>
 
 
       <!-- Default form contact -->

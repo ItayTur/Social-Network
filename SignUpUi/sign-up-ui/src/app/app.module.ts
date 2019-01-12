@@ -25,7 +25,6 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     NewsFeedComponent,
     PageNotFoundComponent,
     PostAddingComponent,
-
   ],
   imports: [
     FacebookModule.forRoot(),

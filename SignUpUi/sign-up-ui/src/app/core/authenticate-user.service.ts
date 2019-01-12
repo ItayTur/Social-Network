@@ -16,7 +16,7 @@ export class AuthenticateUserService {
   constructor(private httpClient: HttpClient, private erorrHandler: ErrorHandlingService) { }
 
   login(email: string, password: string):Observable<any> {
-    let auth : AuthModel = new AuthModel(email, password);
+    let auth: AuthModel = new AuthModel(email, password);
     return this.httpClient.post(this.authApi, auth)
     .pipe(
       retry(3),

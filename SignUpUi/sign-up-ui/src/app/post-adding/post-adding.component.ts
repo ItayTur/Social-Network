@@ -11,12 +11,18 @@ import { Post } from "./post.model";
 })
 export class PostAddingComponent implements OnInit {
 
-  post: Post = new Post("","","",new Date());
-  pics: any;
+  post: Post = new Post("","",new Date());
+  imgSrc: string | ArrayBuffer;
   constructor() { }
 
   onFileChanged(event) {
-    const file = event.target.files[0];
+
+    const pic = event.target.files[0];
+    this.post.pic = pic;
+
+    const reader = new FileReader();
+    reader.onload = e => this.imgSrc = reader.result;
+    reader.readAsDataURL(pic);
   }
 
   onSubmit() {
@@ -25,7 +31,7 @@ export class PostAddingComponent implements OnInit {
 
   ngOnInit() {
 
-    
+
   }
 
 

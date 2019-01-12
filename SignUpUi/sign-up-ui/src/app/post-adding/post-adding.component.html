@@ -17,17 +17,15 @@
             <span>Choose pics</span>
             <input  class="form-control file-input" type="file" (change)="onFileChanged($event)">
           </div>
-          <div class="file-path-wrapper">
-            <input  name = "Pics"  class="file-path validate" type="text" placeholder="Upload your file">
-          </div>
         </div>
-        
+        <img id=uploaded-img [src]="imgSrc" class="rounded mx-auto d-block" style="width: 200px" *ngIf="imgSrc">
+        <br>
 
 
         <!-- Send button -->
         <button class="btn btn-info btn-block" type="submit">Post</button>
 
-     
+
       <!-- Default form contact -->
       </form>
     </mdb-card>

@@ -16,8 +16,8 @@ export class LoginComponent implements OnInit {
   cookieValue = 'UNKNOWN';
   loginForm: FormGroup;
 
-  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService, 
-    private auth: AuthenticateUserService, private snackBar: SnackBarService, private cookieService: CookieService, 
+  constructor(private FB: FacebookService, private fbLoginService: FacebookLoginService,
+    private auth: AuthenticateUserService, private snackBar: SnackBarService, private cookieService: CookieService,
     private router:Router) {
     let initParams: InitParams = {
       appId: '1183102151855520',
@@ -29,7 +29,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loginForm = new FormGroup({ password: new FormControl(null, Validators.required), email: new FormControl(null, [Validators.required, Validators.email]) });
+    this.loginForm = new FormGroup({ password: new FormControl(null, Validators.required),
+       email: new FormControl(null, [Validators.required, Validators.email]) });
 
     (window as any).fbAsyncInit = function () {
       this.FB.init({
@@ -79,7 +80,7 @@ export class LoginComponent implements OnInit {
             .subscribe((appToken)=>this.cookieService.set("authToken",appToken,1));
             this.router.navigate(['/news-feed']);
         } else {
-          this.snackBar.openSnackBar('You need to provide all the facebook permissions to use the app.', "", 10000);   
+          this.snackBar.openSnackBar('You need to provide all the facebook permissions to use the app.', "", 10000);
         }
      })
       .catch((error: any) => console.error(error));

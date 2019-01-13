@@ -21,11 +21,13 @@ namespace BL.Managers
 
         private readonly IPostsRepository _postsRepository;
         private readonly IStorageManager _storageManager;
+        private readonly string _authBaseUrl;
 
         public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager)
         {
             _postsRepository = postsRepository;
             _storageManager = storageManager;
+            _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
         }
 
         /// <summary>
@@ -71,7 +73,7 @@ namespace BL.Managers
             TokenDto tokenDto = new TokenDto() { Token = token };
             using(HttpClient httpClient = new HttpClient())
             {
-                var response = await httpClient.PostAsJsonAsync("localHost:53535", token);
+                var response = await httpClient.PostAsJsonAsync(_authBaseUrl, token);
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new AuthenticationException();

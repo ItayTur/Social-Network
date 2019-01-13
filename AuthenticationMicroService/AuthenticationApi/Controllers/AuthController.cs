@@ -2,6 +2,7 @@
 using Common.Interfaces;
 using System;
 using System.Data.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -10,19 +11,21 @@ namespace AuthenticationApi.Controllers
     public class AuthController : ApiController
     {
         private IAuthManager _authManager;
+        private IFacebookAuthManager _facebookAuthManager;
 
-        public AuthController(IAuthManager authManager)
+        public AuthController(IAuthManager authManager, IFacebookAuthManager facebookAuthManager)
         {
             _authManager = authManager;
+            _facebookAuthManager = facebookAuthManager;
         }
 
         [HttpPost]
         [Route("api/Auth/FacebookSignIn")]
-        public IHttpActionResult FacebookSignIn([FromBody]AccessTokenDto accessToken)
+        public async Task<IHttpActionResult> FacebookSignIn([FromBody]AccessTokenDto accessToken)
         {
             try
             {
-                var appToken =  _authManager.FacebookSignIn(accessToken.AccessToken);
+                var appToken =  await _facebookAuthManager.SignIn(accessToken.AccessToken);
                 return Ok(appToken);
             }
             catch (ArgumentException e)
@@ -48,7 +51,7 @@ namespace AuthenticationApi.Controllers
 
             try
             {
-                var token = _authManager.RegisterUserByUsernamePasswordAndLogin(authDto.Email, authDto.Password);
+                var token = _authManager.RegisterUserAndLogin(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (DuplicateKeyException ex)
@@ -72,7 +75,7 @@ namespace AuthenticationApi.Controllers
 
             try
             {
-                var token = _authManager.LoginUserByUserPassword(authDto.Email, authDto.Password);
+                var token = _authManager.LoginUser(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (ArgumentException ex)

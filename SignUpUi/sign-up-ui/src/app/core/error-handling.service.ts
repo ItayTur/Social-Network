@@ -21,8 +21,10 @@ export class ErrorHandlingService {
       console.error(
         `Backend returned code ${error.status}, ` +
         `body was: ${error.error}`);
-        if (error.message === "Internal server error") {
+        if (error.message === "Internal server error" || error.status === 500) {
           errorMessage = "Oops, something went wrong. Please try again later";
+        } else if ( error.status ===0 ) {
+          errorMessage = "A network error has occurd.";
         } else {
           errorMessage = error.error.Message;
         }

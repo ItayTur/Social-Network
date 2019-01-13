@@ -15,7 +15,7 @@ export class PostAddingService {
   constructor(private httpClient: HttpClient, private cookieService: CookieService,
     private errorHandlingService: ErrorHandlingService) { }
 
-  AddPost (post: Post): Observable<any> {
+  AddPost (post: Post): Observable<any>  {
 
     return this.httpClient.post(this.addPostUrl, post, ).pipe(retry(3),
      catchError(this.errorHandlingService.handleError));

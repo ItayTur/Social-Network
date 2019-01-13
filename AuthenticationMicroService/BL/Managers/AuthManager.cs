@@ -56,131 +56,16 @@ namespace BL.Managers
         }
 
 
-
-        /// <summary>
-        /// Signs in the user through facebook api.
-        /// </summary>
-        /// <param name="facebookToken"></param>
-        /// <returns>The app token</returns>
-        public string FacebookSignIn(string facebookToken)
-        {
-            using (HttpClient httpClient = new HttpClient())
-            {
-                HttpResponseMessage response = GetUserByFacebookToken(facebookToken, httpClient).Result;
-                if (response.IsSuccessStatusCode)
-                {
-                    var facebookUserDto = response.Content.ReadAsAsync<FacebookUserDto>().Result;
-                    var userEmail = facebookUserDto.email;
-                    var appToken = _loginTokenManager.Add(userEmail);
-                    if (_authRepository.IsEmailFree(userEmail))
-                    {
-                        AddUserToDatabase(facebookUserDto, userEmail, appToken);
-                    }
-                    return appToken;
-
-                }
-                else
-                {
-                    throw new ArgumentException("Access token is not valid");
-                }
-            }
-        }
-
-
-
-        /// <summary>
-        /// Addes the user to the Users table and the email to the Auth table.
-        /// </summary>
-        /// <param name="facebookUserDto"></param>
-        /// <param name="userEmail"></param>
-        /// <param name="appToken"></param>
-        private void AddUserToDatabase(FacebookUserDto facebookUserDto, string userEmail, string appToken)
-        {
-            try
-            {
-                Task addUserTask = AddUserToUsersDb(appToken, facebookUserDto);
-                Task addAuthTask = AddUserToAuthDb(userEmail);
-                Task.WaitAll(addUserTask, addAuthTask);
-            }
-            catch (AggregateException ae)
-            {
-                bool isAddUserFail = false, isAddAuthFail= false;
-                foreach (var exception in ae.InnerExceptions)
-                {
-                    if(exception is AddAuthToDbException)
-                    {
-                        isAddAuthFail = true;
-                    }
-                    if(exception is AddUserToDbException)
-                    {
-                        isAddUserFail = true;
-                    }
-                }
-                RollbackSuccededTask(isAddAuthFail, isAddUserFail, userEmail);
-            }
-            
-        }
-
-
-
-        /// <summary>
-        /// If only one of the specified tasks failed a rollback is preformed on the other.
-        /// </summary>
-        /// <param name="isAddAuthFail"></param>
-        /// <param name="isAddUserFail"></param>
-        private async void RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, string userEmail)
-        {
-            if (isAddAuthFail && !isAddUserFail)
-            {
-                await RemoveUserFromDb(userEmail);
-            }
-            else if(!isAddAuthFail && isAddUserFail)
-            {
-                RemoveAuthFromDb(userEmail);
-            }
-        }
-        
-
-
-        /// <summary>
-        /// Removes the user associated with the specified email from the database.
-        /// </summary>
-        /// <param name="userEmail"></param>
-        private async Task RemoveUserFromDb(string userEmail)
-        {
-            using(HttpClient httpClient = new HttpClient())
-            {
-                var response = await httpClient.DeleteAsync(_identityUrl+$"/{userEmail}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new Exception("Identity server could not remove the user");
-                }
-            }
-        }
-
-
-
-        /// <summary>
-        /// Removes the auth associated with the specified email from the database.
-        /// </summary>
-        /// <param name="userEmail"></param>
-        private void RemoveAuthFromDb(string userEmail)
-        {
-            _authRepository.Delete(userEmail);
-        }
-
-
-
         /// <summary>
         /// Addes mail to the auth table in the database.
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        private Task AddUserToAuthDb(string userEmail)
+        private Task AddUserToAuthDb(string email, string password, string userId)
         {
             try
             {
-                return Task.Run(() => _authRepository.Add(new AuthModel(userEmail)));
+                return Task.Run(() => _authRepository.Add(new AuthModel(email, password, userId)));
             }
             catch (Exception e)
             {
@@ -190,57 +75,7 @@ namespace BL.Managers
             
         }
 
-
-
-        /// <summary>
-        /// Adds a user entity to the users database through the identity service.
-        /// </summary>
-        /// <param name="appToken"></param>
-        /// <param name="user"></param>
-        private async Task AddUserToUsersDb(string appToken, FacebookUserDto user)
-        {
-            try
-            {
-                using (HttpClient httpClient = new HttpClient())
-                {
-
-                    var response = await httpClient.PostAsJsonAsync(_identityUrl, user).ConfigureAwait(continueOnCapturedContext: false);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new Exception("Identity server could not add the user");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                //TODO: log
-                throw new AddUserToDbException(e.Message);
-            }
-            
-        }
-
-
-
-        /// <summary>
-        /// Gets the user details associated with the specified facebook token.
-        /// </summary>
-        /// <param name="facebookToken"></param>
-        /// <param name="httpClient"></param>
-        /// <returns>An HttpResponseMessage with the user details or the reason why it failed.</returns>
-        private async Task<HttpResponseMessage> GetUserByFacebookToken(string facebookToken, HttpClient httpClient)
-        {
-            
-           httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", facebookToken);
-            httpClient.BaseAddress = new Uri("https://graph.facebook.com/v3.2/");
-            httpClient.DefaultRequestHeaders
-            .Accept
-            .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            return httpClient.GetAsync($"me?fields=id,name,email,first_name,last_name").Result;
-            //return response;
-            //.Content.ReadAsStringAsync().Result;
-            //return new HttpResponseMessage();
-        }
-
+               
 
         
         /// <summary>
@@ -249,13 +84,13 @@ namespace BL.Managers
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public string LoginUserByUserPassword(string email, string password)
+        public string LoginUser(string email, string password)
         {
             try
             {
                 var auth = _authRepository.GetAuthByEmail(email);
                 VerifyAuthPassword(auth, password);
-                return _loginTokenManager.Add(email);
+                return _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
             }
             catch (Exception ex)
             {
@@ -272,14 +107,15 @@ namespace BL.Managers
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns>The access token associated with the specified email and password.</returns>
-        public string RegisterUserByUsernamePasswordAndLogin(string email, string password)
+        public string RegisterUserAndLogin(string email, string password)
         {
             try
             {
                 VerifyEmailIsFree(email);
-                AuthModel auth = new AuthModel(email, SecurePasswordHasher.Hash(password));
+                string userId = GenerateUserId();
+                AuthModel auth = new AuthModel(email, SecurePasswordHasher.Hash(password), userId);
                 _authRepository.Add(auth);
-                return _loginTokenManager.Add(email);
+                return _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.UserPassword);
             }
             catch (DuplicateKeyException ex)
             {
@@ -293,7 +129,7 @@ namespace BL.Managers
             }
         }
 
-
+        
 
         /// <summary>
         /// Verfies the email occupation. Throws an exception other wise.
@@ -319,6 +155,11 @@ namespace BL.Managers
             {
                 throw new ArgumentException();
             }
+        }
+
+        private string GenerateUserId()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }

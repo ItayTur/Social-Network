@@ -13,9 +13,10 @@ namespace Common.Interfaces
 
         void Update(AuthModel updatedUser);
 
-        AuthModel Add(AuthModel newUser);
+        void Add(AuthModel newUser);
 
         bool IsEmailFree(string email);
+
         void Delete(string userEmail);
     }
 }

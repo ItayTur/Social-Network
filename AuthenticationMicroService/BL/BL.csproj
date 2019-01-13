@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Helpers\SecurePasswordHasher.cs" />
     <Compile Include="Managers\AuthManager.cs" />
+    <Compile Include="Managers\FacebookAuthManager.cs" />
     <Compile Include="Managers\LoginTokenManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

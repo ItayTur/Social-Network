@@ -14,15 +14,8 @@ namespace Common.Interfaces
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns>Access token</returns>
-        string LoginUserByUserPassword(string email, string password);
-
-        /// <summary>
-        /// Login user by facebook email (acquired through facebook's user access token).
-        /// Auth will be created if doesn't exist.
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns>Access token</returns>
-        string FacebookSignIn(string facebookToken);
+        string LoginUser(string email, string password);
+       
 
         bool ChangePassword(string accessToken, string currentPassword, string oldPassword);
 
@@ -34,6 +27,6 @@ namespace Common.Interfaces
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        string RegisterUserByUsernamePasswordAndLogin(string email, string password);
+        string RegisterUserAndLogin(string email, string password);
     }
 }

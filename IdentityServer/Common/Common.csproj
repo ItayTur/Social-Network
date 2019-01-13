@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CA4140B0-D458-4FAA-B943-74F2C765FF78}</ProjectGuid>
+    <ProjectGuid>{2DDB288B-3E9C-44CB-BBF5-15346D52760E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Common</RootNamespace>
@@ -35,8 +35,8 @@
       <HintPath>..\packages\AWSSDK.2.3.55.2\lib\net45\AWSSDK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,34 +45,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dtos\AccessTokenDto.cs" />
-    <Compile Include="Dtos\FacebookUserDto.cs" />
-    <Compile Include="Exceptions\AddAuthToDbException.cs" />
-    <Compile Include="Exceptions\AddUserToDbException.cs" />
-    <Compile Include="Dtos\AuthDto.cs" />
-    <Compile Include="Interfaces\Helpers\ILogsRepository.cs" />
-    <Compile Include="Interfaces\IAuthManager.cs" />
-    <Compile Include="Interfaces\IAuthRepository.cs" />
-    <Compile Include="Interfaces\Helpers\ILogger.cs" />
-    <Compile Include="Interfaces\IFacebookAuthManager.cs" />
-    <Compile Include="Interfaces\IFacebookAuthRepository.cs" />
-    <Compile Include="Interfaces\ILoginTokenManager.cs" />
-    <Compile Include="Interfaces\ILoginTokenRepository.cs" />
-    <Compile Include="Logers\AbstractLogger.cs" />
-    <Compile Include="Logers\DBLogger.cs" />
-    <Compile Include="Logers\FileLogger.cs" />
-    <Compile Include="Logers\LoggerFactory.cs" />
-    <Compile Include="Logers\MultiLogger.cs" />
-    <Compile Include="Models\AuthModel.cs" />
-    <Compile Include="Models\FacebookAuthModel.cs" />
-    <Compile Include="Models\LoginTokenModel.cs" />
-    <Compile Include="Models\LogModel.cs" />
+    <Compile Include="Dtos\TokenDto.cs" />
+    <Compile Include="Interfaces\IUsersManager.cs" />
+    <Compile Include="Interfaces\IUsersRepository.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

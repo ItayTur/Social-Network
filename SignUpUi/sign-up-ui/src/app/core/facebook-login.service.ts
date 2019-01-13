@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Observable } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { FacebookTokenModel } from "./facebookToken.model";
+import { ErrorHandlingService } from "./error-handling.service";
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -19,20 +20,12 @@ export class FacebookLoginService {
   facebookLoginApi = this.baseUrl + "/Auth/FacebookSignIn";
 
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private erorrHandler: ErrorHandlingService) { }
   login(auth: any): Observable<any> {
     let facebookToken: FacebookTokenModel = new FacebookTokenModel(auth.authResponse.accessToken);
     return this.httpClient.post(this.facebookLoginApi, facebookToken, httpOptions)
-      .pipe(retry(3), catchError(this.handleError));
+      .pipe(retry(3), catchError(this.erorrHandler.handleError));
   }
 
-  private handleError(error: any) {
-    console.error('server error:', error);
-    if (error.error instanceof Error) {
-        const errMessage = error.error.message;
-        return Observable.throw(errMessage);
-    }
-    return Observable.throw(error || 'server error');
-  }
 
 }

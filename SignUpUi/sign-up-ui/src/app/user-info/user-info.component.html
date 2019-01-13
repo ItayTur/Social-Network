@@ -11,21 +11,21 @@
     <!--Body-->
     <div class="w-100 text-center">
       <ul class="list-unstyled mb-0">
-        <li>
+        <li *ngIf="user.firstName || user.lastName">
           <i class="fa fa-user fa-2x blue-text"></i>
-          <p>Joni G</p>
+          <p>{{user.firstName}} {{user.lastName}}</p>
         </li>
-        <li>
+        <li *ngIf="user.email">
           <i class="fa fa-envelope fa-2x blue-text"></i>
-          <p>contact@example.com</p>
+          <p>{{user.email}}</p>
         </li>
-        <li>
+        <li *ngIf="user.address">
           <i class="fa fa-map-marker fa-2x blue-text"></i>
-          <p>San Francisco, CA 94126, USA</p>
+          <p>{{user.address}}</p>
         </li>
-        <li>
+        <li *ngIf="user.job">
           <i class="fa fa-briefcase fa-2x blue-text"></i>
-          <p class="mb-0">+ 01 234 567 89</p>
+          <p class="mb-0">{{user.job}}</p>
         </li>
       </ul>
     </div>

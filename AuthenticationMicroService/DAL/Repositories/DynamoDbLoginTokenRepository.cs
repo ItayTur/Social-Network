@@ -29,5 +29,13 @@ namespace DAL.Repositories
                 return loginToken;
             }
         }
+
+        public async Task Update(LoginTokenModel loginToken)
+        {
+            using (DynamoDbContext dbContext = new DynamoDbContext())
+            {
+                await dbContext.SaveAsync<LoginTokenModel>(loginToken);
+            }
+        }
     }
 }

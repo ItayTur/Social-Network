@@ -11,5 +11,6 @@ namespace Common.Interfaces
     {
         LoginTokenModel GetLoginToken(string token);
         LoginTokenModel AddLoginToken(LoginTokenModel loginToken);
+        Task Update(LoginTokenModel loginToken);
     }
 }

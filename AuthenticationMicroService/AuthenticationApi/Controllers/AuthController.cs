@@ -2,6 +2,7 @@
 using Common.Interfaces;
 using System;
 using System.Data.Linq;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -11,11 +12,13 @@ namespace AuthenticationApi.Controllers
     public class AuthController : ApiController
     {
         private IAuthManager _authManager;
+        private ILoginTokenManager _loginTokenManager;
         private IFacebookAuthManager _facebookAuthManager;
 
-        public AuthController(IAuthManager authManager, IFacebookAuthManager facebookAuthManager)
+        public AuthController(IAuthManager authManager, ILoginTokenManager loginTokenManager, IFacebookAuthManager facebookAuthManager)
         {
             _authManager = authManager;
+            _loginTokenManager = loginTokenManager;
             _facebookAuthManager = facebookAuthManager;
         }
 
@@ -42,6 +45,7 @@ namespace AuthenticationApi.Controllers
 
 
         [HttpPost]
+        [Route("api/Auth/Register")]
         public IHttpActionResult RegisterUsernamePassword([FromBody] AuthDto authDto)
         {
             if (DtoNotValid(authDto))
@@ -96,5 +100,26 @@ namespace AuthenticationApi.Controllers
             }
             return false;
         }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> VerifyAuth([FromBody]AccessTokenDto accessToken)
+        {
+            try
+            {
+                var userId = await _loginTokenManager.VerifyAsync(accessToken.AccessToken);
+                return Ok(userId);
+            }
+            catch (AuthenticationException )
+            {
+
+                return BadRequest("Authentication was not approved");
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
+
+        }
+
     }
 }

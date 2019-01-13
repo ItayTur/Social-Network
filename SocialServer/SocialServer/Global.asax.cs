@@ -23,6 +23,7 @@ namespace SocialServer
 
             //SimpleInjector registrations.
             container.Register<IPostsManager, PostsManager>(Lifestyle.Singleton);
+            container.Register<IStorageManager, AWSStorageManager>(Lifestyle.Singleton);
             container.Register<IPostsRepository, Neo4jPostsRepository>(Lifestyle.Singleton);
 
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);

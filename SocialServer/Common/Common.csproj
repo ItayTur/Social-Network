@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,6 +46,7 @@
     <Compile Include="Dtos\TokenDto.cs" />
     <Compile Include="Interfaces\IPostsManager.cs" />
     <Compile Include="Interfaces\IPostsRepository.cs" />
+    <Compile Include="Interfaces\IStorageManager.cs" />
     <Compile Include="Models\CommentModel.cs" />
     <Compile Include="Models\PostModel.cs" />
     <Compile Include="Models\UserModel.cs" />

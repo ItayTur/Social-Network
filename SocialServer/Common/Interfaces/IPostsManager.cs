@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Common.Interfaces
 {
@@ -16,6 +17,6 @@ namespace Common.Interfaces
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        Task Add( NewPostDto newPostDto);
+        Task Add( HttpRequest httpRequest, string token, string path);
     }
 }

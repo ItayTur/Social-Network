@@ -34,22 +34,22 @@ namespace DAL.Repositories
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(string posterId, PostModel post, ICollection<string> tagIds)
+        public async Task Add(string posterId, PostModel post)
         {
             try
             {
                 _graphClient.Cypher.Merge($"(postingUser:UserModel{{Id: {posterId}}})")
                 .Merge($"(post:PostModel {{Id: {post.Id}, Content: {post.Content}, ImgUrl: {post.ImgUrl},DateTime: {post.DateTime}, Likes: {0}}})")
                 .Merge($"(postingUser)-[:POSTED]->(post)").ExecuteWithoutResults();
-                foreach (var tagId in tagIds)
+                foreach (var tagId in post.Tags)
                 {
                     await _graphClient.Cypher.Merge($"(taggedUser: UserModel{{Id: {tagId}}})").ExecuteWithoutResultsAsync();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 
-                throw new Exception();
+                throw new Exception(e.Message);
             }
            
 

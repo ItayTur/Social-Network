@@ -28,7 +28,7 @@ namespace AuthenticationApi.Controllers
         {
             try
             {
-                var appToken =  await _facebookAuthManager.SignIn(accessToken.AccessToken);
+                var appToken =  await _facebookAuthManager.SignIn(accessToken.Token);
                 return Ok(appToken);
             }
             catch (ArgumentException e)
@@ -106,7 +106,7 @@ namespace AuthenticationApi.Controllers
         {
             try
             {
-                var userId = await _loginTokenManager.VerifyAsync(accessToken.AccessToken);
+                var userId = await _loginTokenManager.VerifyAsync(accessToken.Token);
                 return Ok(userId);
             }
             catch (AuthenticationException )

@@ -47,11 +47,13 @@ namespace BL.Managers
                     DateTime = DateTime.Now
                 };
 
-                var picFile = httpRequest.Files["pic"];
-
+                HttpPostedFile picFile = httpRequest.Files["pic"];
+                if (picFile != null)
+                {
+                    post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
+                }
                 var userId = await VerifyToken(token);
                 post.Id = GenerateId();
-                post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
                 var addPostToDbTask = _postsRepository.Add("posting-user-id", post);
             }
             catch (Exception e)
@@ -71,18 +73,27 @@ namespace BL.Managers
         private async Task<string> VerifyToken(string token)
         {
             TokenDto tokenDto = new TokenDto() { Token = token };
-            using(HttpClient httpClient = new HttpClient())
+            try
             {
-                var response = await httpClient.PostAsJsonAsync(_authBaseUrl, token);
-                if (!response.IsSuccessStatusCode)
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    throw new AuthenticationException();
-                }
-                else
-                {
-                    return await response.Content.ReadAsAsync<string>();
+                    var response = await httpClient.PostAsJsonAsync(_authBaseUrl, tokenDto).ConfigureAwait(false);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new AuthenticationException();
+                    }
+                    else
+                    {
+                        return await response.Content.ReadAsAsync<string>();
+                    }
                 }
             }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+            
         }
     }
 }

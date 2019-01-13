@@ -30,9 +30,14 @@ namespace SocialServer.Controllers
             {
                 var httpRequest = HttpContext.Current.Request;
                 CookieHeaderValue cookie = Request.Headers.GetCookies("authToken").FirstOrDefault();
-                string path = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["pic"].FileName);
+
+                string picPath = "";
+                if (httpRequest.Files["pic"] != null)
+                {
+                    picPath = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["pic"].FileName);
+                }
                 
-                _postsManager.Add(httpRequest,"cookieToken", path);
+                _postsManager.Add(httpRequest,"cookieToken", picPath);
                 return Ok();
 
             }

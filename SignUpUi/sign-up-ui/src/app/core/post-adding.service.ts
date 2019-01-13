@@ -19,7 +19,9 @@ export class PostAddingService {
     const formData = new FormData();
     formData.append("Content",post.Content);
     formData.append("Tags",post.Tags);
-    formData.append("Pic",post.pic, post.pic.name);
+    if(post.pic) {
+      formData.append("Pic",post.pic, post.pic.name);
+    }
     return this.httpClient.post("http://localhost:4573/api/Posts/AddPost", formData).pipe(
       retry(3), catchError(this.errorHandlingService.handleError));
   }

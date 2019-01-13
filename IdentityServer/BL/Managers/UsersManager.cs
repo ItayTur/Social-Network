@@ -43,7 +43,7 @@ namespace BL.Managers
             {
                 throw new AuthenticationException();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new Exception();
             }

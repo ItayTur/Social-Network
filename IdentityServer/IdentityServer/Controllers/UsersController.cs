@@ -28,8 +28,8 @@ namespace IdentityServer.Controllers
             try
             {
                 string token = GetCookie(Request, ConfigurationManager.AppSettings["UserTokenCookieName"]);
-                await _usersManager.Get(id, token);
-                return Ok();
+                var user  = await _usersManager.Get(id, token);
+                return Ok(user);
             }
             catch (AuthenticationException)
             {

@@ -9,13 +9,13 @@ import { ErrorHandlingService } from "./error-handling.service";
   providedIn: 'root'
 })
 export class IdentityService {
-  baseUrl = "http://localhost:54353/api";
-  identityApi = this.baseUrl + "/Identity/";
+  baseUrl = "http://localhost:9152/api";
+  identityApi = this.baseUrl + "/Users";
 
   constructor(private httpClient: HttpClient, private erorrHandler: ErrorHandlingService) { }
 
   getDetails():Observable<any> {
-    return this.httpClient.get(this.identityApi)
+    return this.httpClient.get(this.identityApi+"/?id=" + "7d47d17c-387c-45c0-89b2-a040f7ba7e5e", { withCredentials: true })
     .pipe(
       retry(3),
       catchError(this.erorrHandler.handleError)

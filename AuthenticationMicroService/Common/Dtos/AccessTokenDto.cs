@@ -8,6 +8,6 @@ namespace Common.Dtos
 {
     public class AccessTokenDto
     {
-        public string AccessToken { get; set; }
+        public string Token { get; set; }
     }
 }

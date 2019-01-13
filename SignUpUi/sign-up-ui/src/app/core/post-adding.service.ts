@@ -16,8 +16,8 @@ export class PostAddingService {
     private errorHandlingService: ErrorHandlingService) { }
 
   AddPost (post: Post): Observable<any> {
-    post.token = this.cookieService.get("authToken");
-    return this.httpClient.post(this.addPostUrl, post).pipe(retry(3),
+
+    return this.httpClient.post(this.addPostUrl, post, ).pipe(retry(3),
      catchError(this.errorHandlingService.handleError));
   }
 }

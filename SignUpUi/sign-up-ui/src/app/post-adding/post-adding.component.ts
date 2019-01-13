@@ -12,7 +12,7 @@ import { SnackBarService } from '../core/snack-bar.service';
 })
 export class PostAddingComponent implements OnInit {
 
-  post: Post = new Post("","",new Date());
+  post: Post = new Post("","");
   imgSrc: string | ArrayBuffer;
   constructor(private postAddingService: PostAddingService, private snackBarService: SnackBarService) { }
 
@@ -27,7 +27,6 @@ export class PostAddingComponent implements OnInit {
   }
 
   onSubmit() {
-    debugger;
     this.postAddingService.AddPost(this.post).subscribe(success=> { console.log(success); },
     (err)=> { this.snackBarService.openSnackBar(err, "", 10000); });
   }

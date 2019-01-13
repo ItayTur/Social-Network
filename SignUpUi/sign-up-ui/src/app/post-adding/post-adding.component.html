@@ -15,7 +15,7 @@
         <div class="file-field md-form">
           <div class="btn btn-info btn-sm float-center">
             <span>Choose pics</span>
-            <input  class="form-control file-input" type="file" (change)="onFileChanged($event)">
+            <input  class="form-control file-input" type="file" (change)="onFileChanged($event)" accept="image/*">
           </div>
         </div>
         <img id=uploaded-img [src]="imgSrc" class="rounded mx-auto d-block" style="width: 200px" [alt]="post.pic.name" *ngIf="imgSrc">

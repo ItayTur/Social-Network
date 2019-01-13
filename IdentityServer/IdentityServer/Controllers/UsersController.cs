@@ -23,12 +23,12 @@ namespace IdentityServer.Controllers
             _usersManager = usersManager;
         }
 
-        public async Task<IHttpActionResult> GetUser(string id)
+        public async Task<IHttpActionResult> GetUser()
         {
             try
             {
                 string token = GetCookie(Request, ConfigurationManager.AppSettings["UserTokenCookieName"]);
-                var user  = await _usersManager.Get(id, token);
+                var user  = await _usersManager.Get(token);
                 return Ok(user);
             }
             catch (AuthenticationException)

@@ -15,7 +15,7 @@ namespace Common.Interfaces
         /// <param name="id"></param>
         /// <param name="token"></param>
         /// <returns>User</returns>
-        Task<UserModel> Get(string id, string token);
+        Task<UserModel> Get(string token);
 
         /// <summary>
         /// Adds new user record to the db.

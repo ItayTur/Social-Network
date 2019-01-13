@@ -10,14 +10,17 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PostAddingService {
-  baseUrl = "http://localhost8080/api/";
-  addPostUrl = "baseUrl/"+"Posts";
+  baseUrl = "http://localhost:4573/api/";
+  addPostUrl = this.baseUrl+"/Posts/AddPost";
   constructor(private httpClient: HttpClient, private cookieService: CookieService,
     private errorHandlingService: ErrorHandlingService) { }
 
   AddPost (post: Post): Observable<any>  {
-
-    return this.httpClient.post(this.addPostUrl, post, ).pipe(retry(3),
-     catchError(this.errorHandlingService.handleError));
+    const formData = new FormData();
+    formData.append("Content",post.Content);
+    formData.append("Tags",post.Tags);
+    formData.append("Pic",post.pic, post.pic.name);
+    return this.httpClient.post("http://localhost:4573/api/Posts/AddPost", formData).pipe(
+      retry(3), catchError(this.errorHandlingService.handleError));
   }
 }

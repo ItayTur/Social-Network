@@ -11,7 +11,7 @@ namespace SocialServer
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-            config.EnableCors(new EnableCorsAttribute("*",headers: "*",methods: "*"));
+            config.EnableCors(new EnableCorsAttribute("*",headers: "*",methods: "*") { SupportsCredentials = true });
             // Web API routes
             config.MapHttpAttributeRoutes();
 

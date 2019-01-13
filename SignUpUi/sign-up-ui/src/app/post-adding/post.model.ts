@@ -5,7 +5,6 @@ export class Post {
         public Content: string,
         public Tags: string,
     ) {}
-    token: string;
     pic: File;
 }
 

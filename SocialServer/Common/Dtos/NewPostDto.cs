@@ -12,7 +12,7 @@ namespace Common.Dtos
     {
         public string Token { get; set; }
 
-        public PostModel Post { get; set; }
+        public PostModel Post { get; }
 
         public string Content { get; set; }
 

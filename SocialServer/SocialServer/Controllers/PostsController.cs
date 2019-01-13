@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 
@@ -22,17 +23,26 @@ namespace SocialServer.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult AddPost(NewPostDto newPost)
+        [Route("api/Posts/AddPost")]
+        public IHttpActionResult AddPost()
         {
             try
             {
                 var httpRequest = HttpContext.Current.Request;
+                CookieHeaderValue cookie = Request.Headers.GetCookies("authToken").FirstOrDefault();
+                NewPostDto newPost = new NewPostDto
+                {
+                    Content = httpRequest["Content"],
+                    Date = DateTime.Now,
+                    //Token = cookie["token"].Value,
+                };
+                
                 var picFile = httpRequest.Files["pic"];
                 _postsManager.Add(newPost);
                 return Ok();
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return InternalServerError();
             }

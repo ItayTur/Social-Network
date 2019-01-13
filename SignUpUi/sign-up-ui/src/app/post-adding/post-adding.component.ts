@@ -27,8 +27,19 @@ export class PostAddingComponent implements OnInit {
   }
 
   onSubmit() {
-    this.postAddingService.AddPost(this.post).subscribe(success=> { console.log(success); },
+    this.postAddingService.AddPost(this.post).subscribe(
+      success=> {
+        console.log('done');
+        this.cleanForm();
+      },
     (err)=> { this.snackBarService.openSnackBar(err, "", 10000); });
+  }
+
+  private cleanForm() {
+    this.post.Content=null;
+    this.post.Tags = null;
+    this.post.pic = null;
+    this.imgSrc = null;
   }
 
   ngOnInit() {

@@ -35,48 +35,48 @@
                   <div class="col">
                     <div class="md-form">
                       <i class="fa fa-user prefix white-text active"></i>
-                      <input type="text" id="form1" class="text-white form-control" mdbInputDirective>
+                      <input type="text" id="form1" class="text-white form-control" mdbInput mdbValidate formControlName="firstName">
                       <label for="form1" class="text-white">Your first name</label>
+                      <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">This is a required field.</mdb-error>
                     </div>
                   </div>
                   <div class="col">
                     <div class="md-form">
                       <i class="fa fa-user prefix white-text active"></i>
-                      <input type="text" id="form2" class="text-white form-control" mdbInputDirective>
+                      <input type="text" id="form2" class="text-white form-control" mdbInput mdbValidate formControlName="lastName">
                       <label for="form2" class="text-white">Your last name</label>
+                      <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">This is a required field.</mdb-error>
                     </div>
                   </div>
                 </div>
                 <div class="md-form">
                   <i class="fa fa-envelope prefix white-text active"></i>
-                  <input type="email" id="form3" class="text-white form-control" mdbInputDirective>
+                  <input type="email" id="form3" class="text-white form-control" mdbInput mdbValidate formControlName="email">
                   <label for="form3" class="text-white">Your email</label>
+                  <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">Your email is required.</mdb-error>
                 </div>
-                <div class="md-form">
+               <div class="md-form">
                   <i class="fa fa-lock prefix text-white active"></i>
-                  <input type="password" id="form4" class="text-white form-control" mdbInputDirective>
+                  <input type="password" id="form4" class="text-white form-control" mdbInput mdbValidate formControlName="password">
                   <label for="form4" class="text-white">Your password</label>
                 </div>
                 <div class="md-form">
                   <i class="fa fa-map-marker prefix white-text active"></i>
-                  <input type="text" id="form5" class="text-white form-control" mdbInputDirective>
+                  <input type="text" id="form5" class="text-white form-control" mdbInput formControlName="address">
                   <label for="form5" class="text-white">Your address</label>
                 </div>
                 <div class="md-form">
                   <i class="fa fa-briefcase prefix white-text active"></i>
-                  <input type="text" id="form6" class="text-white form-control" mdbInputDirective>
+                  <input type="text" id="form6" class="text-white form-control" mdbInput formControlName="job">
                   <label for="form6" class="text-white">Your job</label>
                 </div>
                 <div class="md-form">
                   <i class="fa fa-birthday-cake prefix white-text active"></i>
-                  <input type="text" id="form7" class="text-white form-control" mdbInputDirective>
+                  <input type="text" id="form7" class="text-white form-control" mdbInput formControlName="birthdate">
                   <label for="form7" class="text-white">Your birthdate</label>
                 </div>
                 <div class="text-center mt-4">
-                  <button mdbBtn color="indigo" mdbWavesEffect type="submit">Sign up</button>
-                  <hr class="hr-light mb-3 mt-4">
-                  <div class="inline-ul text-center d-flex justify-content-center">
-                  </div>
+                  <button mdbBtn color="indigo" mdbWavesEffect type="submit" [disabled]="!registerForm.valid">Sign up</button>                  
                 </div>
               </form>
             </mdb-card-body>

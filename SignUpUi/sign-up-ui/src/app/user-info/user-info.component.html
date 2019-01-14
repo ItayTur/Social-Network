@@ -1,0 +1,32 @@
+<mdb-card class="w-25 p-3 wow fadeInRight" data-wow-delay="0.3s">
+  <mdb-card-body class="z-depth-2">
+    <!--Header-->
+    <div class="text-center">
+      <h3 class="dark-grey-text">
+        <strong>User Info</strong>
+      </h3>
+      <hr>
+    </div>
+    <!--Body-->
+    <div class="w-100 text-center">
+      <ul class="list-unstyled mb-0">
+        <li *ngIf="user.firstName || user.lastName">
+          <i class="fa fa-user fa-2x blue-text"></i>
+          <p>{{user.firstName}} {{user.lastName}}</p>
+        </li>
+        <li *ngIf="user.email">
+          <i class="fa fa-envelope fa-2x blue-text"></i>
+          <p>{{user.email}}</p>
+        </li>
+        <li *ngIf="user.address">
+          <i class="fa fa-map-marker fa-2x blue-text"></i>
+          <p>{{user.address}}</p>
+        </li>
+        <li *ngIf="user.job">
+          <i class="fa fa-briefcase fa-2x blue-text"></i>
+          <p class="mb-0">{{user.job}}</p>
+        </li>
+      </ul>
+    </div>
+  </mdb-card-body>
+</mdb-card>

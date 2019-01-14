@@ -3,6 +3,7 @@ using Common.Interfaces;
 using Common.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Linq;
 using System.Linq;
 using System.Net.Http;
@@ -24,6 +25,29 @@ namespace BL.Managers
         public UsersManager(IUsersRepository usersRepository)
         {
             _usersRepository = usersRepository;
+        }
+
+        /// <summary>
+        /// Gets a user by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="token"></param>
+        /// <returns>User</returns>
+        public async Task<UserModel> Get(string token)
+        {
+            try
+            {
+                string userId = await VerfiyToken(token);
+                return _usersRepository.Get(userId);
+            }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
+            catch (Exception e)
+            {
+                throw new Exception();
+            }
         }
 
         /// <summary>
@@ -53,18 +77,21 @@ namespace BL.Managers
         /// Verifies the token validity.
         /// </summary>
         /// <param name="token"></param>
-        private async Task VerfiyToken(string token)
+        private async Task<string> VerfiyToken(string token)
         {
             using(HttpClient httpClient = new HttpClient())
             {
                 try
                 {
+                    var authUrl = ConfigurationManager.AppSettings["AuthBaseUrl"] +"Auth";
                     var tokentDto = new TokenDto(token);
-                    var response = await httpClient.PostAsJsonAsync("", tokentDto);
+                    var response = await httpClient.PostAsJsonAsync(authUrl, tokentDto);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new AuthenticationException();
                     }
+                    var content = await response.Content.ReadAsAsync<string>();
+                    return content;
                 }
                 catch (Exception e)
                 {
@@ -93,5 +120,7 @@ namespace BL.Managers
                 throw;
             }
         }
+
+        
     }
 }

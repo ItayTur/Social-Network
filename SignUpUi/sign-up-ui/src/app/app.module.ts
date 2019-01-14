@@ -16,6 +16,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { UserInfoComponent } from './user-info/user-info.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     LoginComponent,
     NewsFeedComponent,
     PageNotFoundComponent,
+    UserInfoComponent
 
   ],
   imports: [

@@ -12,6 +12,26 @@ namespace DAL.Repositories
     public class DynamoDbUsersRepository : IUsersRepository
     {
         /// <summary>
+        /// Gets a user record from the db.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>User</returns>
+        public UserModel Get(string id)
+        {
+            using (DynamoDbContext context = new DynamoDbContext())
+            {
+                try
+                {
+                    return context.Load<UserModel>(id);
+                }
+                catch (Exception e)
+                {
+                    //ADD LOGER
+                    throw new Exception(e.Message);
+                }
+            }
+        }
+        /// <summary>
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>

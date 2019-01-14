@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 
@@ -24,7 +25,7 @@ namespace SocialServer.Controllers
 
         [HttpPost]
         [Route("api/Posts/AddPost")]
-        public IHttpActionResult AddPost()
+        public async Task<IHttpActionResult> AddPost()
         {
             try
             {
@@ -37,11 +38,31 @@ namespace SocialServer.Controllers
                     picPath = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["pic"].FileName);
                 }
                 
-                _postsManager.Add(httpRequest,"cookieToken", picPath);
+                await _postsManager.Add(httpRequest,"cookieToken", picPath);
                 return Ok();
 
             }
             catch (Exception e)
+            {
+                return InternalServerError();
+            }
+        }
+
+        [HttpGet]
+        [Route("api/Posts/SearchTag/{text}")]
+        public async Task<IHttpActionResult> SearchTag(string text)
+        {
+            try
+            {
+                IEnumerable<string> tagFound = await _postsManager.SearchTag(text);
+                return Ok(tagFound);
+            }
+            catch (ArgumentException e)
+            {
+
+                return NotFound();
+            }
+            catch(Exception e)
             {
                 return InternalServerError();
             }

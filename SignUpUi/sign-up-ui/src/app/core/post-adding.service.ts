@@ -15,10 +15,11 @@ export class PostAddingService {
   constructor(private httpClient: HttpClient, private cookieService: CookieService,
     private errorHandlingService: ErrorHandlingService) { }
 
-  AddPost (post: Post): Observable<any>  {
+  AddPost (post: Post, tags: string[]): Observable<any>  {
+    debugger;
     const formData = new FormData();
     formData.append("Content",post.Content);
-    formData.append("Tags",post.Tags);
+    formData.append("Tags",JSON.stringify(tags));
     if(post.pic) {
       formData.append("Pic",post.pic, post.pic.name);
     }

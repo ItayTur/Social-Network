@@ -61,5 +61,28 @@ namespace DAL.Repositories
            
 
         }
+
+
+        /// <summary>
+        /// Gets the emailes containing the text specified.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<string>> GetEmailsWith(string text)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(user:User)")
+                .Where((UserModel user) => user.Email.Contains(text))
+                .Return(user => user.As<UserModel>().Email)
+                .ResultsAsync;
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+            
+        }
     }
 }

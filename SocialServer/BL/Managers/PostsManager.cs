@@ -13,6 +13,8 @@ using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace BL.Managers
 {
@@ -47,8 +49,12 @@ namespace BL.Managers
                     DateTime = DateTime.Now
                 };
                 IEnumerable<string> tags = new List<string>();
-
-                HttpPostedFile picFile = httpRequest.Files["pic"];
+                if (httpRequest["Tags"] != null)
+                {
+                    dynamic stringTags = JsonConvert.DeserializeObject(httpRequest["Tags"]);
+                    tags = stringTags.values.ToObject<List<string>>();
+                }
+                HttpPostedFile picFile = httpRequest.Files["Pic"];
                 if (picFile != null)
                 {
                     post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
@@ -64,12 +70,33 @@ namespace BL.Managers
             }
         }
 
-        
+
+        /// <summary>
+        /// Searches the text specified and return the matching results.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<string>> SearchTag(string text)
+        {
+            return await _postsRepository.GetEmailsWith(text);
+        }
+
+
+        /// <summary>
+        /// Generates unique string ID.
+        /// </summary>
+        /// <returns></returns>
         private string GenerateId()
         {
             return Guid.NewGuid().ToString();
         }
 
+
+        /// <summary>
+        /// Verifies the specified token.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private async Task<string> VerifyToken(string token)
         {
             TokenDto tokenDto = new TokenDto() { Token = token };

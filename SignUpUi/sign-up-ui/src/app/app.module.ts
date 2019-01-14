@@ -4,6 +4,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material';
 
+import { TagInputModule } from 'ngx-chips';
+
 import { AppComponent } from './app.component';
 
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
@@ -36,7 +38,8 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     HttpClientModule,
     ReactiveFormsModule,
     MatSnackBarModule,
-    AppRoutingModule
+    AppRoutingModule,
+    TagInputModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

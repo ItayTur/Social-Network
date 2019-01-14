@@ -2,8 +2,7 @@
 
 export class Post {
     constructor(
-        public Content: string,
-        public Tags: string,
+        public Content: string
     ) {}
     pic: File;
 }

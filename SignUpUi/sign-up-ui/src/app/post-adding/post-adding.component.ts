@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Post } from "./post.model";
 import { PostAddingService } from "../core/post-adding.service";
 import { SnackBarService } from '../core/snack-bar.service';
+import { Observable } from 'rxjs';
+import { TagsService } from '../core/tags.service';
 
 
 
@@ -11,10 +13,13 @@ import { SnackBarService } from '../core/snack-bar.service';
   styleUrls: ['./post-adding.component.scss']
 })
 export class PostAddingComponent implements OnInit {
-
-  post: Post = new Post("","");
+  constructor(private postAddingService: PostAddingService,
+    private tagsService: TagsService, private snackBarService: SnackBarService) { }
+  post: Post = new Post("");
+  tags: string[];
   imgSrc: string | ArrayBuffer;
-  constructor(private postAddingService: PostAddingService, private snackBarService: SnackBarService) { }
+  public requestedTags = (text: string): Observable<any> => this.tagsService.GetTags(text);
+
 
   onFileChanged(event) {
 
@@ -27,7 +32,7 @@ export class PostAddingComponent implements OnInit {
   }
 
   onSubmit() {
-    this.postAddingService.AddPost(this.post).subscribe(
+    this.postAddingService.AddPost(this.post, this.tags).subscribe(
       success=> {
         console.log('done');
         this.cleanForm();
@@ -37,7 +42,7 @@ export class PostAddingComponent implements OnInit {
 
   private cleanForm() {
     this.post.Content=null;
-    this.post.Tags = null;
+    this.tags = null;
     this.post.pic = null;
     this.imgSrc = null;
   }

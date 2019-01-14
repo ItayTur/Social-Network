@@ -9,7 +9,9 @@
           <textarea name="Content" [(ngModel)]="post.Content" class="form-control rounded-0" id="contentId" rows="3" placeholder="What's on your mind..." required></textarea>
         </div>
         <!-- tags -->
-        <input name="Tags" [(ngModel)]="post.Tags" type="text" id="tagsId" class="form-control mb-4" placeholder="Tags">
+        <tag-input name="Tags" [(ngModel)]="tags" [onlyFromAutocomplete]="true">
+          <tag-input-dropdown [autocompleteObservable]="requestedTags"></tag-input-dropdown>
+        </tag-input>
 
         <!-- images -->
         <div class="file-field md-form">

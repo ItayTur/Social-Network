@@ -16,5 +16,13 @@ namespace Common.Interfaces
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
         Task Add(string posterId, PostModel post, IEnumerable<string> tags);
+
+
+        /// <summary>
+        /// Gets the emailes containing the text specified.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        Task<IEnumerable<string>> GetEmailsWith(string text);
     }
 }

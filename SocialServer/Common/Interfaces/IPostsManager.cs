@@ -18,5 +18,13 @@ namespace Common.Interfaces
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
         Task Add( HttpRequest httpRequest, string token, string path);
+
+
+        /// <summary>
+        /// Searches the text specified and return the matching results.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        Task<IEnumerable<string>> SearchTag(string text);
     }
 }

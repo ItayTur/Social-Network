@@ -68,13 +68,13 @@ namespace DAL.Repositories
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<string>> GetEmailsWith(string text)
+        public async Task<IEnumerable<UserModel>> GetUsersOfEmailWith(string text)
         {
             try
             {
                 return await _graphClient.Cypher.Match("(user:User)")
                 .Where((UserModel user) => user.Email.Contains(text))
-                .Return(user => user.As<UserModel>().Email)
+                .Return(user => user.As<UserModel>())
                 .ResultsAsync;
             }
             catch (Exception e)

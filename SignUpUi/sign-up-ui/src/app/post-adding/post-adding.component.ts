@@ -18,7 +18,12 @@ export class PostAddingComponent implements OnInit {
   post: Post = new Post("");
   tags: string[];
   imgSrc: string | ArrayBuffer;
-  public requestedTags = (text: string): Observable<any> => this.tagsService.GetTags(text);
+  public requestedTags = (text: string): Observable<any> => {
+    let l =this.tagsService.GetTags(text);
+    console.log(l);
+    return l;
+  }
+
 
 
   onFileChanged(event) {

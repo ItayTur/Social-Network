@@ -33,7 +33,7 @@ namespace SocialServer.Controllers
                 CookieHeaderValue cookie = Request.Headers.GetCookies("authToken").FirstOrDefault();
 
                 string picPath = "";
-                if (httpRequest.Files["pic"] != null)
+                if (httpRequest.Files["Pic"] != null)
                 {
                     picPath = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["pic"].FileName);
                 }
@@ -54,7 +54,7 @@ namespace SocialServer.Controllers
         {
             try
             {
-                IEnumerable<string> tagFound = await _postsManager.SearchTag(text);
+                IEnumerable<UserModel> tagFound = await _postsManager.SearchTag(text);
                 return Ok(tagFound);
             }
             catch (ArgumentException e)

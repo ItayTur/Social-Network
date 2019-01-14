@@ -48,11 +48,10 @@ namespace BL.Managers
                     Content = httpRequest["Content"],
                     DateTime = DateTime.Now
                 };
-                IEnumerable<string> tags = new List<string>();
+                ICollection<string> tags = new List<string>();
                 if (httpRequest["Tags"] != null)
                 {
-                    dynamic stringTags = JsonConvert.DeserializeObject(httpRequest["Tags"]);
-                    tags = stringTags.values.ToObject<List<string>>();
+                    var jsonTags = JsonConvert.SerializeObject((httpRequest["Tags"]));
                 }
                 HttpPostedFile picFile = httpRequest.Files["Pic"];
                 if (picFile != null)
@@ -76,9 +75,9 @@ namespace BL.Managers
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<string>> SearchTag(string text)
+        public async Task<IEnumerable<UserModel>> SearchTag(string text)
         {
-            return await _postsRepository.GetEmailsWith(text);
+            return await _postsRepository.GetUsersOfEmailWith(text);
         }
 
 

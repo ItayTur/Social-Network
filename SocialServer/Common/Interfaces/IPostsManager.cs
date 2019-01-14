@@ -25,6 +25,6 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        Task<IEnumerable<string>> SearchTag(string text);
+        Task<IEnumerable<UserModel>> SearchTag(string text);
     }
 }

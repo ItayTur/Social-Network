@@ -13,11 +13,6 @@ namespace Common.Models
         public string ImgUrl { get; set; }
         public DateTime DateTime { get; set; }
         public int Likes { get; set; }
-        public ICollection<string> Tags { get; set; }
-
-        public PostModel()
-        {
-            Tags = new List<string>();
-        }
+        
     }
 }

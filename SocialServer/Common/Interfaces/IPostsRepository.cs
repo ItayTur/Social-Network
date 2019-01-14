@@ -15,6 +15,6 @@ namespace Common.Interfaces
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        Task Add(string posterId, PostModel post);
+        Task Add(string posterId, PostModel post, IEnumerable<string> tags);
     }
 }

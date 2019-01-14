@@ -34,16 +34,23 @@ namespace DAL.Repositories
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(string posterId, PostModel post)
+        public async Task Add(string posterId, PostModel post, IEnumerable<string>tags)
         {
             try
             {
-                _graphClient.Cypher.Merge($"(postingUser:UserModel{{Id: {posterId}}})")
-                .Merge($"(post:PostModel {{Id: {post.Id}, Content: {post.Content}, ImgUrl: {post.ImgUrl},DateTime: {post.DateTime}, Likes: {0}}})")
-                .Merge($"(postingUser)-[:POSTED]->(post)").ExecuteWithoutResults();
-                foreach (var tagId in post.Tags)
+                await _graphClient.Cypher.Match("(postingUser: User)")
+                    .Where((UserModel postingUser) => postingUser.Id == posterId)
+                    .Create("(postingUser)-[:POST]->(post:Post {post})")
+                    .WithParam("post", post)
+                    .ExecuteWithoutResultsAsync();
+                
+                foreach (var emailTagged in tags)
                 {
-                    await _graphClient.Cypher.Merge($"(taggedUser: UserModel{{Id: {tagId}}})").ExecuteWithoutResultsAsync();
+                    await _graphClient.Cypher.Match("(taggingPost: Post)", "(taggedUser: User)")
+                        .Where((PostModel taggingPost) => taggingPost.Id == post.Id)
+                        .AndWhere((UserModel taggedUser) => taggedUser.Email == emailTagged)
+                        .CreateUnique("post-[:TAG]->taggedUser")
+                        .ExecuteWithoutResultsAsync();
                 }
             }
             catch (Exception e)

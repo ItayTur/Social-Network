@@ -46,15 +46,16 @@ namespace BL.Managers
                     Content = httpRequest["Content"],
                     DateTime = DateTime.Now
                 };
+                IEnumerable<string> tags = new List<string>();
 
                 HttpPostedFile picFile = httpRequest.Files["pic"];
                 if (picFile != null)
                 {
                     post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
                 }
-                var userId = await VerifyToken(token);
+                var userId = await VerifyToken("692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d").ConfigureAwait(false);
                 post.Id = GenerateId();
-                var addPostToDbTask = _postsRepository.Add("posting-user-id", post);
+                var addPostToDbTask = _postsRepository.Add(userId, post, tags);
             }
             catch (Exception e)
             {
@@ -64,7 +65,6 @@ namespace BL.Managers
         }
 
         
-
         private string GenerateId()
         {
             return Guid.NewGuid().ToString();

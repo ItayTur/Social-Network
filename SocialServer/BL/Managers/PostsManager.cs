@@ -42,24 +42,11 @@ namespace BL.Managers
         {
             try
             {
-
-                PostModel post = new PostModel()
-                {
-                    Content = httpRequest["Content"],
-                    DateTime = DateTime.Now
-                };
-                List<TagDto> tags = new List<TagDto>();
-                if (httpRequest["Tags"] != null)
-                {
-                    tags = JsonConvert.DeserializeObject<List<TagDto>>((httpRequest["Tags"]));
-                }
-                HttpPostedFile picFile = httpRequest.Files["Pic"];
-                if (picFile != null)
-                {
-                    post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
-                }
-                //var userId = await VerifyToken("692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d").ConfigureAwait(false);
-                var userId = "8776290e-793a-430a-8cfe-e5e800bc50ab";
+                PostModel post = GetPost(httpRequest["Content"]);
+                List<TagDto> tags = GetTags(httpRequest);
+                await SetImageUrl(httpRequest.Files["Pic"], path, post);
+                //"692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d"
+                var userId = await VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
                 var addPostToDbTask = _postsRepository.Add(userId, post, tags);
             }
@@ -70,15 +57,53 @@ namespace BL.Managers
             }
         }
 
+        private async Task SetImageUrl(HttpPostedFile picFile, string path, PostModel post)
+        {
+            if (picFile != null)
+            {
+                post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
+            }
+        }
+
+        private static List<TagDto> GetTags(HttpRequest httpRequest)
+        {
+            List<TagDto> tags = new List<TagDto>();
+            if (httpRequest["Tags"] != "undefined")
+            {
+                tags = JsonConvert.DeserializeObject<List<TagDto>>((httpRequest["Tags"]));
+            }
+
+            return tags;
+        }
+
+        private static PostModel GetPost(string content)
+        {
+            return new PostModel()
+            {
+                Content = content,
+                DateTime = DateTime.Now
+            };
+        }
+
 
         /// <summary>
         /// Searches the text specified and return the matching results.
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<UserModel>> SearchTag(string text)
+        public async Task<IEnumerable<UserModel>> SearchTag(string text, string token)
         {
-            return await _postsRepository.GetUsersOfEmailWith(text);
+            try
+            {
+                string taggerId = await VerifyToken(token);
+                return await _postsRepository.GetUsersOfEmailWith(taggerId, text);
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
+            
         }
 
 
@@ -93,7 +118,7 @@ namespace BL.Managers
 
 
         /// <summary>
-        /// Verifies the specified token.
+        /// Verifies the specified token and return the user id.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>

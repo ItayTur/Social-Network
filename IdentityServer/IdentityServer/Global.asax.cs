@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using BL.Managers;
+using Common.Interfaces;
 using DAL.Repositories;
 using SimpleInjector;
 using SimpleInjector.Integration.WebApi;
@@ -22,6 +23,7 @@ namespace IdentityServer
 
             //SimpleInjector registrations.
             container.Register<IUsersRepository, DynamoDbUsersRepository>(Lifestyle.Singleton);
+            container.Register<IUsersManager, UsersManager>(Lifestyle.Singleton);
 
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);
 

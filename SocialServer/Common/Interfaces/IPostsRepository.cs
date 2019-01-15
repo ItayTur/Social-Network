@@ -24,6 +24,6 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        Task<IEnumerable<UserModel>> GetUsersOfEmailWith(string text);
+        Task<IEnumerable<UserModel>> GetUsersOfEmailWith(string taggerId, string text);
     }
 }

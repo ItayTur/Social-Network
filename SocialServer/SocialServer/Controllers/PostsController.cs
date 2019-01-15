@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -30,14 +31,12 @@ namespace SocialServer.Controllers
             try
             {
                 var httpRequest = HttpContext.Current.Request;
-                CookieHeaderValue cookie = Request.Headers.GetCookies("authToken").FirstOrDefault();
-
+                string token = GetCookieValue(Request, "authToken");
                 string picPath = "";
                 if (httpRequest.Files["Pic"] != null)
                 {
                     picPath = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["pic"].FileName);
                 }
-                
                 await _postsManager.Add(httpRequest,"cookieToken", picPath);
                 return Ok();
 
@@ -54,7 +53,9 @@ namespace SocialServer.Controllers
         {
             try
             {
-                IEnumerable<UserModel> tagsFound = await _postsManager.SearchTag(text);
+                string token = GetCookieValue(Request, "authToken");
+                //"692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d"
+                IEnumerable<UserModel> tagsFound = await _postsManager.SearchTag(text, token);
                 return Ok(tagsFound);
             }
             catch (ArgumentException e)
@@ -66,6 +67,21 @@ namespace SocialServer.Controllers
             {
                 return InternalServerError();
             }
+        }
+
+        /// <summary>
+        /// Retrieves an individual cookie from the cookies collection
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cookieName"></param>
+        /// <returns></returns>
+        public string GetCookieValue(HttpRequestMessage request, string cookieName)
+        {
+            CookieHeaderValue cookie = request.Headers.GetCookies(cookieName).FirstOrDefault();
+            if (cookie != null)
+                return cookie[cookieName].Value;
+
+            throw new AuthenticationException();
         }
     }
 }

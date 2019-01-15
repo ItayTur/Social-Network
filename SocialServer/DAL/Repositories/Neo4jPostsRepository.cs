@@ -43,14 +43,14 @@ namespace DAL.Repositories
                     .Where((UserModel postingUser) => postingUser.Id == posterId)
                     .Create("(postingUser)-[:POST]->(post:Post {post})")
                     .WithParam("post", post)
-                    .ExecuteWithoutResultsAsync();
+                    .ExecuteWithoutResultsAsync().ConfigureAwait(false);
                 
                 foreach (var tag in tags)
                 {
                     await _graphClient.Cypher.Match("(taggingPost: Post)", "(taggedUser: User)")
                         .Where((PostModel taggingPost) => taggingPost.Id == post.Id)
                         .AndWhere((UserModel taggedUser) => taggedUser.Id == tag.Id)
-                        .CreateUnique("post-[:TAG]->taggedUser")
+                        .CreateUnique("(taggingPost)-[:TAG]->(taggedUser)")
                         .ExecuteWithoutResultsAsync();
                 }
             }

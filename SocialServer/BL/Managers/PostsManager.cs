@@ -59,6 +59,7 @@ namespace BL.Managers
                     post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
                 }
                 //var userId = await VerifyToken("692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d").ConfigureAwait(false);
+                var userId = "8776290e-793a-430a-8cfe-e5e800bc50ab";
                 post.Id = GenerateId();
                 var addPostToDbTask = _postsRepository.Add(userId, post, tags);
             }

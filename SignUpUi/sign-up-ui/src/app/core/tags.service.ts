@@ -16,7 +16,7 @@ export class TagsService {
   GetTags(text: string): Observable<any> {
 
     const url = "http://localhost:4573/api/Posts/SearchTag/"+text;
-    return this.httpClient.get<UserModel[]>(url)
+    return this.httpClient.get<UserModel[]>(url, { withCredentials: true })
     .pipe(retry(3), catchError(this.errorHandler.handleError));
   }
 }

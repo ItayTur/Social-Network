@@ -24,7 +24,6 @@ namespace IdentityServer
             //SimpleInjector registrations.
             container.Register<IUsersManager, UsersManager>(Lifestyle.Singleton);
             container.Register<IUsersRepository, DynamoDbUsersRepository>(Lifestyle.Singleton);
-            container.Register<IUsersManager, UsersManager>(Lifestyle.Singleton);
 
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);
 

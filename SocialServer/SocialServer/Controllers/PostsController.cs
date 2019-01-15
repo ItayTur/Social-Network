@@ -37,7 +37,7 @@ namespace SocialServer.Controllers
                 {
                     picPath = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["pic"].FileName);
                 }
-                await _postsManager.Add(httpRequest,"cookieToken", picPath);
+                await _postsManager.Add(httpRequest, token, picPath);
                 return Ok();
 
             }

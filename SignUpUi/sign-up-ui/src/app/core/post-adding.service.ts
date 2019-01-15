@@ -22,7 +22,7 @@ export class PostAddingService {
     if(post.pic) {
       formData.append("Pic",post.pic, post.pic.name);
     }
-    return this.httpClient.post("http://localhost:4573/api/Posts/AddPost", formData).pipe(
+    return this.httpClient.post("http://localhost:4573/api/Posts/AddPost", formData, { withCredentials: true }).pipe(
       retry(3), catchError(this.errorHandlingService.handleError));
   }
 }

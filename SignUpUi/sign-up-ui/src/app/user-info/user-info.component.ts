@@ -9,14 +9,14 @@ import { UserModel } from '../core/user.model';
   styleUrls: ['./user-info.component.scss']
 })
 export class UserInfoComponent implements OnInit {
-  user: UserModel;
+  user: UserModel = new UserModel("", "","","","","",null);
 
   constructor(private identity: IdentityService, private snackBar: SnackBarService) { }
 
   ngOnInit() {
     this.identity.getDetails()
       .subscribe(user => {
-        this.user = new UserModel(user.Id, user.Email, user.FirstName, user.LastName, user.Address, user.Job, user.BirthDate)
+        this.user = new UserModel(user.Id, user.Email, user.FirstName, user.LastName, user.Address, user.Job, user.BirthDate);
       },
         (err) => {
           this.snackBar.openSnackBar(err, "", 10000);

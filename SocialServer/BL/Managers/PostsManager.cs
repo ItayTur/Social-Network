@@ -48,17 +48,17 @@ namespace BL.Managers
                     Content = httpRequest["Content"],
                     DateTime = DateTime.Now
                 };
-                ICollection<string> tags = new List<string>();
+                List<TagDto> tags = new List<TagDto>();
                 if (httpRequest["Tags"] != null)
                 {
-                    var jsonTags = JsonConvert.SerializeObject((httpRequest["Tags"]));
+                    tags = JsonConvert.DeserializeObject<List<TagDto>>((httpRequest["Tags"]));
                 }
                 HttpPostedFile picFile = httpRequest.Files["Pic"];
                 if (picFile != null)
                 {
                     post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
                 }
-                var userId = await VerifyToken("692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d").ConfigureAwait(false);
+                //var userId = await VerifyToken("692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d").ConfigureAwait(false);
                 post.Id = GenerateId();
                 var addPostToDbTask = _postsRepository.Add(userId, post, tags);
             }

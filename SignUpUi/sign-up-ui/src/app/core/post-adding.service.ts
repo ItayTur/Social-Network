@@ -15,8 +15,7 @@ export class PostAddingService {
   constructor(private httpClient: HttpClient, private cookieService: CookieService,
     private errorHandlingService: ErrorHandlingService) { }
 
-  AddPost (post: Post, tags: string[]): Observable<any>  {
-    debugger;
+  AddPost (post: Post, tags: any[]): Observable<any>  {
     const formData = new FormData();
     formData.append("Content",post.Content);
     formData.append("Tags",JSON.stringify(tags));

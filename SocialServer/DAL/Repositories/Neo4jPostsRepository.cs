@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Common.Dtos;
+using Common.Interfaces;
 using Common.Models;
 using Neo4jClient;
 using System;
@@ -34,7 +35,7 @@ namespace DAL.Repositories
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(string posterId, PostModel post, IEnumerable<string>tags)
+        public async Task Add(string posterId, PostModel post, IEnumerable<TagDto>tags)
         {
             try
             {
@@ -44,11 +45,11 @@ namespace DAL.Repositories
                     .WithParam("post", post)
                     .ExecuteWithoutResultsAsync();
                 
-                foreach (var emailTagged in tags)
+                foreach (var tag in tags)
                 {
                     await _graphClient.Cypher.Match("(taggingPost: Post)", "(taggedUser: User)")
                         .Where((PostModel taggingPost) => taggingPost.Id == post.Id)
-                        .AndWhere((UserModel taggedUser) => taggedUser.Email == emailTagged)
+                        .AndWhere((UserModel taggedUser) => taggedUser.Id == tag.Id)
                         .CreateUnique("post-[:TAG]->taggedUser")
                         .ExecuteWithoutResultsAsync();
                 }

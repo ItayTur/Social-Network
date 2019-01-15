@@ -54,8 +54,8 @@ namespace SocialServer.Controllers
         {
             try
             {
-                IEnumerable<UserModel> tagFound = await _postsManager.SearchTag(text);
-                return Ok(tagFound);
+                IEnumerable<UserModel> tagsFound = await _postsManager.SearchTag(text);
+                return Ok(tagsFound);
             }
             catch (ArgumentException e)
             {

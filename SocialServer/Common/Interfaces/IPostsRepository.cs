@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using Common.Dtos;
+using Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Common.Interfaces
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        Task Add(string posterId, PostModel post, IEnumerable<string> tags);
+        Task Add(string posterId, PostModel post, IEnumerable<TagDto> tags);
 
 
         /// <summary>

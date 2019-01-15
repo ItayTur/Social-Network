@@ -15,14 +15,11 @@ import { TagsService } from '../core/tags.service';
 export class PostAddingComponent implements OnInit {
   constructor(private postAddingService: PostAddingService,
     private tagsService: TagsService, private snackBarService: SnackBarService) { }
+
   post: Post = new Post("");
-  tags: string[];
+  tags: any[];
   imgSrc: string | ArrayBuffer;
-  public requestedTags = (text: string): Observable<any> => {
-    let l =this.tagsService.GetTags(text);
-    console.log(l);
-    return l;
-  }
+  public requestedTags = (text: string): Observable<any> => this.tagsService.GetTags(text);
 
 
 

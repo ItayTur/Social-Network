@@ -9,7 +9,7 @@
           <textarea name="Content" [(ngModel)]="post.Content" class="form-control rounded-0" id="contentId" rows="3" placeholder="What's on your mind..." required></textarea>
         </div>
         <!-- tags -->
-        <tag-input [ngModel]="tags"  name="Tags"  [onlyFromAutocomplete]="true">
+        <tag-input [(ngModel)]="tags"  name="Tags"  [onlyFromAutocomplete]="true">
           <tag-input-dropdown [autocompleteObservable]="requestedTags" [identifyBy]="'Id'" [displayBy]="'Email'"></tag-input-dropdown>
         </tag-input>
 

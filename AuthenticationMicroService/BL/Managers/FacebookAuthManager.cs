@@ -2,6 +2,7 @@
 using Common.Exceptions;
 using Common.Interfaces;
 using Common.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -156,7 +157,7 @@ namespace BL.Managers
         /// <summary>
         /// Removes the user associated with the specified email from the database.
         /// </summary>
-        /// <param name="userEmail"></param>
+        /// <param name="userId"></param>
         private async Task RemoveUserFromDb(string userId)
         {
             using (HttpClient httpClient = new HttpClient())
@@ -174,7 +175,7 @@ namespace BL.Managers
         /// <summary>
         /// Removes the auth associated with the specified email from the database.
         /// </summary>
-        /// <param name="userEmail"></param>
+        /// <param name="facebookId"></param>
         private void RemoveFacebookAuthFromDb(string facebookId)
         {
             _facebookAuthRepository.Delete(facebookId);
@@ -216,7 +217,10 @@ namespace BL.Managers
                                     LastName = facebookUser.last_name,
                                     Email = facebookUser.email
                                 };
-                    var response = await httpClient.PostAsJsonAsync(_identityUrl, user).ConfigureAwait(continueOnCapturedContext: false);
+                    var data = new JObject();
+                    data.Add("user", JToken.FromObject(user));
+                    data.Add("token", JToken.FromObject(appToken));
+                    var response = await httpClient.PostAsJsonAsync(_identityUrl, data).ConfigureAwait(continueOnCapturedContext: false);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Identity server could not add the user");

@@ -46,16 +46,16 @@ namespace AuthenticationApi.Controllers
 
         [HttpPost]
         [Route("api/Auth/Register")]
-        public IHttpActionResult RegisterUsernamePassword([FromBody] AuthDto authDto)
+        public async Task<IHttpActionResult> RegisterUsernamePasswordAsync([FromBody] RegistrationDto registrationDto)
         {
-            if (DtoNotValid(authDto))
+            if (DtoNotValid(registrationDto))
             {
                 return BadRequest("One of the parameters was missing");
             }
 
             try
             {
-                var token = _authManager.RegisterUserAndLogin(authDto.Email, authDto.Password);
+                string token = await _authManager.RegisterUserAndLogin(registrationDto);
                 return Ok(token);
             }
             catch (DuplicateKeyException ex)
@@ -94,7 +94,22 @@ namespace AuthenticationApi.Controllers
 
         private bool DtoNotValid(AuthDto authDto)
         {
-            if (authDto == null || string.IsNullOrWhiteSpace(authDto.Email) || string.IsNullOrWhiteSpace(authDto.Password))
+            if (authDto == null 
+                || string.IsNullOrWhiteSpace(authDto.Email) 
+                || string.IsNullOrWhiteSpace(authDto.Password))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool DtoNotValid(RegistrationDto registrationInfoDto)
+        {
+            if (registrationInfoDto == null 
+                || string.IsNullOrWhiteSpace(registrationInfoDto.Email) 
+                || string.IsNullOrWhiteSpace(registrationInfoDto.Password) 
+                || string.IsNullOrWhiteSpace(registrationInfoDto.FirstName) 
+                || string.IsNullOrWhiteSpace(registrationInfoDto.LastName))
             {
                 return true;
             }

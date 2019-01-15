@@ -1,7 +1,7 @@
 export class FacebookTokenModel {
-  accessToken: string;
+  Token: string;
 
   constructor(token: string) {
-    this.accessToken = token;
+    this.Token = token;
   }
 }

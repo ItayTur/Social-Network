@@ -22,6 +22,7 @@ namespace IdentityServer
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             //SimpleInjector registrations.
+            container.Register<IUsersManager, UsersManager>(Lifestyle.Singleton);
             container.Register<IUsersRepository, DynamoDbUsersRepository>(Lifestyle.Singleton);
             container.Register<IUsersManager, UsersManager>(Lifestyle.Singleton);
 

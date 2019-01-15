@@ -19,6 +19,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { CoreModule } from './core/core.module';
 import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { UserInfoComponent } from './user-info/user-info.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,9 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     NewsFeedComponent,
     PageNotFoundComponent,
     PostAddingComponent,
+    UserInfoComponent,
+    RegisterComponent
+
   ],
   imports: [
     FacebookModule.forRoot(),

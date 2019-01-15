@@ -14,5 +14,10 @@ namespace Common.Dtos
         {
             Token = token;
         }
+
+        public TokenDto()
+        {
+
+        }
     }
 }

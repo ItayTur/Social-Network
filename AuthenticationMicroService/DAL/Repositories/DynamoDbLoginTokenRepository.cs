@@ -11,12 +11,12 @@ namespace DAL.Repositories
 {
     public class DynamoDbLoginTokenRepository : ILoginTokenRepository
     {
-        public LoginTokenModel AddLoginToken(LoginTokenModel loginToken)
+        public async Task<LoginTokenModel> AddLoginToken(LoginTokenModel loginToken)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                dbContext.Save(loginToken);
-                var savedLoginToken= dbContext.Load<LoginTokenModel>(loginToken.Token);
+                await dbContext.SaveAsync(loginToken);
+                var savedLoginToken= await dbContext.LoadAsync<LoginTokenModel>(loginToken.Token);
                 return savedLoginToken;
             }
         }

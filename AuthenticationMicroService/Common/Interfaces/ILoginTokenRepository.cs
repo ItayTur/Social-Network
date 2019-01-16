@@ -10,7 +10,7 @@ namespace Common.Interfaces
     public interface ILoginTokenRepository
     {
         LoginTokenModel GetLoginToken(string token);
-        LoginTokenModel AddLoginToken(LoginTokenModel loginToken);
+        Task<LoginTokenModel> AddLoginToken(LoginTokenModel loginToken);
         Task Update(LoginTokenModel loginToken);
     }
 }

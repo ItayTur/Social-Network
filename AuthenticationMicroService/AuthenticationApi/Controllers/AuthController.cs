@@ -55,7 +55,7 @@ namespace AuthenticationApi.Controllers
 
             try
             {
-                string token = await _authManager.RegisterUserAndLogin(registrationDto);
+                string token = await _authManager.RegisterUserAndLogin(registrationDto).ConfigureAwait(continueOnCapturedContext: false);
                 return Ok(token);
             }
             catch (DuplicateKeyException ex)
@@ -70,7 +70,7 @@ namespace AuthenticationApi.Controllers
 
         [HttpPost]
         [Route("api/Auth/Login")]
-        public IHttpActionResult LoginUsernamePassword([FromBody] AuthDto authDto)
+        public async Task<IHttpActionResult> LoginUsernamePassword([FromBody] AuthDto authDto)
         {
             if (DtoNotValid(authDto))
             {
@@ -79,7 +79,7 @@ namespace AuthenticationApi.Controllers
 
             try
             {
-                var token = _authManager.LoginUser(authDto.Email, authDto.Password);
+                var token = await _authManager.LoginUser(authDto.Email, authDto.Password);
                 return Ok(token);
             }
             catch (ArgumentException ex)

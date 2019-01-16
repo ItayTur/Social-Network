@@ -66,13 +66,13 @@ namespace BL.Managers
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public string LoginUser(string email, string password)
+        public async Task<string> LoginUser(string email, string password)
         {
             try
             {
                 var auth = _authRepository.GetAuthByEmail(email);
                 VerifyAuthPassword(auth, password);
-                return _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
+                return await _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
             }
             catch (Exception ex)
             {
@@ -93,9 +93,9 @@ namespace BL.Managers
         {
             try
             {
-                VerifyEmailIsFree(registrationDto.Email);
+                VerifyEmailIsUnique(registrationDto.Email);
                 string userId = GenerateUserId();
-                var appToken = _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.UserPassword);
+                var appToken = await _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.UserPassword);
                 await AddUserToDatabases(registrationDto, userId, appToken);
                 return appToken;
             }
@@ -111,6 +111,8 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Addes the user to the Users table and the email to the Auth table.
         /// </summary>
@@ -124,7 +126,7 @@ namespace BL.Managers
                 Task addUserTask = AddUserToUsersDb(appToken, registrationDto, userId);
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
                 Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email);
-                Task.WaitAll(addUserTask, addAuthTask);
+                Task.WaitAll(addUserTask, addAuthTask, addUserNodeTask);
             }
             catch (AggregateException ae)
             {
@@ -150,6 +152,8 @@ namespace BL.Managers
 
         }
 
+
+
         /// <summary>
         /// Addes user to graph database.
         /// </summary>
@@ -162,10 +166,12 @@ namespace BL.Managers
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    var dataToSend = new JObject();
-                    dataToSend.Add("Token", JToken.FromObject(appToken));
-                    dataToSend.Add("UserEmail", JToken.FromObject(email));
-                    var response = await httpClient.PostAsJsonAsync(_socialUrl, dataToSend);
+                    var dataToSend = new JObject
+                    {
+                        { "token", JToken.FromObject(appToken) },
+                        { "email", JToken.FromObject(email) }
+                    };
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl + "Users/AddUser", dataToSend).ConfigureAwait(continueOnCapturedContext: false);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new AddUserToGraphException();
@@ -179,10 +185,12 @@ namespace BL.Managers
             }
             catch (Exception e)
             {
-                throw e;
+                throw new AddUserToGraphException(e.Message);
             }
 
         }
+
+
 
         /// <summary>
         /// If only one of the specified tasks failed a rollback is preformed on the other.
@@ -215,6 +223,8 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Rollbacks when two database additions failed.
         /// </summary>
@@ -240,6 +250,8 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Removes the user associated with the specified token from the database.
         /// </summary>
@@ -255,6 +267,8 @@ namespace BL.Managers
                 }
             }
         }
+
+
 
 
         /// <summary>
@@ -282,6 +296,8 @@ namespace BL.Managers
             }
 
         }
+
+
 
         /// <summary>
         /// Removes the user associated with the specified email from the database.
@@ -317,11 +333,11 @@ namespace BL.Managers
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        private Task AddUserToAuthDb(string email, string password, string userId)
+        private async Task AddUserToAuthDb(string email, string password, string userId)
         {
             try
             {
-                return Task.Run(() => _authRepository.Add(new AuthModel(email, password, userId)));
+                await _authRepository.Add(new AuthModel(email, password, userId)).ConfigureAwait(continueOnCapturedContext: false);
             }
             catch (Exception e)
             {
@@ -329,6 +345,8 @@ namespace BL.Managers
                 throw new AddAuthToDbException(e.Message);
             }
         }
+
+
 
         /// <summary>
         /// Adds a user entity to the users database through the identity service.
@@ -370,17 +388,21 @@ namespace BL.Managers
         }
 
 
+
+
         /// <summary>
         /// Verfies the email occupation. Throws an exception other wise.
         /// </summary>
         /// <param name="email"></param>
-        private void VerifyEmailIsFree(string email)
+        private void VerifyEmailIsUnique(string email)
         {
             if (!_authRepository.IsEmailFree(email))
             {
                 throw new DuplicateKeyException(email, "Email already exists");
             }
         }
+
+
 
         
         /// <summary>
@@ -395,6 +417,8 @@ namespace BL.Managers
                 throw new ArgumentException();
             }
         }
+
+
 
         private string GenerateUserId()
         {

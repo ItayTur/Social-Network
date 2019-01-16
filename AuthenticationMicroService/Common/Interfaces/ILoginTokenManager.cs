@@ -15,7 +15,7 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="loginType"></param>
         /// <returns>Auth token</returns>
-        string Add(string userId, LoginTypes loginType);
+        Task<string> Add(string userId, LoginTypes loginType);
 
         /// <summary>
         /// Verifies user token

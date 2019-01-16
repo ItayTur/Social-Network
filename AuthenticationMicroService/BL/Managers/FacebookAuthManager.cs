@@ -50,13 +50,13 @@ namespace BL.Managers
                         if (_facebookAuthRepository.IsFacebookIdFree(facebookId))
                         {
                             var userId = GenerateUserId();
-                            appToken = _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.Facebook);
+                            appToken = await _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.Facebook);
                             await AddUserToDatabases(facebookUserDto, userId, appToken);
                         }
                         else
                         {
                             var facebookAuth = _facebookAuthRepository.GetAuthByFacebookId(facebookId);
-                            appToken = _loginTokenManager.Add(facebookAuth.UserId, LoginTokenModel.LoginTypes.Facebook);
+                            appToken = await _loginTokenManager.Add(facebookAuth.UserId, LoginTokenModel.LoginTypes.Facebook);
                         }
 
                         return appToken;

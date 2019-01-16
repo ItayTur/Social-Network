@@ -45,7 +45,6 @@ namespace BL.Managers
                 PostModel post = GetPost(httpRequest["Content"]);
                 List<TagDto> tags = GetTags(httpRequest);
                 await SetImageUrl(httpRequest.Files["Pic"], path, post);
-                //"692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d"
                 var userId = await VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
                 var addPostToDbTask = _postsRepository.Add(userId, post, tags);

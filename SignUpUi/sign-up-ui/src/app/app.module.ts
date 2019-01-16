@@ -4,12 +4,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material';
 
+import { TagInputModule } from 'ngx-chips';
+
 import { AppComponent } from './app.component';
 
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { NewsFeedComponent } from './news-feed/news-feed.component';
+import { PostAddingComponent } from './post-adding/post-adding.component';
 
 import { FacebookModule } from 'ngx-facebook';
 import { CookieService } from 'ngx-cookie-service';
@@ -25,6 +28,7 @@ import { RegisterComponent } from './register/register.component';
     LoginComponent,
     NewsFeedComponent,
     PageNotFoundComponent,
+    PostAddingComponent,
     UserInfoComponent,
     RegisterComponent
 
@@ -39,7 +43,8 @@ import { RegisterComponent } from './register/register.component';
     HttpClientModule,
     ReactiveFormsModule,
     MatSnackBarModule,
-    AppRoutingModule
+    AppRoutingModule,
+    TagInputModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

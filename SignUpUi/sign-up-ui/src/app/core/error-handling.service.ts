@@ -14,24 +14,23 @@ export class ErrorHandlingService {
     if (error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error.message);
-      errorMessage = 'Something went wrong. Please try again later.'
+      errorMessage = 'Something went wrong. Please try again later.';
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
       console.error(
         `Backend returned code ${error.status}, ` +
         `body was: ${error.error}`);
-        if (error.message == "Internal server error" || error.status == 500){
+        if (error.message === "Internal server error" || error.status === 500) {
           errorMessage = "Oops, something went wrong. Please try again later";
-        }else if ( error.status ===0 ){
-          errorMessage = "A network error has occurd."
-        }
-        else {
+        } else if ( error.status ===0 ) {
+          errorMessage = "A network error has occurd.";
+        } else {
           errorMessage = error.error.Message;
         }
     }
     // return an observable with a user-facing error message
     return throwError(
       errorMessage);
-  };
+  }
 }

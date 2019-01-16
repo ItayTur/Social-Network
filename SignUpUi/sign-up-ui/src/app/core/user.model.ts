@@ -6,7 +6,7 @@ export class UserModel {
     address: string;
     job: string;
     birthDate: Date;
-  
+
     constructor(id:string, email: string, firstName: string, lastName: string, address: string, job: string, birthDate:Date) {
       this.id = id;
       this.email = email;

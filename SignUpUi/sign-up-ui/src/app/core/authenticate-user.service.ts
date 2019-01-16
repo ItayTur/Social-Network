@@ -23,7 +23,7 @@ export class AuthenticateUserService {
   constructor(private httpClient: HttpClient, private erorrHandler: ErrorHandlingService) { }
 
   login(email: string, password: string):Observable<any> {
-    let auth : AuthModel = new AuthModel(email, password);
+    let auth: AuthModel = new AuthModel(email, password);
     return this.httpClient.post(this.authApi + "/Login", auth)
     .pipe(
       retry(3),
@@ -31,7 +31,7 @@ export class AuthenticateUserService {
     );
   }
 
-  register(registrationInfo:RegistrationInfoModel):Observable<any> {    
+  register(registrationInfo:RegistrationInfoModel):Observable<any> {
     return this.httpClient.post(this.authApi + "/Register", registrationInfo, httpOptions)
     .pipe(
       retry(3),

@@ -29,7 +29,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loginForm = new FormGroup({ password: new FormControl(null, Validators.required), email: new FormControl(null, [Validators.required, Validators.email]) });
+    this.loginForm = new FormGroup({ password: new FormControl(null, Validators.required),
+       email: new FormControl(null, [Validators.required, Validators.email]) });
 
     (window as any).fbAsyncInit = function () {
       this.FB.init({

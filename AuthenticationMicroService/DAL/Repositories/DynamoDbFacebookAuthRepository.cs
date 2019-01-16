@@ -19,11 +19,11 @@ namespace DAL.Repositories
             }
         }
 
-        public void Delete(string facebookId)
+        public async Task Delete(string facebookId)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                dbContext.Delete<FacebookAuthModel>(facebookId);
+                await dbContext.DeleteAsync<FacebookAuthModel>(facebookId).ConfigureAwait(false);
                 //TODO: log
             }
         }

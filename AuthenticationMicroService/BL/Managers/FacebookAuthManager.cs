@@ -19,6 +19,7 @@ namespace BL.Managers
         private readonly IFacebookAuthRepository _facebookAuthRepository;
         private readonly ILoginTokenManager _loginTokenManager;
         private readonly string _identityUrl;
+        private readonly string _socialUrl;
 
         /// <summary>
         /// Constructor.
@@ -30,6 +31,7 @@ namespace BL.Managers
             _facebookAuthRepository = facebookAuthRepository;
             _loginTokenManager = loginTokenManager;
             _identityUrl = ConfigurationManager.AppSettings["IdentityUrl"];
+            _socialUrl = ConfigurationManager.AppSettings["SocialUrl"];
         }
 
 
@@ -47,7 +49,7 @@ namespace BL.Managers
                     {
                         var userId = GenerateUserId();
                         appToken = _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.Facebook);
-                        await AddUserToDatabase(facebookUserDto, userId, appToken);
+                        await AddUserToDatabases(facebookUserDto, userId, appToken);
                     }
                     else
                     {
@@ -108,17 +110,18 @@ namespace BL.Managers
         /// <param name="facebookUserDto"></param>
         /// <param name="userEmail"></param>
         /// <param name="appToken"></param>
-        private async Task AddUserToDatabase(FacebookUserDto facebookUserDto, string userId, string appToken)
+        private async Task AddUserToDatabases(FacebookUserDto facebookUserDto, string userId, string appToken)
         {
             try
             {
                 Task addUserTask = AddUserToUsersDb(appToken, facebookUserDto, userId);
                 Task addAuthTask = AddUserToFacebookAuthDb(facebookUserDto.id, userId);
+                Task addUserToGraphTask = AddUserToGraphDb(appToken, facebookUserDto);
                 Task.WaitAll(addUserTask, addAuthTask);
             }
             catch (AggregateException ae)
             {
-                bool isAddUserFail = false, isAddAuthFail = false;
+                bool isAddUserFail = false, isAddAuthFail = false, isAddToGraphFail = false;
                 foreach (var exception in ae.InnerExceptions)
                 {
                     if (exception is AddAuthToDbException)
@@ -129,40 +132,185 @@ namespace BL.Managers
                     {
                         isAddUserFail = true;
                     }
+                    if (exception is AddUserToGraphException)
+                    {
+                        isAddToGraphFail = true;
+                    }
                 }
-                await RollbackSuccededTask(isAddAuthFail, isAddUserFail, userId, facebookUserDto.id);
+                await RollbackSuccededTasks(isAddAuthFail, isAddUserFail, isAddToGraphFail, appToken, facebookUserDto.id);
                 throw new Exception("Internal server error");
             }
 
         }
 
+        private async Task AddUserToGraphDb(string appToken, FacebookUserDto facebookUserDto)
+        {
+            try
+            {
+                using(HttpClient httpClient = new HttpClient())
+                {
+                    var dataToSend = new JObject();
+                    dataToSend.Add("Token", JToken.FromObject(appToken));
+                    dataToSend.Add("UserEmail", JToken.FromObject(facebookUserDto.email));
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl,dataToSend);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new AddUserToGraphException();
+                    }
+                }
+            }
+            catch (AddUserToGraphException e)
+            {
+
+                throw e;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            
+        }
+
+        /// <summary>
+        /// Adds a user entity to the users database through the identity service.
+        /// </summary>
+        /// <param name="appToken"></param>
+        /// <param name="user"></param>
+        private async Task AddUserToUsersDb(string appToken, FacebookUserDto facebookUser, string userId)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    UserModel user = GetUserFromFacebookData(facebookUser, userId);
+                    var data = new JObject();
+                    data.Add("user", JToken.FromObject(user));
+                    data.Add("token", JToken.FromObject(appToken));
+                    var response = await httpClient.PostAsJsonAsync(_identityUrl, data).ConfigureAwait(continueOnCapturedContext: false);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Identity server could not add the user");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                //TODO: log
+                throw new AddUserToDbException(e.Message);
+            }
+
+        }
+
+        /// <summary>
+        /// Gets UserModel instance from the recieved facebook data.
+        /// </summary>
+        /// <param name="facebookUser"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private static UserModel GetUserFromFacebookData(FacebookUserDto facebookUser, string userId)
+        {
+            return new UserModel()
+            {
+                Id = userId,
+                FirstName = facebookUser.first_name,
+                LastName = facebookUser.last_name,
+                Email = facebookUser.email
+            };
+        }
 
         /// <summary>
         /// If only one of the specified tasks failed a rollback is preformed on the other.
         /// </summary>
         /// <param name="isAddAuthFail"></param>
         /// <param name="isAddUserFail"></param>
-        private async Task RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, string userId, string facebookId)
+        private async Task RollbackSuccededTasks(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraghFail, string token, string facebookId)
         {
-            if (isAddAuthFail && !isAddUserFail)
+            if (isAddAuthFail && !isAddUserFail && !isAddToGraghFail)
             {
-                await RemoveUserFromDb(userId);
+                await RemoveIdentity(token);
+                await RemoveGraphNode(token);
             }
-            else if (!isAddAuthFail && isAddUserFail)
+            else if (!isAddAuthFail && isAddUserFail && !isAddToGraghFail)
             {
-                RemoveFacebookAuthFromDb(facebookId);
+                await RemoveFBAuth(facebookId);
+                await RemoveGraphNode(token);
+
+            }
+            else if (!isAddAuthFail && !isAddUserFail && isAddToGraghFail)
+            {
+                await RemoveFBAuth(facebookId);
+                await RemoveIdentity(token);
+
+            }
+
+            else
+            {
+                await RollbackOnTwoAdditionsFail(isAddAuthFail, isAddUserFail, isAddToGraghFail, token,facebookId);
             }
         }
 
+
         /// <summary>
-        /// Removes the user associated with the specified email from the database.
+        /// Rollbacks when two database additions failed.
+        /// </summary>
+        /// <param name="isAddAuthFail"></param>
+        /// <param name="isAddUserFail"></param>
+        /// <param name="isAddToGraghFail"></param>
+        /// <param name="token"></param>
+        /// <param name="facebookId"></param>
+        /// <returns></returns>
+        private async Task RollbackOnTwoAdditionsFail(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraghFail, string token, string facebookId)
+        {
+            if(!isAddAuthFail && isAddUserFail && isAddToGraghFail)
+            {
+                await RemoveFBAuth(facebookId);
+            }
+            else if(isAddAuthFail && !isAddUserFail && isAddToGraghFail)
+            {
+                await RemoveIdentity(token);
+            }
+            else if (isAddAuthFail && isAddUserFail && !isAddToGraghFail)
+            {
+                await RemoveGraphNode(token);
+            }
+        }
+
+
+        /// <summary>
+        /// Removes the user associated with the specified id from the graph DB.
         /// </summary>
         /// <param name="userId"></param>
-        private async Task RemoveUserFromDb(string userId)
+        /// <returns></returns>
+        private async Task RemoveGraphNode(string token)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.DeleteAsync(_socialUrl + $"users/DeleteUserByToken/{token}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Error with removing from the graph");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+           
+        }
+
+        /// <summary>
+        /// Removes the user associated with the specified token from the database.
+        /// </summary>
+        /// <param name="token"></param>
+        private async Task RemoveIdentity(string token)
         {
             using (HttpClient httpClient = new HttpClient())
             {
-                var response = await httpClient.DeleteAsync(_identityUrl + $"/{userId}");
+                var response = await httpClient.DeleteAsync(_identityUrl + $"/DeleteUser/{token}");
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new ArgumentException("Identity server could not remove the user");
@@ -176,9 +324,9 @@ namespace BL.Managers
         /// Removes the auth associated with the specified email from the database.
         /// </summary>
         /// <param name="facebookId"></param>
-        private void RemoveFacebookAuthFromDb(string facebookId)
+        private async Task RemoveFBAuth(string facebookId)
         {
-            _facebookAuthRepository.Delete(facebookId);
+            await _facebookAuthRepository.Delete(facebookId);
         }
 
         /// <summary>
@@ -199,41 +347,7 @@ namespace BL.Managers
             }
         }
 
-        /// <summary>
-        /// Adds a user entity to the users database through the identity service.
-        /// </summary>
-        /// <param name="appToken"></param>
-        /// <param name="user"></param>
-        private async Task AddUserToUsersDb(string appToken, FacebookUserDto facebookUser, string userId)
-        {
-            try
-            {
-                using (HttpClient httpClient = new HttpClient())
-                {
-                    var user = new UserModel()
-                                {
-                                    Id = userId,
-                                    FirstName = facebookUser.first_name,
-                                    LastName = facebookUser.last_name,
-                                    Email = facebookUser.email
-                                };
-                    var data = new JObject();
-                    data.Add("user", JToken.FromObject(user));
-                    data.Add("token", JToken.FromObject(appToken));
-                    var response = await httpClient.PostAsJsonAsync(_identityUrl, data).ConfigureAwait(continueOnCapturedContext: false);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new Exception("Identity server could not add the user");
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                //TODO: log
-                throw new AddUserToDbException(e.Message);
-            }
-
-        }
+        
 
         private string GenerateUserId()
         {

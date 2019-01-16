@@ -97,7 +97,7 @@ namespace BL.Managers
                 catch (Exception e)
                 {
 
-                    throw new Exception(e.Message);
+                    throw e;
                 }
                 
             }
@@ -107,18 +107,18 @@ namespace BL.Managers
         /// Deletes the user associated with the specified id.
         /// </summary>
         /// <param name="id"></param>
-        public async Task Delete(string id, string token)
+        public async Task Delete(string token)
         {
             try
             {
-                await VerfiyToken(token);
-                _usersRepository.Delete(id);
+                string userId = await VerfiyToken(token);
+                _usersRepository.Delete(userId);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
-                throw;
+                throw e;
             }
         }
 

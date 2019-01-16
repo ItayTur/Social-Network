@@ -15,7 +15,7 @@ namespace Common.Interfaces
 
         bool IsFacebookIdFree(string facebookId);
 
-        void Delete(string facebookId);
+        Task Delete(string facebookId);
     }
 }
 

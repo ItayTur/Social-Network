@@ -20,12 +20,19 @@ namespace IdentityServer.Controllers
     {
         private readonly IUsersManager _usersManager;
 
-
+        /// <summary>
+        /// COnstructor.
+        /// </summary>
+        /// <param name="usersManager"></param>
         public UsersController(IUsersManager usersManager)
         {
             _usersManager = usersManager;
         }
 
+        /// <summary>
+        /// Gets the user associated with the token specified.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IHttpActionResult> GetUser()
         {
             try
@@ -45,6 +52,11 @@ namespace IdentityServer.Controllers
             }
         }
 
+        /// <summary>
+        /// Adds user to the DB.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public async Task<IHttpActionResult> PostUser([FromBody] JObject data)
         {
             try
@@ -71,13 +83,29 @@ namespace IdentityServer.Controllers
         /// <param name="request"></param>
         /// <param name="cookieName"></param>
         /// <returns></returns>
-        public static string GetCookie(HttpRequestMessage request, string cookieName)
+        public string GetCookie(HttpRequestMessage request, string cookieName)
         {
             CookieHeaderValue cookie = request.Headers.GetCookies(cookieName).FirstOrDefault();
             if (cookie != null)
                 return cookie[cookieName].Value;
 
             throw new AuthenticationException();
+        }
+
+        [System.Web.Http.HttpDelete]
+        [System.Web.Http.Route("api/Users/DeleteUser/{token}")]
+        public async Task<IHttpActionResult> DeleteUser(string token)
+        {
+            try
+            {
+                _usersManager.Delete(token);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
         }
     }
 }

@@ -69,7 +69,7 @@ namespace DAL.Repositories
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<UserModel>> GetUsersOfEmailWith(string taggerId,string text)
+        public async Task<IEnumerable<UserModel>> GetUsersByEmailText(string taggerId,string text)
         {
             try
             {

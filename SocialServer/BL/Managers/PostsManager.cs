@@ -95,7 +95,7 @@ namespace BL.Managers
             try
             {
                 string taggerId = await VerifyToken(token);
-                return await _postsRepository.GetUsersOfEmailWith(taggerId, text);
+                return await _postsRepository.GetUsersByEmailText(taggerId, text);
             }
             catch (Exception e)
             {

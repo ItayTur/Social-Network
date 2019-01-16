@@ -54,7 +54,6 @@ namespace SocialServer.Controllers
             try
             {
                 string token = GetCookieValue(Request, "authToken");
-                //"692dc1cd-ec5d-46e5-83ed-12e0bb6fa87d"
                 IEnumerable<UserModel> tagsFound = await _postsManager.SearchTag(text, token);
                 return Ok(tagsFound);
             }

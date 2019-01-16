@@ -20,10 +20,10 @@ namespace Common.Interfaces
 
 
         /// <summary>
-        /// Gets the emailes containing the text specified.
+        /// Gets the users containing the text specified in their email.
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        Task<IEnumerable<UserModel>> GetUsersOfEmailWith(string taggerId, string text);
+        Task<IEnumerable<UserModel>> GetUsersByEmailText(string taggerId, string text);
     }
 }

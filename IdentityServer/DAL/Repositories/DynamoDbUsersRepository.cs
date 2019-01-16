@@ -16,13 +16,13 @@ namespace DAL.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns>User</returns>
-        public UserModel Get(string id)
+        public async Task<UserModel> Get(string id)
         {
             using (DynamoDbContext context = new DynamoDbContext())
             {
                 try
                 {
-                    return context.Load<UserModel>(id);
+                    return await context.LoadAsync<UserModel>(id);
                 }
                 catch (Exception e)
                 {
@@ -35,13 +35,13 @@ namespace DAL.Repositories
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>
-        public void Add(UserModel user)
+        public async Task Add(UserModel user)
         {
             using(DynamoDbContext context = new DynamoDbContext())
             {
                 try
                 {
-                    context.Save(user);
+                    await context.SaveAsync(user);
                 }
                 catch (Exception e)
                 {
@@ -56,13 +56,13 @@ namespace DAL.Repositories
         /// Deletes the user associated with the specified id.
         /// </summary>
         /// <param name="id"></param>
-        public void Delete(string id)
+        public async Task Delete(string id)
         {
             using (DynamoDbContext context = new DynamoDbContext())
             {
                 try
                 {
-                    context.Delete<UserModel>(id);
+                    await context.DeleteAsync<UserModel>(id);
                 }
                 catch (Exception e)
                 {

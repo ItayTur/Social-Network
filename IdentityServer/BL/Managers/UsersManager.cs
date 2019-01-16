@@ -39,7 +39,7 @@ namespace BL.Managers
             try
             {
                 string userId = await VerfiyToken(token);
-                return _usersRepository.Get(userId);
+                return await _usersRepository.Get(userId);
             }
             catch (AuthenticationException)
             {
@@ -60,7 +60,7 @@ namespace BL.Managers
             try
             {
                 await VerfiyToken(token);
-                _usersRepository.Add(user);
+                await _usersRepository.Add(user);
             }
             catch(AuthenticationException)
             {
@@ -112,7 +112,7 @@ namespace BL.Managers
             try
             {
                 string userId = await VerfiyToken(token);
-                _usersRepository.Delete(userId);
+                await _usersRepository.Delete(userId);
 
             }
             catch (Exception e)

@@ -117,7 +117,7 @@ namespace BL.Managers
                 Task addUserTask = AddUserToUsersDb(appToken, facebookUserDto, userId);
                 Task addAuthTask = AddUserToFacebookAuthDb(facebookUserDto.id, userId);
                 Task addUserToGraphTask = AddUserToGraphDb(appToken, facebookUserDto);
-                Task.WaitAll(addUserTask, addAuthTask);
+                Task.WaitAll(addUserTask, addAuthTask, addUserToGraphTask);
             }
             catch (AggregateException ae)
             {
@@ -128,11 +128,11 @@ namespace BL.Managers
                     {
                         isAddAuthFail = true;
                     }
-                    if (exception is AddUserToDbException)
+                    else if (exception is AddUserToDbException)
                     {
                         isAddUserFail = true;
                     }
-                    if (exception is AddUserToGraphException)
+                    else if (exception is AddUserToGraphException)
                     {
                         isAddToGraphFail = true;
                     }
@@ -156,23 +156,22 @@ namespace BL.Managers
                 using(HttpClient httpClient = new HttpClient())
                 {
                     var dataToSend = new JObject();
-                    dataToSend.Add("Token", JToken.FromObject(appToken));
-                    dataToSend.Add("UserEmail", JToken.FromObject(facebookUserDto.email));
-                    var response = await httpClient.PostAsJsonAsync(_socialUrl,dataToSend);
+                    dataToSend.Add("token", JToken.FromObject(appToken));
+                    dataToSend.Add("email", JToken.FromObject(facebookUserDto.email));
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl+"Users/AddUser",dataToSend).ConfigureAwait(continueOnCapturedContext: false);
                     if (!response.IsSuccessStatusCode)
                     {
-                        throw new AddUserToGraphException();
+                        throw new Exception("Couldn't connect to social server");
                     }
                 }
             }
-            catch (AddUserToGraphException e)
+            catch (HttpRequestException e)
             {
-
-                throw e;
+                throw new AddUserToGraphException(e.Message);
             }
             catch (Exception e)
             {
-                throw e;
+                throw new AddUserToGraphException(e.Message);
             }
             
         }

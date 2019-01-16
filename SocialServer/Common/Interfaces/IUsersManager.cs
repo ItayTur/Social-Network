@@ -13,5 +13,13 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="token"></param>
         Task Delete(string token);
+
+        /// <summary>
+        /// Addes user with the email specified.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task Add(string token, string email);
     }
 }

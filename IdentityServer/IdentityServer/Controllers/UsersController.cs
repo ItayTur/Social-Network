@@ -62,7 +62,7 @@ namespace IdentityServer.Controllers
             try
             {
                 UserModel user = data["user"].ToObject<UserModel>();
-                string token = data["token"].ToObject<String>();
+                string token = data["token"].ToObject<string>();
                 await _usersManager.Add(user, token);
                 return Ok();
             }
@@ -98,7 +98,7 @@ namespace IdentityServer.Controllers
         {
             try
             {
-                _usersManager.Delete(token);
+                await _usersManager.Delete(token);
                 return Ok();
             }
             catch (Exception)

@@ -24,6 +24,16 @@ namespace DAL.Repositories
         }
 
         /// <summary>
+        /// Adds user to the database.
+        /// </summary>
+        /// <param name="userToAdd"></param>
+        /// <returns></returns>
+        public Task Add(UserModel userToAdd)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Deletes the user associated with the specified Id.
         /// </summary>
         /// <param name="userId"></param>

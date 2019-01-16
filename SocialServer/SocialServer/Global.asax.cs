@@ -22,9 +22,11 @@ namespace SocialServer
             container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             //SimpleInjector registrations.
-            container.Register<IPostsManager, PostsManager>(Lifestyle.Singleton);
             container.Register<IStorageManager, AWSStorageManager>(Lifestyle.Singleton);
+            container.Register<IPostsManager, PostsManager>(Lifestyle.Singleton);
+            container.Register<IUsersManager, UsersManager>(Lifestyle.Singleton);
             container.Register<IPostsRepository, Neo4jPostsRepository>(Lifestyle.Singleton);
+            container.Register<IUsersRepository, Neo4jUsersRepository>(Lifestyle.Singleton);
 
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);
 

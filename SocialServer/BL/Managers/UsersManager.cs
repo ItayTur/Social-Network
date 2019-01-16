@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Interfaces;
+using Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -28,6 +29,41 @@ namespace BL.Managers
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
         }
 
+        /// <summary>
+        /// Addes user with the email specified.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public async Task Add(string token, string email)
+        {
+            try
+            {
+                string userId = await VerifyToken(token);
+                UserModel userToAdd = CreateUser(email, userId);
+                await _usersRepository.Add(userToAdd);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
+        }
+
+        private UserModel CreateUser(string email, string userId)
+        {
+            return new UserModel()
+            {
+                Id = userId,
+                Email = email
+            };
+        }
+
+        /// <summary>
+        /// Deletes the user associated with the specified token.
+        /// </summary>
+        /// <param name="token"></param>
         public async Task Delete( string token)
         {
             try

@@ -143,6 +143,12 @@ namespace BL.Managers
 
         }
 
+        /// <summary>
+        /// Addes user to graph database.
+        /// </summary>
+        /// <param name="appToken"></param>
+        /// <param name="facebookUserDto"></param>
+        /// <returns></returns>
         private async Task AddUserToGraphDb(string appToken, FacebookUserDto facebookUserDto)
         {
             try
@@ -223,20 +229,20 @@ namespace BL.Managers
         /// </summary>
         /// <param name="isAddAuthFail"></param>
         /// <param name="isAddUserFail"></param>
-        private async Task RollbackSuccededTasks(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraghFail, string token, string facebookId)
+        private async Task RollbackSuccededTasks(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraphFail, string token, string facebookId)
         {
-            if (isAddAuthFail && !isAddUserFail && !isAddToGraghFail)
+            if (isAddAuthFail && !isAddUserFail && !isAddToGraphFail)
             {
                 await RemoveIdentity(token);
                 await RemoveGraphNode(token);
             }
-            else if (!isAddAuthFail && isAddUserFail && !isAddToGraghFail)
+            else if (!isAddAuthFail && isAddUserFail && !isAddToGraphFail)
             {
                 await RemoveFBAuth(facebookId);
                 await RemoveGraphNode(token);
 
             }
-            else if (!isAddAuthFail && !isAddUserFail && isAddToGraghFail)
+            else if (!isAddAuthFail && !isAddUserFail && isAddToGraphFail)
             {
                 await RemoveFBAuth(facebookId);
                 await RemoveIdentity(token);
@@ -245,7 +251,7 @@ namespace BL.Managers
 
             else
             {
-                await RollbackOnTwoAdditionsFail(isAddAuthFail, isAddUserFail, isAddToGraghFail, token,facebookId);
+                await RollbackOnTwoAdditionsFail(isAddAuthFail, isAddUserFail, isAddToGraphFail, token,facebookId);
             }
         }
 

@@ -19,6 +19,7 @@ namespace BL.Managers
     {
         private readonly IAuthRepository _authRepository;
         private readonly ILoginTokenManager _loginTokenManager;
+        private readonly string _socialUrl;
         private readonly string _identityUrl;
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace BL.Managers
             _authRepository = authRepository;
             _loginTokenManager = loginTokenManager;
             _identityUrl = ConfigurationManager.AppSettings["IdentityUrl"];
+            _socialUrl = ConfigurationManager.AppSettings["SocialUrl"];
         }
 
 
@@ -94,7 +96,7 @@ namespace BL.Managers
                 VerifyEmailIsFree(registrationDto.Email);
                 string userId = GenerateUserId();
                 var appToken = _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.UserPassword);
-                await AddUserToDatabase(registrationDto, userId, appToken);
+                await AddUserToDatabases(registrationDto, userId, appToken);
                 return appToken;
             }
             catch (DuplicateKeyException ex)
@@ -115,17 +117,18 @@ namespace BL.Managers
         /// <param name="registrationDto"></param>
         /// <param name="userEmail"></param>
         /// <param name="appToken"></param>
-        private async Task AddUserToDatabase(RegistrationDto registrationDto, string userId, string appToken)
+        private async Task AddUserToDatabases(RegistrationDto registrationDto, string userId, string appToken)
         {
             try
             {
                 Task addUserTask = AddUserToUsersDb(appToken, registrationDto, userId);
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
+                Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email);
                 Task.WaitAll(addUserTask, addAuthTask);
             }
             catch (AggregateException ae)
             {
-                bool isAddUserFail = false, isAddAuthFail = false;
+                bool isAddUserFail = false, isAddAuthFail = false, isAddToGraphFail = false;
                 foreach (var exception in ae.InnerExceptions)
                 {
                     if (exception is AddAuthToDbException)
@@ -136,9 +139,47 @@ namespace BL.Managers
                     {
                         isAddUserFail = true;
                     }
+                    if (exception is AddUserToGraphException)
+                    {
+                        isAddToGraphFail = true;
+                    }
                 }
-                await RollbackSuccededTask(isAddAuthFail, isAddUserFail, userId, registrationDto.Email);
+                await RollbackSuccededTask(isAddAuthFail, isAddUserFail, isAddToGraphFail, appToken, registrationDto.Email);
                 throw new Exception("Internal server error");
+            }
+
+        }
+
+        /// <summary>
+        /// Addes user to graph database.
+        /// </summary>
+        /// <param name="appToken"></param>
+        /// <param name="facebookUserDto"></param>
+        /// <returns></returns>
+        private async Task AddUserToGraphDb(string appToken, string email)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var dataToSend = new JObject();
+                    dataToSend.Add("Token", JToken.FromObject(appToken));
+                    dataToSend.Add("UserEmail", JToken.FromObject(email));
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl, dataToSend);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new AddUserToGraphException();
+                    }
+                }
+            }
+            catch (AddUserToGraphException e)
+            {
+
+                throw e;
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
 
         }
@@ -148,16 +189,98 @@ namespace BL.Managers
         /// </summary>
         /// <param name="isAddAuthFail"></param>
         /// <param name="isAddUserFail"></param>
-        private async Task RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, string userId, string email)
+        private async Task RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraphFail, string token, string email)
         {
-            if (isAddAuthFail && !isAddUserFail)
+            if (isAddAuthFail && !isAddUserFail && !isAddToGraphFail)
             {
-                await RemoveUserFromDb(userId);
+                await RemoveIdentity(token);
+                await RemoveGraphNode(token);
             }
-            else if (!isAddAuthFail && isAddUserFail)
+            else if (!isAddAuthFail && isAddUserFail && !isAddToGraphFail)
             {
-                RemoveAuthFromDb(email);
+                await RemoveAuthFromDb(email);
+                await RemoveGraphNode(token);
+
             }
+            else if (!isAddAuthFail && !isAddUserFail && isAddToGraphFail)
+            {
+                await RemoveAuthFromDb(email);
+                await RemoveIdentity(token);
+
+            }
+
+            else
+            {
+                await RollbackOnTwoAdditionsFail(isAddAuthFail, isAddUserFail, isAddToGraphFail, token, email);
+            }
+        }
+
+        /// <summary>
+        /// Rollbacks when two database additions failed.
+        /// </summary>
+        /// <param name="isAddAuthFail"></param>
+        /// <param name="isAddUserFail"></param>
+        /// <param name="isAddToGraghFail"></param>
+        /// <param name="token"></param>
+        /// <param name="facebookId"></param>
+        /// <returns></returns>
+        private async Task RollbackOnTwoAdditionsFail(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraghFail, string token, string email)
+        {
+            if (!isAddAuthFail && isAddUserFail && isAddToGraghFail)
+            {
+                await RemoveAuthFromDb(email);
+            }
+            else if (isAddAuthFail && !isAddUserFail && isAddToGraghFail)
+            {
+                await RemoveIdentity(token);
+            }
+            else if (isAddAuthFail && isAddUserFail && !isAddToGraghFail)
+            {
+                await RemoveGraphNode(token);
+            }
+        }
+
+        /// <summary>
+        /// Removes the user associated with the specified token from the database.
+        /// </summary>
+        /// <param name="token"></param>
+        private async Task RemoveIdentity(string token)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var response = await httpClient.DeleteAsync(_identityUrl + $"/DeleteUser/{token}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ArgumentException("Identity server could not remove the user");
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Removes the user associated with the specified id from the graph DB.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private async Task RemoveGraphNode(string token)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.DeleteAsync(_socialUrl + $"users/DeleteUserByToken/{token}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Error with removing from the graph");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+
         }
 
         /// <summary>
@@ -182,9 +305,9 @@ namespace BL.Managers
         /// Removes the auth associated with the specified email from the database.
         /// </summary>
         /// <param name="email"></param>
-        private void RemoveAuthFromDb(string email)
+        private async Task RemoveAuthFromDb(string email)
         {
-            _authRepository.Delete(email);
+            await _authRepository.Delete(email);
         }
 
 

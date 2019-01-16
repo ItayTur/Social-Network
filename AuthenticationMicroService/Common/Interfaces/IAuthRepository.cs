@@ -17,6 +17,6 @@ namespace Common.Interfaces
 
         bool IsEmailFree(string email);
 
-        void Delete(string userEmail);
+        Task Delete(string userEmail);
     }
 }

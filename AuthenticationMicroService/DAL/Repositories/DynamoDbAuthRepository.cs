@@ -43,11 +43,11 @@ namespace DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public void Delete(string userEmail)
+        public async Task Delete(string userEmail)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                dbContext.Delete<AuthModel>(userEmail);
+                await dbContext.DeleteAsync<AuthModel>(userEmail);
                 //TODO: log
             }
         }

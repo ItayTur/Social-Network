@@ -39,30 +39,39 @@ namespace BL.Managers
         {
             using (HttpClient httpClient = new HttpClient())
             {
-                HttpResponseMessage response = GetUserByFacebookToken(facebookToken, httpClient);
-                if (response.IsSuccessStatusCode)
+                try
                 {
-                    var facebookUserDto = await response.Content.ReadAsAsync<FacebookUserDto>();
-                    var facebookId = facebookUserDto.id;
-                    string appToken;
-                    if (_facebookAuthRepository.IsFacebookIdFree(facebookId))
+                    HttpResponseMessage response = GetUserByFacebookToken(facebookToken, httpClient);
+                    if (response.IsSuccessStatusCode)
                     {
-                        var userId = GenerateUserId();
-                        appToken = _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.Facebook);
-                        await AddUserToDatabases(facebookUserDto, userId, appToken);
+                        var facebookUserDto = await response.Content.ReadAsAsync<FacebookUserDto>();
+                        var facebookId = facebookUserDto.id;
+                        string appToken;
+                        if (_facebookAuthRepository.IsFacebookIdFree(facebookId))
+                        {
+                            var userId = GenerateUserId();
+                            appToken = _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.Facebook);
+                            await AddUserToDatabases(facebookUserDto, userId, appToken);
+                        }
+                        else
+                        {
+                            var facebookAuth = _facebookAuthRepository.GetAuthByFacebookId(facebookId);
+                            appToken = _loginTokenManager.Add(facebookAuth.UserId, LoginTokenModel.LoginTypes.Facebook);
+                        }
+
+                        return appToken;
                     }
                     else
                     {
-                        var facebookAuth = _facebookAuthRepository.GetAuthByFacebookId(facebookId);
-                        appToken = _loginTokenManager.Add(facebookAuth.UserId, LoginTokenModel.LoginTypes.Facebook);
+                        throw new ArgumentException("Access token is not valid");
                     }
-
-                    return appToken;
                 }
-                else
+                catch (Exception e)
                 {
-                    throw new ArgumentException("Access token is not valid");
+
+                    throw e;
                 }
+                
             }
         }
                

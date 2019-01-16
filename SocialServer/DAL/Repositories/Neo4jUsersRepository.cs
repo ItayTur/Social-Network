@@ -28,9 +28,24 @@ namespace DAL.Repositories
         /// </summary>
         /// <param name="userToAdd"></param>
         /// <returns></returns>
-        public Task Add(UserModel userToAdd)
+        public async Task Add(UserModel userToAdd)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _graphClient.Cypher.Merge("(user:User {Id: {id}})")
+                    .OnCreate()
+                    .Set("user = {userToAdd}")
+                    .WithParams(new
+                    {
+                        id = userToAdd.Id,
+                        userToAdd
+                    }).ExecuteWithoutResultsAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
 
         /// <summary>

@@ -51,6 +51,13 @@ namespace BL.Managers
             
         }
 
+        /// <summary>
+        /// Creates UserModel instance 
+        /// associated with the specified email and user ID.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         private UserModel CreateUser(string email, string userId)
         {
             return new UserModel()

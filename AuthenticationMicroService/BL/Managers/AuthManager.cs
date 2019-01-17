@@ -19,6 +19,7 @@ namespace BL.Managers
     {
         private readonly IAuthRepository _authRepository;
         private readonly ILoginTokenManager _loginTokenManager;
+        private readonly string _socialUrl;
         private readonly string _identityUrl;
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace BL.Managers
             _authRepository = authRepository;
             _loginTokenManager = loginTokenManager;
             _identityUrl = ConfigurationManager.AppSettings["IdentityUrl"];
+            _socialUrl = ConfigurationManager.AppSettings["SocialUrl"];
         }
 
 
@@ -64,13 +66,13 @@ namespace BL.Managers
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public string LoginUser(string email, string password)
+        public async Task<string> LoginUser(string email, string password)
         {
             try
             {
                 var auth = _authRepository.GetAuthByEmail(email);
                 VerifyAuthPassword(auth, password);
-                return _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
+                return await _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
             }
             catch (Exception ex)
             {
@@ -91,10 +93,10 @@ namespace BL.Managers
         {
             try
             {
-                VerifyEmailIsFree(registrationDto.Email);
+                VerifyEmailIsUnique(registrationDto.Email);
                 string userId = GenerateUserId();
-                var appToken = _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.UserPassword);
-                await AddUserToDatabase(registrationDto, userId, appToken);
+                var appToken = await _loginTokenManager.Add(userId, LoginTokenModel.LoginTypes.UserPassword);
+                await AddUserToDatabases(registrationDto, userId, appToken);
                 return appToken;
             }
             catch (DuplicateKeyException ex)
@@ -109,23 +111,26 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Addes the user to the Users table and the email to the Auth table.
         /// </summary>
         /// <param name="registrationDto"></param>
         /// <param name="userEmail"></param>
         /// <param name="appToken"></param>
-        private async Task AddUserToDatabase(RegistrationDto registrationDto, string userId, string appToken)
+        private async Task AddUserToDatabases(RegistrationDto registrationDto, string userId, string appToken)
         {
             try
             {
                 Task addUserTask = AddUserToUsersDb(appToken, registrationDto, userId);
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
-                Task.WaitAll(addUserTask, addAuthTask);
+                Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email);
+                Task.WaitAll(addUserTask, addAuthTask, addUserNodeTask);
             }
             catch (AggregateException ae)
             {
-                bool isAddUserFail = false, isAddAuthFail = false;
+                bool isAddUserFail = false, isAddAuthFail = false, isAddToGraphFail = false;
                 foreach (var exception in ae.InnerExceptions)
                 {
                     if (exception is AddAuthToDbException)
@@ -136,29 +141,163 @@ namespace BL.Managers
                     {
                         isAddUserFail = true;
                     }
+                    if (exception is AddUserToGraphException)
+                    {
+                        isAddToGraphFail = true;
+                    }
                 }
-                await RollbackSuccededTask(isAddAuthFail, isAddUserFail, userId, registrationDto.Email);
+                await RollbackSuccededTask(isAddAuthFail, isAddUserFail, isAddToGraphFail, appToken, registrationDto.Email);
                 throw new Exception("Internal server error");
             }
 
         }
+
+
+
+        /// <summary>
+        /// Addes user to graph database.
+        /// </summary>
+        /// <param name="appToken"></param>
+        /// <param name="facebookUserDto"></param>
+        /// <returns></returns>
+        private async Task AddUserToGraphDb(string appToken, string email)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var dataToSend = new JObject
+                    {
+                        { "token", JToken.FromObject(appToken) },
+                        { "email", JToken.FromObject(email) }
+                    };
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl + "Users/AddUser", dataToSend).ConfigureAwait(continueOnCapturedContext: false);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new AddUserToGraphException();
+                    }
+                }
+            }
+            catch (AddUserToGraphException e)
+            {
+
+                throw e;
+            }
+            catch (Exception e)
+            {
+                throw new AddUserToGraphException(e.Message);
+            }
+
+        }
+
+
 
         /// <summary>
         /// If only one of the specified tasks failed a rollback is preformed on the other.
         /// </summary>
         /// <param name="isAddAuthFail"></param>
         /// <param name="isAddUserFail"></param>
-        private async Task RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, string userId, string email)
+        private async Task RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraphFail, string token, string email)
         {
-            if (isAddAuthFail && !isAddUserFail)
+            if (isAddAuthFail && !isAddUserFail && !isAddToGraphFail)
             {
-                await RemoveUserFromDb(userId);
+                await RemoveIdentity(token);
+                await RemoveGraphNode(token);
             }
-            else if (!isAddAuthFail && isAddUserFail)
+            else if (!isAddAuthFail && isAddUserFail && !isAddToGraphFail)
             {
-                RemoveAuthFromDb(email);
+                await RemoveAuthFromDb(email);
+                await RemoveGraphNode(token);
+
+            }
+            else if (!isAddAuthFail && !isAddUserFail && isAddToGraphFail)
+            {
+                await RemoveAuthFromDb(email);
+                await RemoveIdentity(token);
+
+            }
+
+            else
+            {
+                await RollbackOnTwoAdditionsFail(isAddAuthFail, isAddUserFail, isAddToGraphFail, token, email);
             }
         }
+
+
+
+        /// <summary>
+        /// Rollbacks when two database additions failed.
+        /// </summary>
+        /// <param name="isAddAuthFail"></param>
+        /// <param name="isAddUserFail"></param>
+        /// <param name="isAddToGraghFail"></param>
+        /// <param name="token"></param>
+        /// <param name="facebookId"></param>
+        /// <returns></returns>
+        private async Task RollbackOnTwoAdditionsFail(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraghFail, string token, string email)
+        {
+            if (!isAddAuthFail && isAddUserFail && isAddToGraghFail)
+            {
+                await RemoveAuthFromDb(email);
+            }
+            else if (isAddAuthFail && !isAddUserFail && isAddToGraghFail)
+            {
+                await RemoveIdentity(token);
+            }
+            else if (isAddAuthFail && isAddUserFail && !isAddToGraghFail)
+            {
+                await RemoveGraphNode(token);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Removes the user associated with the specified token from the database.
+        /// </summary>
+        /// <param name="token"></param>
+        private async Task RemoveIdentity(string token)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var response = await httpClient.DeleteAsync(_identityUrl + $"/DeleteUser/{token}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ArgumentException("Identity server could not remove the user");
+                }
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Removes the user associated with the specified id from the graph DB.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private async Task RemoveGraphNode(string token)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.DeleteAsync(_socialUrl + $"users/DeleteUserByToken/{token}");
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Error with removing from the graph");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+
+        }
+
+
 
         /// <summary>
         /// Removes the user associated with the specified email from the database.
@@ -182,9 +321,9 @@ namespace BL.Managers
         /// Removes the auth associated with the specified email from the database.
         /// </summary>
         /// <param name="email"></param>
-        private void RemoveAuthFromDb(string email)
+        private async Task RemoveAuthFromDb(string email)
         {
-            _authRepository.Delete(email);
+            await _authRepository.Delete(email);
         }
 
 
@@ -194,11 +333,11 @@ namespace BL.Managers
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        private Task AddUserToAuthDb(string email, string password, string userId)
+        private async Task AddUserToAuthDb(string email, string password, string userId)
         {
             try
             {
-                return Task.Run(() => _authRepository.Add(new AuthModel(email, password, userId)));
+                await _authRepository.Add(new AuthModel(email, password, userId)).ConfigureAwait(continueOnCapturedContext: false);
             }
             catch (Exception e)
             {
@@ -206,6 +345,8 @@ namespace BL.Managers
                 throw new AddAuthToDbException(e.Message);
             }
         }
+
+
 
         /// <summary>
         /// Adds a user entity to the users database through the identity service.
@@ -247,17 +388,21 @@ namespace BL.Managers
         }
 
 
+
+
         /// <summary>
         /// Verfies the email occupation. Throws an exception other wise.
         /// </summary>
         /// <param name="email"></param>
-        private void VerifyEmailIsFree(string email)
+        private void VerifyEmailIsUnique(string email)
         {
             if (!_authRepository.IsEmailFree(email))
             {
                 throw new DuplicateKeyException(email, "Email already exists");
             }
         }
+
+
 
         
         /// <summary>
@@ -272,6 +417,8 @@ namespace BL.Managers
                 throw new ArgumentException();
             }
         }
+
+
 
         private string GenerateUserId()
         {

@@ -48,6 +48,8 @@
     <Compile Include="Interfaces\IPostsManager.cs" />
     <Compile Include="Interfaces\IPostsRepository.cs" />
     <Compile Include="Interfaces\IStorageManager.cs" />
+    <Compile Include="Interfaces\IUsersManager.cs" />
+    <Compile Include="Interfaces\IUsersRepository.cs" />
     <Compile Include="Models\CommentModel.cs" />
     <Compile Include="Models\PostModel.cs" />
     <Compile Include="Models\UserModel.cs" />

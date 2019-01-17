@@ -39,7 +39,7 @@ namespace BL.Managers
             try
             {
                 string userId = await VerfiyToken(token);
-                return _usersRepository.Get(userId);
+                return await _usersRepository.Get(userId);
             }
             catch (AuthenticationException)
             {
@@ -60,7 +60,7 @@ namespace BL.Managers
             try
             {
                 await VerfiyToken(token);
-                _usersRepository.Add(user);
+                await _usersRepository.Add(user);
             }
             catch(AuthenticationException)
             {
@@ -97,7 +97,7 @@ namespace BL.Managers
                 catch (Exception e)
                 {
 
-                    throw new Exception(e.Message);
+                    throw e;
                 }
                 
             }
@@ -107,18 +107,18 @@ namespace BL.Managers
         /// Deletes the user associated with the specified id.
         /// </summary>
         /// <param name="id"></param>
-        public async Task Delete(string id, string token)
+        public async Task Delete(string token)
         {
             try
             {
-                await VerfiyToken(token);
-                _usersRepository.Delete(id);
+                string userId = await VerfiyToken(token);
+                await _usersRepository.Delete(userId);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
-                throw;
+                throw e;
             }
         }
 

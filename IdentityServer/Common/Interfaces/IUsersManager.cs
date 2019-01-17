@@ -27,6 +27,6 @@ namespace Common.Interfaces
         /// Deletes the user associated with the specified id.
         /// </summary>
         /// <param name="id"></param>
-        Task Delete(string id, string token);
+        Task Delete(string token);
     }
 }

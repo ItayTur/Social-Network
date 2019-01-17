@@ -13,10 +13,10 @@ namespace Common.Interfaces
 
         void Update(AuthModel updatedUser);
 
-        void Add(AuthModel newUser);
+        Task Add(AuthModel newUser);
 
         bool IsEmailFree(string email);
 
-        void Delete(string userEmail);
+        Task Delete(string userEmail);
     }
 }

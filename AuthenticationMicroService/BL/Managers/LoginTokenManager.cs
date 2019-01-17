@@ -28,12 +28,12 @@ namespace BL.Managers
         /// <param name="userId"></param>
         /// <param name="loginType"></param>
         /// <returns>Auth token</returns>
-        public string Add(string userId, LoginTypes loginType)
+        public async Task<string> Add(string userId, LoginTypes loginType)
         {
             try
             {
                 var loginToken = new LoginTokenModel(userId, loginType);
-                var savedLoginToken = _loginTokenRepository.AddLoginToken(loginToken);
+                var savedLoginToken = await _loginTokenRepository.AddLoginToken(loginToken);
                 return savedLoginToken.Token;
             }
             catch (Exception ex)

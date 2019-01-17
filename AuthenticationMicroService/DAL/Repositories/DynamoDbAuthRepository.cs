@@ -12,12 +12,21 @@ namespace DAL.Repositories
 {
     public class DynamoDbAuthRepository : IAuthRepository
     {
-        public void Add(AuthModel newUser)
+        public async Task Add(AuthModel newUser)
         {
-            using (DynamoDbContext dbContext = new DynamoDbContext())
+            try
             {
-                dbContext.Save(newUser);
+                using (DynamoDbContext dbContext = new DynamoDbContext())
+                {
+                    await dbContext.SaveAsync(newUser).ConfigureAwait(false);
+                }
             }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+            
         }
 
         public bool IsEmailFree(string email)
@@ -43,11 +52,11 @@ namespace DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public void Delete(string userEmail)
+        public async Task Delete(string userEmail)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                dbContext.Delete<AuthModel>(userEmail);
+                await dbContext.DeleteAsync<AuthModel>(userEmail);
                 //TODO: log
             }
         }

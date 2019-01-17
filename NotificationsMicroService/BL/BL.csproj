@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Managers\ConnectionsToUsersManager.cs" />
-    <Compile Include="Managers\NotificationsHub.cs" />
+    <Compile Include="Helpers\NotificationsHub.cs" />
     <Compile Include="Managers\NotificationsManager.cs" />
     <Compile Include="Managers\UsersManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

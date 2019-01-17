@@ -55,7 +55,7 @@ namespace SocialServer.Controllers
         /// <param name="email"></param>
         private void VerifyUserData(string token, string email)
         {
-            if (token == null || email == null || token == "" || email == "")
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
             {
                 throw new ArgumentNullException();
             }

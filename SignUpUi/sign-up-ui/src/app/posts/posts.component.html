@@ -1,0 +1,14 @@
+<!-- Section: Social newsfeed -->
+<section class="my-5">
+  <!-- Grid row -->
+  <div class="row">
+    <!-- Grid column -->
+    <div class="col-md-12">
+      <!-- Newsfeed -->
+      <div class="mdb-feed">
+         <!-- news -->
+         <app-post [post]="post" *ngFor="let post of posts"></app-post>
+      </div>
+    </div>
+  </div>
+</section>

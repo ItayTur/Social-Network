@@ -1,20 +1,13 @@
-﻿using Amazon;
-using Amazon.S3;
-using Common;
-using Common.Dtos;
+﻿using Common.Dtos;
 using Common.Interfaces;
 using Common.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Authentication;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace BL.Managers
 {
@@ -23,6 +16,7 @@ namespace BL.Managers
 
         private readonly IPostsRepository _postsRepository;
         private readonly IStorageManager _storageManager;
+        private readonly ICommonOperationsManager _commonOperationsManager;
         private readonly string _authBaseUrl;
 
 
@@ -31,10 +25,11 @@ namespace BL.Managers
         /// </summary>
         /// <param name="postsRepository"></param>
         /// <param name="storageManager"></param>
-        public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager)
+        public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager, ICommonOperationsManager commonOperationsManager)
         {
             _postsRepository = postsRepository;
             _storageManager = storageManager;
+            _commonOperationsManager = commonOperationsManager;
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
         }
 
@@ -53,7 +48,7 @@ namespace BL.Managers
                 PostModel post = CreatePost(httpRequest["Content"], httpRequest["IsPublic"]);
                 List<TagDto> tags = GetTags(httpRequest);
                 await SetImageUrl(httpRequest.Files["Pic"], path, post);
-                var userId = await VerifyToken(token).ConfigureAwait(false);
+                var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
                 var addPostToDbTask = _postsRepository.Add(userId, post, tags);
             }
@@ -128,7 +123,7 @@ namespace BL.Managers
         {
             try
             {
-                string taggerId = await VerifyToken(token);
+                string taggerId = await _commonOperationsManager.VerifyToken(token);
                 return await _postsRepository.GetUsersByEmailText(taggerId, text);
             }
             catch (Exception e)
@@ -136,7 +131,7 @@ namespace BL.Managers
 
                 throw new Exception(e.Message);
             }
-            
+
         }
 
 
@@ -149,37 +144,59 @@ namespace BL.Managers
             return Guid.NewGuid().ToString();
         }
 
+        public async Task<IEnumerable<PostModel>> GetPosts(string token)
+        {
+            try
+            {
+                if (int.TryParse(ConfigurationManager.AppSettings["PostsToShow"], out int postsToShow) && postsToShow > 0)
+                {
+                    string userId = await _commonOperationsManager.VerifyToken(token);
+                    var postsToReturn = await GetFollowedUsersPosts(userId, postsToShow);
+                    if (postsToReturn.Count < postsToShow)
+                    {
+                        int postsAmountLeft = postsToShow - postsToReturn.Count;
+                        IEnumerable<PostModel> publicPosts = await _postsRepository.GetPublicPosts(userId, postsAmountLeft);
+                        foreach (var post in publicPosts)
+                        {
+                            postsToReturn.Add(post);
+                        }
+                    }
+
+                    return postsToReturn;
+                }
+                else
+                {
+                    throw new ArgumentException("Posts to show amount is not a valid integer or bigger than zero");
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
 
 
         /// <summary>
-        /// Verifies the specified token and return the user id.
+        /// Gets the posts that's been published by the users the specified user follow. 
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        private async Task<string> VerifyToken(string token)
+        private async Task<ICollection<PostModel>> GetFollowedUsersPosts(string userId, int postsToShow)
         {
-            TokenDto tokenDto = new TokenDto() { Token = token };
             try
             {
-                using (HttpClient httpClient = new HttpClient())
-                {
-                    var response = await httpClient.PostAsJsonAsync(_authBaseUrl, tokenDto).ConfigureAwait(false);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new AuthenticationException();
-                    }
-                    else
-                    {
-                        return await response.Content.ReadAsAsync<string>();
-                    }
-                }
+                IEnumerable<PostModel> postsToReturn = await _postsRepository.GetFollowedUsersPosts(userId, postsToShow);
+                return postsToReturn.ToList();
             }
-            catch (Exception e)
+            catch (Exception)
             {
 
-                throw new Exception(e.Message);
+                throw;
             }
-            
         }
     }
 }

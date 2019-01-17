@@ -18,10 +18,12 @@ namespace SocialServer.Controllers
     public class PostsController : ApiController
     {
         private readonly IPostsManager _postsManager;
+        private readonly ICommonOperationsManager _commonOperationsManager;
 
-        public PostsController(IPostsManager postsManager)
+        public PostsController(IPostsManager postsManager, ICommonOperationsManager commonOperationsManager)
         {
             _postsManager = postsManager;
+            _commonOperationsManager = commonOperationsManager;
         }
 
         [HttpPost]
@@ -31,7 +33,7 @@ namespace SocialServer.Controllers
             try
             {
                 var httpRequest = HttpContext.Current.Request;
-                string token = GetCookieValue(Request, "authToken");
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
                 string picPath = "";
                 if (httpRequest.Files["Pic"] != null)
                 {
@@ -53,7 +55,7 @@ namespace SocialServer.Controllers
         {
             try
             {
-                string token = GetCookieValue(Request, "authToken");
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
                 IEnumerable<UserModel> tagsFound = await _postsManager.SearchTag(text, token);
                 return Ok(tagsFound);
             }
@@ -68,19 +70,22 @@ namespace SocialServer.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieves an individual cookie from the cookies collection
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cookieName"></param>
-        /// <returns></returns>
-        public string GetCookieValue(HttpRequestMessage request, string cookieName)
+       
+        [HttpGet]
+        [Route("api/Posts/GetUsersPosts")]
+        public async Task<IHttpActionResult> GetUsersPosts()
         {
-            CookieHeaderValue cookie = request.Headers.GetCookies(cookieName).FirstOrDefault();
-            if (cookie != null)
-                return cookie[cookieName].Value;
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var posts = await _postsManager.GetPosts(token);
+                return Ok(posts);
+            }
+            catch (Exception)
+            {
 
-            throw new AuthenticationException();
+                return InternalServerError();
+            }
         }
     }
 }

@@ -26,5 +26,12 @@ namespace Common.Interfaces
         /// <param name="text"></param>
         /// <returns></returns>
         Task<IEnumerable<UserModel>> SearchTag(string text, string id);
+
+        /// <summary>
+        /// Gets posts to user. 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<PostModel>> GetPosts(string token);
     }
 }

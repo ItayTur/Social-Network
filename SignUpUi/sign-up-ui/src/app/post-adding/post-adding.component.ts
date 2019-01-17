@@ -16,7 +16,7 @@ export class PostAddingComponent implements OnInit {
   constructor(private postAddingService: PostAddingService,
     private tagsService: TagsService, private snackBarService: SnackBarService) { }
 
-  post: Post = new Post("");
+  post: Post = new Post("",true);
   tags: any[];
   imgSrc: string | ArrayBuffer;
   public requestedTags = (text: string): Observable<any> => this.tagsService.GetTags(text);

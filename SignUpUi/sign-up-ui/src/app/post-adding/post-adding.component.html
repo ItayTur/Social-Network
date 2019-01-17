@@ -20,6 +20,12 @@
             <input  class="form-control file-input" type="file" (change)="onFileChanged($event)" accept="image/*">
           </div>
         </div>
+
+        <!-- is public -->
+        <div>
+          <mdb-checkbox name="isPublic" [default]="true" [(ngModel)] = "post.IsPublic">Public</mdb-checkbox>
+        </div>
+
         <img id=uploaded-img [src]="imgSrc" class="rounded mx-auto d-block" style="width: 200px" [alt]="post.pic.name" *ngIf="imgSrc">
         <br>
 

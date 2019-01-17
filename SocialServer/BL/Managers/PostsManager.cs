@@ -25,12 +25,20 @@ namespace BL.Managers
         private readonly IStorageManager _storageManager;
         private readonly string _authBaseUrl;
 
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="postsRepository"></param>
+        /// <param name="storageManager"></param>
         public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager)
         {
             _postsRepository = postsRepository;
             _storageManager = storageManager;
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
         }
+
+
 
         /// <summary>
         /// Adds a post to the database. 
@@ -42,7 +50,7 @@ namespace BL.Managers
         {
             try
             {
-                PostModel post = GetPost(httpRequest["Content"]);
+                PostModel post = CreatePost(httpRequest["Content"], httpRequest["IsPublic"]);
                 List<TagDto> tags = GetTags(httpRequest);
                 await SetImageUrl(httpRequest.Files["Pic"], path, post);
                 var userId = await VerifyToken(token).ConfigureAwait(false);
@@ -56,6 +64,15 @@ namespace BL.Managers
             }
         }
 
+
+
+        /// <summary>
+        /// Sets the image url in the PostModel instance specified.
+        /// </summary>
+        /// <param name="picFile"></param>
+        /// <param name="path"></param>
+        /// <param name="post"></param>
+        /// <returns></returns>
         private async Task SetImageUrl(HttpPostedFile picFile, string path, PostModel post)
         {
             if (picFile != null)
@@ -64,7 +81,15 @@ namespace BL.Managers
             }
         }
 
-        private static List<TagDto> GetTags(HttpRequest httpRequest)
+
+
+        /// <summary>
+        /// Gets the tags associated with the text
+        /// specified in the http request.
+        /// </summary>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        private List<TagDto> GetTags(HttpRequest httpRequest)
         {
             List<TagDto> tags = new List<TagDto>();
             if (httpRequest["Tags"] != "undefined")
@@ -75,14 +100,23 @@ namespace BL.Managers
             return tags;
         }
 
-        private static PostModel GetPost(string content)
+
+
+        /// <summary>
+        /// Creates post instance from the content specifid.
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private PostModel CreatePost(string content, string isPublic)
         {
             return new PostModel()
             {
                 Content = content,
+                IsPublic = isPublic == "true" ? true : false,
                 DateTime = DateTime.Now
             };
         }
+
 
 
         /// <summary>
@@ -114,6 +148,7 @@ namespace BL.Managers
         {
             return Guid.NewGuid().ToString();
         }
+
 
 
         /// <summary>

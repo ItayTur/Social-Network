@@ -18,6 +18,7 @@ export class PostAddingService {
   AddPost (post: Post, tags: any[]): Observable<any>  {
     const formData = new FormData();
     formData.append("Content",post.Content);
+    formData.append("IsPublic",JSON.stringify(post.IsPublic));
     formData.append("Tags",JSON.stringify(tags));
     if(post.pic) {
       formData.append("Pic",post.pic, post.pic.name);

@@ -37,7 +37,8 @@ namespace SocialServer.Controllers
                 string picPath = "";
                 if (httpRequest.Files["Pic"] != null)
                 {
-                    picPath = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["pic"].FileName);
+                    string fileName = _commonOperationsManager.GetNewGuid();
+                    picPath = HttpContext.Current.Server.MapPath("~/" + fileName);
                 }
                 await _postsManager.Add(httpRequest, token, picPath);
                 return Ok();

@@ -6,8 +6,9 @@ export class Post {
         public IsPublic: boolean,
     ) {}
     pic: File;
-    Email: string;
+    WriterEmail: string;
     DateTime;
     Likes: number;
+    ImgUrl: string;
 }
 

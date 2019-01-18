@@ -23,5 +23,11 @@ namespace Common.Interfaces
         /// <param name="cookieName"></param>
         /// <returns></returns>
         string GetCookieValue(HttpRequestMessage request, string cookieName);
+
+        /// <summary>
+        /// Gets a new guid.
+        /// </summary>
+        /// <returns></returns>
+        string GetNewGuid();
     }
 }

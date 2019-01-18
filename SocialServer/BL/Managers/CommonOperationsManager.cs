@@ -38,6 +38,15 @@ namespace BL.Managers
             throw new AuthenticationException();
         }
 
+        /// <summary>
+        /// Gets a new guid instance as string.
+        /// </summary>
+        /// <returns></returns>
+        public string GetNewGuid()
+        {
+            return Guid.NewGuid().ToString();
+        }
+
 
         /// <summary>
         /// Verifies the specified token and return the user id.

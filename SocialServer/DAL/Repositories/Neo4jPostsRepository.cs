@@ -88,12 +88,13 @@ namespace DAL.Repositories
         {
             try
             {
-                return await _graphClient.Cypher.Match("(recievingUser: User)-[:FOLLOW]->(postingUser)-[:POST]->(post:Post)")
-                    .Where((UserModel receivingUser) => receivingUser.Id != userId)
-                    .AndWhere((PostModel post) => post.IsPublic)
+                return await _graphClient.Cypher.Match("(poster: User)-[:POST]->(post: Post), (receivingUser:User)")
+                    .Where((UserModel receivingUser) => receivingUser.Id == userId)
+                    .AndWhere((PostModel post) => post.IsPublic==true)
+                    .AndWhere("not (receivingUser)-[:FOLLOW]->(poster) and receivingUser<>poster")
                     .Return(post => post.As<PostModel>()).Limit(postsToShow).ResultsAsync;
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;

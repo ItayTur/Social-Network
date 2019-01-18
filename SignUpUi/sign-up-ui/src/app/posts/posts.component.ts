@@ -13,6 +13,7 @@ export class PostsComponent implements OnInit {
   constructor(private postService: PostsService, private snackBarService: SnackBarService) { }
 
   ngOnInit() {
+    debugger;
     this.postService.GetPosts()
     .subscribe((servicePosts)=> this.posts = servicePosts,
      (err)=> this.snackBarService.openSnackBar(err,"",10000));

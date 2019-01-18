@@ -14,6 +14,6 @@ export class PostsService {
 
   GetPosts(): Observable<any> {
     return this.httpClient.get(this.baseUrl+"Posts/GetUsersPosts", { withCredentials: true })
-    .pipe(retry(3), catchError(this.errorHandler.handleError));
+    .pipe(catchError(this.errorHandler.handleError));
   }
 }

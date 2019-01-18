@@ -9,7 +9,8 @@ import { Post } from '../post-adding/post.model';
 export class PostComponent implements OnInit {
 
   constructor() { }
-  @Input() post: Post;
+  @Input()
+  post: Post;
   ngOnInit() {
   }
 

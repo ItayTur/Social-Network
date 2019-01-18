@@ -42,5 +42,12 @@ namespace Common.Interfaces
         /// <param name="postsAmountLeft"></param>
         /// <returns></returns>
         Task<IEnumerable<PostModel>> GetPublicPosts(string userId, int postsToShow);
+
+
+        /// <summary>
+        /// Gets the email of the user associated with the specified ID.
+        /// </summary>
+        /// <returns></returns>
+        Task<string> GetUserEmailById(string userId);
     }
 }

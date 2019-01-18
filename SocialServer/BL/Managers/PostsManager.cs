@@ -50,7 +50,8 @@ namespace BL.Managers
                 await SetImageUrl(httpRequest.Files["Pic"], path, post);
                 var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
-                var addPostToDbTask = _postsRepository.Add(userId, post, tags);
+                post.WriterEmail = await _postsRepository.GetUserEmailById(userId);
+                await _postsRepository.Add(userId, post, tags);
             }
             catch (Exception e)
             {

@@ -61,6 +61,8 @@ namespace DAL.Repositories
 
         }
 
+
+
         /// <summary>
         /// Gets the posts that's been published by the users the specified user follow. 
         /// </summary>
@@ -84,6 +86,14 @@ namespace DAL.Repositories
 
         }
 
+
+
+        /// <summary>
+        /// Gets posts from the users, the user specified not follow and marked as public.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="postsAmountLeft"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<PostModel>> GetPublicPosts(string userId, int postsToShow)
         {
             try
@@ -100,6 +110,27 @@ namespace DAL.Repositories
                 throw;
             }
         }
+
+
+
+        /// <summary>
+        /// Gets the email of the user associated with the specified ID.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string> GetUserEmailById(string userId)
+        {
+            var userFound = await _graphClient.Cypher.Match("(user:User)")
+                .Where((UserModel user) => user.Id == userId)
+                .Return(user => user.As<UserModel>())
+                .ResultsAsync;
+            string emailToReturn = "";
+            foreach (var user in userFound)
+            {
+                emailToReturn = user.Email;
+            }
+            return emailToReturn;
+        }
+
 
 
         /// <summary>

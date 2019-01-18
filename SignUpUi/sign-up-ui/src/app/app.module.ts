@@ -23,6 +23,7 @@ import { UserInfoComponent } from './user-info/user-info.component';
 import { RegisterComponent } from './register/register.component';
 import { PostsComponent } from './posts/posts.component';
 import { PostComponent } from './post/post.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { PostComponent } from './post/post.component';
     UserInfoComponent,
     RegisterComponent,
     PostsComponent,
-    PostComponent
+    PostComponent,
+    NotificationsComponent
 
   ],
   imports: [

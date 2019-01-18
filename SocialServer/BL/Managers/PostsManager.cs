@@ -149,7 +149,8 @@ namespace BL.Managers
         {
             try
             {
-                if (int.TryParse(ConfigurationManager.AppSettings["PostsToShow"], out int postsToShow) && postsToShow > 0)
+                int postsToShow;
+                if (PostsToShowValid(out postsToShow))
                 {
                     string userId = await _commonOperationsManager.VerifyToken(token);
                     var postsToReturn = await GetFollowedUsersPosts(userId, postsToShow);
@@ -176,6 +177,11 @@ namespace BL.Managers
 
                 throw;
             }
+        }
+
+        private static bool PostsToShowValid(out int postsToShow)
+        {
+            return int.TryParse(ConfigurationManager.AppSettings["PostsToShow"], out postsToShow) && postsToShow > 0;
         }
 
 

@@ -114,26 +114,6 @@ namespace DAL.Repositories
 
 
         /// <summary>
-        /// Gets the email of the user associated with the specified ID.
-        /// </summary>
-        /// <returns></returns>
-        public async Task<string> GetUserEmailById(string userId)
-        {
-            var userFound = await _graphClient.Cypher.Match("(user:User)")
-                .Where((UserModel user) => user.Id == userId)
-                .Return(user => user.As<UserModel>())
-                .ResultsAsync;
-            string emailToReturn = "";
-            foreach (var user in userFound)
-            {
-                emailToReturn = user.Email;
-            }
-            return emailToReturn;
-        }
-
-
-
-        /// <summary>
         /// Gets the emailes containing the text specified.
         /// </summary>
         /// <param name="text"></param>

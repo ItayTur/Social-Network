@@ -122,6 +122,24 @@ namespace BL.Managers
             }
         }
 
-        
+        /// <summary>
+        /// Gets the full name of the user
+        /// associated with id extracted from the token.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<string> GetFullName(string token)
+        {
+            try
+            {
+                string userId = await VerfiyToken(token);
+                return await _usersRepository.GetFullName(userId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

@@ -83,7 +83,7 @@ namespace IdentityServer.Controllers
         /// <param name="request"></param>
         /// <param name="cookieName"></param>
         /// <returns></returns>
-        public string GetCookie(HttpRequestMessage request, string cookieName)
+        private string GetCookie(HttpRequestMessage request, string cookieName)
         {
             CookieHeaderValue cookie = request.Headers.GetCookies(cookieName).FirstOrDefault();
             if (cookie != null)
@@ -92,6 +92,12 @@ namespace IdentityServer.Controllers
             throw new AuthenticationException();
         }
 
+
+        /// <summary>
+        /// Deletes the user assoiciated with the id extracted from the token specified. 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         [System.Web.Http.HttpDelete]
         [System.Web.Http.Route("api/Users/DeleteUser/{token}")]
         public async Task<IHttpActionResult> DeleteUser(string token)
@@ -100,6 +106,29 @@ namespace IdentityServer.Controllers
             {
                 await _usersManager.Delete(token);
                 return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+       
+        /// <summary>
+        /// Gets the full name of the user
+        /// assoiciated with the id extracted from the token specified. 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [System.Web.Http.Route("api/Users/GetFullName/{token}")]
+        public async Task<IHttpActionResult> GetFullName(string token)
+        {
+            try
+            {
+                string fullName = await _usersManager.GetFullName(token);
+                return Ok(fullName);
             }
             catch (Exception)
             {

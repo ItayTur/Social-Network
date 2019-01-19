@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -18,6 +19,7 @@ namespace BL.Managers
         private readonly IStorageManager _storageManager;
         private readonly ICommonOperationsManager _commonOperationsManager;
         private readonly string _authBaseUrl;
+        private readonly string _identityBaseUrl;
 
 
         /// <summary>
@@ -31,6 +33,7 @@ namespace BL.Managers
             _storageManager = storageManager;
             _commonOperationsManager = commonOperationsManager;
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
+            _identityBaseUrl = ConfigurationManager.AppSettings["IdentityBaseUrl"];
         }
 
 
@@ -50,7 +53,7 @@ namespace BL.Managers
                 await SetImageUrl(httpRequest.Files["Pic"], path, post);
                 var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
-                post.WriterEmail = await _postsRepository.GetUserEmailById(userId);
+                post.WriterName = await GetFullName(token);
                 await _postsRepository.Add(userId, post, tags);
             }
             catch (Exception e)
@@ -60,6 +63,37 @@ namespace BL.Managers
             }
         }
 
+
+        /// <summary>
+        /// Gets the full name of the user
+        /// assoiciated with the id extracted from the token specified. 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async Task<string> GetFullName(string token)
+        {
+            try
+            {
+                using(HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(_identityBaseUrl+"/GetFullName/" + token);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var fullName = await response.Content.ReadAsAsync<string>();
+                        return fullName;
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
 
         /// <summary>

@@ -23,6 +23,7 @@ namespace DAL.Repositories
                 try
                 {
                     return await context.LoadAsync<UserModel>(id);
+
                 }
                 catch (Exception e)
                 {
@@ -31,6 +32,9 @@ namespace DAL.Repositories
                 }
             }
         }
+
+
+
         /// <summary>
         /// Adds new user record to the db.
         /// </summary>
@@ -52,6 +56,8 @@ namespace DAL.Repositories
             }
         }
 
+
+
         /// <summary>
         /// Deletes the user associated with the specified id.
         /// </summary>
@@ -70,6 +76,31 @@ namespace DAL.Repositories
                     throw new Exception(e.Message);
                 }
 
+            }
+        }
+
+
+
+        /// <summary>
+        /// Gets the full name of the user associated with id specified.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<string> GetFullName(string id)
+        {
+            using (DynamoDbContext context = new DynamoDbContext())
+            {
+                try
+                {
+                    var userSearched = await context.LoadAsync<UserModel>(id);
+                    return userSearched.FirstName + " " + userSearched.LastName;
+
+                }
+                catch (Exception e)
+                {
+                    //ADD LOGER
+                    throw new Exception(e.Message);
+                }
             }
         }
         

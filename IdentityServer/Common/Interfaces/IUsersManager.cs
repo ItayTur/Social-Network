@@ -28,5 +28,14 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="id"></param>
         Task Delete(string token);
+
+
+        /// <summary>
+        /// Gets the full name of the user
+        /// associated with id extracted from the token.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<string> GetFullName(string token);
     }
 }

@@ -62,6 +62,57 @@ namespace DAL.Repositories
         }
 
 
+        /// <summary>
+        /// Gets the posts tagging the user associated with the specified id. 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostModel>> GetTaggingUserPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(post:Post)-[:TAG]-(taggedUser:User)")
+                    .Where((UserModel user) => user.Id == userId)
+                    .Return(post => post.As<PostModel>())
+                    .OrderByDescending("post.DateTime")
+                    .Limit(postsToShow)
+                    .ResultsAsync;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
+
+
+        /// <summary>
+        /// Gets the posts the user associated with the id specified is tagged on.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="postsToShow"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostModel>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(post:Post)<-[:COMMENT]-(comment:Comment)-[:TAG]->(user:User)")
+                    .Where((UserModel user) => user.Id == userId)
+                    .Return(post => post.As<PostModel>())
+                    .OrderByDescending("post.DateTime")
+                    .Limit(postsToShow)
+                    .ResultsAsync;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
 
         /// <summary>
         /// Gets the posts that's been published by the users the specified user follow. 
@@ -74,7 +125,10 @@ namespace DAL.Repositories
             {
                 return await _graphClient.Cypher.Match("(recievingUser: User)-[:FOLLOW]->(postingUser: User)-[:POST]->(post: Post)")
                      .Where((UserModel recievingUser) => recievingUser.Id == userId)
-                     .Return(post => post.As<PostModel>()).OrderByDescending("post.DateTime").Limit(postsToShow).ResultsAsync;
+                     .Return(post => post.As<PostModel>())
+                     .OrderByDescending("post.DateTime")
+                     .Limit(postsToShow)
+                     .ResultsAsync;
 
             }
             catch (Exception)
@@ -102,7 +156,10 @@ namespace DAL.Repositories
                     .Where((UserModel receivingUser) => receivingUser.Id == userId)
                     .AndWhere((PostModel post) => post.IsPublic==true)
                     .AndWhere("not (receivingUser)-[:FOLLOW]->(poster) and receivingUser<>poster")
-                    .Return(post => post.As<PostModel>()).Limit(postsToShow).ResultsAsync;
+                    .Return(post => post.As<PostModel>())
+                    .Limit(postsToShow)
+                    .OrderByDescending("post.DateTime")
+                    .ResultsAsync;
             }
             catch (Exception e)
             {

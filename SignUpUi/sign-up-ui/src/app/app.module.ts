@@ -21,6 +21,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { UserInfoComponent } from './user-info/user-info.component';
 import { RegisterComponent } from './register/register.component';
+import { PostsComponent } from './posts/posts.component';
+import { PostComponent } from './post/post.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 
 @NgModule({
@@ -32,6 +34,8 @@ import { NotificationsComponent } from './notifications/notifications.component'
     PostAddingComponent,
     UserInfoComponent,
     RegisterComponent,
+    PostsComponent,
+    PostComponent,
     NotificationsComponent
 
   ],

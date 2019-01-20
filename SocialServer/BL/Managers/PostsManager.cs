@@ -1,29 +1,27 @@
-﻿using Amazon;
-using Amazon.S3;
-using Common;
-using Common.Dtos;
+﻿using Common.Dtos;
 using Common.Interfaces;
 using Common.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Authentication;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace BL.Managers
 {
+    public delegate Task GetPostsHandler(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed);
+
     public class PostsManager : IPostsManager
     {
-
+        private readonly GetPostsHandler[] _getPostsHandlers;
         private readonly IPostsRepository _postsRepository;
         private readonly IStorageManager _storageManager;
+        private readonly ICommonOperationsManager _commonOperationsManager;
         private readonly string _authBaseUrl;
+        private readonly string _identityBaseUrl;
 
 
         /// <summary>
@@ -31,13 +29,38 @@ namespace BL.Managers
         /// </summary>
         /// <param name="postsRepository"></param>
         /// <param name="storageManager"></param>
-        public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager)
+        public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager, ICommonOperationsManager commonOperationsManager)
         {
+            int numberOfPostsHandler = 4;
+            _getPostsHandlers = new GetPostsHandler[numberOfPostsHandler];
+            InitializePostsHandlers();
             _postsRepository = postsRepository;
             _storageManager = storageManager;
+            _commonOperationsManager = commonOperationsManager;
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
+            _identityBaseUrl = ConfigurationManager.AppSettings["IdentityBaseUrl"];
         }
 
+
+
+        /// <summary>
+        /// Initializes the posts handlers array with the handling operartions.
+        /// </summary>
+        private void InitializePostsHandlers()
+        {
+            int recommendationLvls;
+            if (IntegerBiggerThanZeroValidation(ConfigurationManager.AppSettings["PostsRecommendationLvls"], out recommendationLvls))
+            {
+                _getPostsHandlers[0] = GetTaggingUserPosts;
+                _getPostsHandlers[1] = GetUserTaggedInCommentPosts;
+                _getPostsHandlers[2] = GetFollowedPosts;
+                _getPostsHandlers[3] = GetPublicPosts;
+            }
+            else
+            {
+                throw new ArgumentException("The PostsRecommendationLvls value given in the configuration is not valid");
+            }
+        }
 
 
         /// <summary>
@@ -53,9 +76,10 @@ namespace BL.Managers
                 PostModel post = CreatePost(httpRequest["Content"], httpRequest["IsPublic"]);
                 List<TagDto> tags = GetTags(httpRequest);
                 await SetImageUrl(httpRequest.Files["Pic"], path, post);
-                var userId = await VerifyToken(token).ConfigureAwait(false);
+                var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
-                var addPostToDbTask = _postsRepository.Add(userId, post, tags);
+                post.WriterName = await GetFullName(token);
+                await _postsRepository.Add(userId, post, tags);
             }
             catch (Exception e)
             {
@@ -64,6 +88,37 @@ namespace BL.Managers
             }
         }
 
+
+        /// <summary>
+        /// Gets the full name of the user
+        /// assoiciated with the id extracted from the token specified. 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async Task<string> GetFullName(string token)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.GetAsync(_identityBaseUrl + "/GetFullName/" + token);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var fullName = await response.Content.ReadAsAsync<string>();
+                        return fullName;
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
 
         /// <summary>
@@ -128,7 +183,7 @@ namespace BL.Managers
         {
             try
             {
-                string taggerId = await VerifyToken(token);
+                string taggerId = await _commonOperationsManager.VerifyToken(token);
                 return await _postsRepository.GetUsersByEmailText(taggerId, text);
             }
             catch (Exception e)
@@ -136,8 +191,9 @@ namespace BL.Managers
 
                 throw new Exception(e.Message);
             }
-            
+
         }
+
 
 
         /// <summary>
@@ -152,34 +208,154 @@ namespace BL.Managers
 
 
         /// <summary>
-        /// Verifies the specified token and return the user id.
+        /// Gets the post recommended for the user 
+        /// associated with id extracted from the token.
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        private async Task<string> VerifyToken(string token)
+        public async Task<IEnumerable<PostModel>> GetPosts(string token)
         {
-            TokenDto tokenDto = new TokenDto() { Token = token };
             try
             {
-                using (HttpClient httpClient = new HttpClient())
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                int postsToShow;
+                if (IntegerBiggerThanZeroValidation(ConfigurationManager.AppSettings["PostsToShow"], out postsToShow))
                 {
-                    var response = await httpClient.PostAsJsonAsync(_authBaseUrl, tokenDto).ConfigureAwait(false);
-                    if (!response.IsSuccessStatusCode)
+                    HashSet<string> usedIds = new HashSet<string>();
+                    List<PostModel> postsToReturn = new List<PostModel>();
+                    for (int i = 0; i < _getPostsHandlers.Length && postsToReturn.Count < postsToShow; i++)
                     {
-                        throw new AuthenticationException();
+                        await _getPostsHandlers[i].Invoke(postsToShow, userId, postsToReturn, usedIds);
+                        postsToShow = postsToShow - postsToReturn.Count;
                     }
-                    else
+                    return postsToReturn;
+                }
+                else
+                {
+                    throw new ArgumentException("Posts to show amount is not a valid integer or bigger than zero");
+                }
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Gets the posts that the user 
+        /// associated with the id extracted from the token is tagged in.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private async Task GetTaggingUserPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        {
+            try
+            {
+                IEnumerable<PostModel> taggingUserPosts = await _postsRepository.GetTaggingUserPosts(userId, postsToShow);
+                GetUniquePosts(postsToReturn, idsUsed, taggingUserPosts);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Gets the post that hasn't been added to the post returning collection.
+        /// </summary>
+        /// <param name="postsToReturn"></param>
+        /// <param name="idsUsed"></param>
+        /// <param name="taggingUserPosts"></param>
+        private void GetUniquePosts(ICollection<PostModel> postsToReturn, HashSet<string> idsUsed, IEnumerable<PostModel> postsToCheck)
+        {
+            try
+            {
+                var postsList = postsToCheck.ToList();
+                foreach (var post in postsList)
+                {
+                    if (!idsUsed.Contains(post.Id))
                     {
-                        return await response.Content.ReadAsAsync<string>();
+                        postsToReturn.Add(post);
+                        idsUsed.Add(post.Id);
                     }
                 }
             }
             catch (Exception e)
             {
 
-                throw new Exception(e.Message);
+                throw;
             }
-            
         }
+
+
+
+        /// <summary>
+        /// Gets the posts that's been published by the users the specified user follow. 
+        /// </summary>
+        /// <param name="postsToShow"></param>
+        /// <param name="userId"></param>
+        /// <param name="postsToReturn"></param>
+        /// <param name="idsUsed"></param>
+        /// <returns></returns>
+        private async Task GetFollowedPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        {
+            var followedPosts = await _postsRepository.GetFollowedUsersPosts(userId, postsToShow);
+            GetUniquePosts(postsToReturn, idsUsed, followedPosts);
+        }
+
+
+
+        /// <summary>
+        /// Gets the posts the user associated with the id specified is tagged on.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="postsToShow"></param>
+        /// <returns></returns>
+        public async Task GetUserTaggedInCommentPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        {
+            var taggedInCommentsPosts = await _postsRepository.GetUserTaggedInCommentPosts(userId, postsToShow);
+            GetUniquePosts(postsToReturn, idsUsed, taggedInCommentsPosts);
+        }
+
+
+
+        /// <summary>
+        /// Gets public posts.
+        /// </summary>
+        /// <param name="postsToShow"></param>
+        /// <param name="userId"></param>
+        /// <param name="postsToReturn"></param>
+        /// <param name="idsUsed"></param>
+        /// <returns></returns>
+        private async Task GetPublicPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        {
+            var publicPosts = await _postsRepository.GetPublicPosts(userId, postsToShow);
+            GetUniquePosts(postsToReturn, idsUsed, publicPosts);
+        }
+
+
+        /// <summary>
+        /// Verifys the posts to show number extracted from the app-config.
+        /// </summary>
+        /// <param name="postsToShow"></param>
+        /// <returns></returns>
+        private static bool IntegerBiggerThanZeroValidation(string stringToVerify, out int num)
+        {
+            return int.TryParse(stringToVerify, out num) && num > 0;
+        }
+
+
+
+
+
+
+
     }
 }

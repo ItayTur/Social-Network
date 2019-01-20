@@ -5,8 +5,6 @@ using Neo4jClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DAL.Repositories
@@ -35,7 +33,7 @@ namespace DAL.Repositories
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(string posterId, PostModel post, IEnumerable<TagDto>tags)
+        public async Task Add(string posterId, PostModel post, IEnumerable<TagDto> tags)
         {
             try
             {
@@ -44,7 +42,7 @@ namespace DAL.Repositories
                     .Create("(postingUser)-[:POST]->(post:Post {post})")
                     .WithParam("post", post)
                     .ExecuteWithoutResultsAsync().ConfigureAwait(false);
-                
+
                 foreach (var tag in tags)
                 {
                     await _graphClient.Cypher.Match("(taggingPost: Post)", "(taggedUser: User)")
@@ -56,12 +54,120 @@ namespace DAL.Repositories
             }
             catch (Exception e)
             {
-                
+
                 throw new Exception(e.Message);
             }
-           
+
 
         }
+
+
+        /// <summary>
+        /// Gets the posts tagging the user associated with the specified id. 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostModel>> GetTaggingUserPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(post:Post)-[:TAG]-(taggedUser:User)")
+                    .Where((UserModel taggedUser) => taggedUser.Id == userId)
+                    .Return(post => post.As<PostModel>())
+                    .OrderByDescending("post.DateTime")
+                    .Limit(postsToShow)
+                    .ResultsAsync;
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+
+        }
+
+
+        /// <summary>
+        /// Gets the posts the user associated with the id specified is tagged on.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="postsToShow"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostModel>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(post:Post)<-[:ON]-(comment:Comment)-[:TAG]->(user:User)")
+                    .Where((UserModel user) => user.Id == userId)
+                    .Return(post => post.As<PostModel>())
+                    .OrderByDescending("post.DateTime")
+                    .Limit(postsToShow)
+                    .ResultsAsync;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the posts that's been published by the users the specified user follow. 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostModel>> GetFollowedUsersPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(recievingUser: User)-[:FOLLOW]->(postingUser: User)-[:POST]->(post: Post)")
+                     .Where((UserModel recievingUser) => recievingUser.Id == userId)
+                     .Return(post => post.As<PostModel>())
+                     .OrderByDescending("post.DateTime")
+                     .Limit(postsToShow)
+                     .ResultsAsync;
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+
+
+        }
+
+
+
+        /// <summary>
+        /// Gets posts from the users, the user specified not follow and marked as public.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="postsAmountLeft"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostModel>> GetPublicPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(poster: User)-[:POST]->(post: Post), (receivingUser:User)")
+                    .Where((UserModel receivingUser) => receivingUser.Id == userId)
+                    .AndWhere((PostModel post) => post.IsPublic==true)
+                    .AndWhere("not (receivingUser)-[:FOLLOW]->(poster) and receivingUser<>poster")
+                    .Return(post => post.As<PostModel>())
+                    .OrderByDescending("post.DateTime")
+                    .Limit(postsToShow)
+                    .ResultsAsync;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
 
 
         /// <summary>
@@ -69,12 +175,12 @@ namespace DAL.Repositories
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<UserModel>> GetUsersByEmailText(string taggerId,string text)
+        public async Task<IEnumerable<UserModel>> GetUsersByEmailText(string taggerId, string text)
         {
             try
             {
                 return await _graphClient.Cypher.Match("(user:User)")
-                .Where((UserModel user) => user.Email.Contains(text) && user.Id!=taggerId)
+                .Where((UserModel user) => user.Email.Contains(text) && user.Id != taggerId)
                 .Return(user => user.As<UserModel>())
                 .ResultsAsync;
             }
@@ -83,7 +189,7 @@ namespace DAL.Repositories
 
                 throw new Exception(e.Message);
             }
-            
+
         }
     }
 }

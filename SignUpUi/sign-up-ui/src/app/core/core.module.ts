@@ -7,6 +7,7 @@ import { FacebookLoginService } from "./facebook-login.service";
 import { AuthenticateUserService } from "./authenticate-user.service";
 import { SnackBarService } from "./snack-bar.service";
 import { PostAddingService } from "./post-adding.service";
+import { PostsService } from "./posts.service";
 
 @NgModule({
   declarations: [],
@@ -15,6 +16,6 @@ import { PostAddingService } from "./post-adding.service";
     CommonModule,
     HttpClientModule,
   ],
-  providers: [FacebookLoginService, AuthenticateUserService, SnackBarService, PostAddingService]
+  providers: [FacebookLoginService, AuthenticateUserService, SnackBarService, PostAddingService, PostsService]
 })
 export class CoreModule { }

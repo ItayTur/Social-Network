@@ -88,5 +88,25 @@ namespace SocialServer.Controllers
                 return InternalServerError();
             }
         }
+
+
+        [HttpPost]
+        [Route("api/Posts/LikePost")]
+        public async Task<IHttpActionResult> LikePost()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                await _postsManager.LikePost(token, httpRequest);
+                return Ok();
+
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
     }
 }

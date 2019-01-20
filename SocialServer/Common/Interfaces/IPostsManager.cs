@@ -33,5 +33,12 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         /// <returns></returns>
         Task<IEnumerable<PostModel>> GetPosts(string token);
+
+        /// <summary>
+        /// Adds like to the post associated with id extracted from the http request.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task LikePost(string token, HttpRequest httpRequest);
     }
 }

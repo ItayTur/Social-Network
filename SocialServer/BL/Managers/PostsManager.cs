@@ -352,8 +352,26 @@ namespace BL.Managers
         }
 
 
+        /// <summary>
+        /// Adds like to the post associated with id extracted from the http request.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task LikePost(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string postId = httpRequest["PostId"];
+                await _postsRepository.LikePost(postId, userId);
 
+            }
+            catch (Exception e)
+            {
 
+                throw;
+            }
+        }
 
 
 

@@ -352,10 +352,69 @@ namespace BL.Managers
         }
 
 
+        /// <summary>
+        /// Adds like to the post associated with id extracted from the http request.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task LikePost(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string postId = httpRequest["PostId"];
+                await _postsRepository.LikePost(postId, userId);
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
 
 
+        /// <summary>
+        /// Deletes like from the post associated with id extracted from the http request.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task UnLikePost(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string postId = httpRequest["PostId"];
+                await _postsRepository.UnLikePost(userId, postId);
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
 
 
+        /// <summary>
+        /// Checks if the user associated with specified user id 
+        /// liked the post associated with the specified post id.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> IsPostLikedBy(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string postId = httpRequest["PostId"];
+                return await _postsRepository.IsPostLikedBy(userId, postId);
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+            
+        }
     }
 }

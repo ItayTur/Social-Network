@@ -34,13 +34,14 @@
 
         <!-- Brief -->
         <div class="brief">
-          <div class="date">{{post.DateTime}}}</div>
+          <div class="date">{{post.DateTime}}</div>
         </div>
 
         <!-- Feed footer -->
         <div class="feed-footer">
-          <a class="like">
-            <i class="fa fa-hand-peace-o" aria-hidden="true"></i>
+          <a class="like" [ngStyle]="{'color': isLikeClicked ? '#ff4444' : '#33b5e5'}"
+          (click)="isLikeClicked ? UnLike(): Like()">
+            <i class="fa fa-heart"  aria-hidden="true"></i>
             <span>{{post.Likes}} likes</span>
           </a>
         </div>

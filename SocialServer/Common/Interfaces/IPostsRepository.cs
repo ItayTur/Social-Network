@@ -1,9 +1,6 @@
 ﻿using Common.Dtos;
 using Common.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.Interfaces
@@ -58,5 +55,43 @@ namespace Common.Interfaces
         /// <param name="postsToShow"></param>
         /// <returns></returns>
         Task<IEnumerable<PostModel>> GetUserTaggedInCommentPosts(string userId, int postsToShow);
+
+        /// <summary>
+        /// Gets the post associated with the specified id.
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        Task<PostModel> GetPostById(string postId);
+
+        /// <summary>
+        /// Update the post associated with the id extracted from the instance specified.
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        Task UpdatePost(PostModel updatedPost);
+
+
+        /// <summary>
+        /// Creates like connection between the post associated with the post id
+        /// and the user associated with user id.
+        /// </summary>
+        /// <param name="likedPost"></param>
+        /// <returns></returns>
+        Task LikePost(string postId, string userId);
+
+        /// <summary>
+        /// Checks if the user associated with specified user id 
+        /// liked the post associated with the specified post id.
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsPostLikedBy(string userId, string postId);
+
+        /// <summary>
+        /// Deletes like connection between the post associated with the specified post id
+        /// and the user associated with the specified user id 
+        /// </summary>
+        /// <param name="likedPost"></param>
+        /// <returns></returns>
+        Task UnLikePost(string userId, string postId);
     }
 }

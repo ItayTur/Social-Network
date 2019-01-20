@@ -88,5 +88,66 @@ namespace SocialServer.Controllers
                 return InternalServerError();
             }
         }
+
+
+        [HttpPost]
+        [Route("api/Posts/LikePost")]
+        public async Task<IHttpActionResult> LikePost()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                await _postsManager.LikePost(token, httpRequest);
+                return Ok();
+
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        [HttpPost]
+        [Route("api/Posts/IsPostLikedBy")]
+        public async Task<IHttpActionResult> IsPostLikedBy()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                var token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var isPostLiked = await _postsManager.IsPostLikedBy(token, httpRequest);
+                return Ok(isPostLiked);
+
+            }
+            catch (Exception e)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        [HttpPost]
+        [Route("api/Posts/UnLikePost")]
+        public async Task<IHttpActionResult> UnLikePost()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                await _postsManager.UnLikePost(token, httpRequest);
+                return Ok();
+
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
     }
 }

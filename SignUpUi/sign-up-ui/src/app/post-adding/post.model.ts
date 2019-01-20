@@ -10,5 +10,6 @@ export class Post {
     DateTime;
     Likes: number;
     ImgUrl: string;
+    Id: string;
 }
 

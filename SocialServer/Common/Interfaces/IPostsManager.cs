@@ -40,5 +40,12 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         /// <returns></returns>
         Task LikePost(string token, HttpRequest httpRequest);
+
+        /// <summary>
+        /// Checks if the user associated with specified user id 
+        /// liked the post associated with the specified post id.
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsPostLiked(string token, HttpRequest httpRequest);
     }
 }

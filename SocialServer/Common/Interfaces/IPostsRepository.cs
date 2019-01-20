@@ -75,6 +75,13 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="likedPost"></param>
         /// <returns></returns>
-        Task<PostModel> LikePost(string postId, string userId);
+        Task LikePost(string postId, string userId);
+
+        /// <summary>
+        /// Checks if the user associated with specified user id 
+        /// liked the post associated with the specified post id.
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> IsPostLiked(string userId, string postId);
     }
 }

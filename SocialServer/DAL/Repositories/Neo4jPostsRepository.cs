@@ -246,18 +246,51 @@ namespace DAL.Repositories
         /// </summary>
         /// <param name="likedPost"></param>
         /// <returns></returns>
-        public async Task<PostModel> LikePost(string postId, string userId)
+        public async Task LikePost(string postId, string userId)
         {
-            var postsFound = await _graphClient.Cypher.Merge("(likedPost: Post)<-[:LIKE]-(user:User)")
-                .Where((UserModel user) => user.Id == userId)
-                .AndWhere((PostModel post)=>post.Id == postId)
-                .OnCreate()
-                .Set("likedPost.Likes = likedPost.Likes+1")
-                .Return(post => post.As<PostModel>())
-                .ResultsAsync;
+            try
+            {
+                await _graphClient.Cypher.Match("(likedPost: Post), (user:User)")
+               .Where((UserModel user) => user.Id == userId)
+               .AndWhere((PostModel likedPost) => likedPost.Id == postId)
+               .Merge("(likedPost)<-[:LIKE]-(user)")
+               .OnCreate()
+               .Set("likedPost.Likes = likedPost.Likes+1")
+               .ExecuteWithoutResultsAsync();
 
-            return postsFound.Single();
                 
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+            
+                
+        }
+
+        /// <summary>
+        /// Checks if the user associated with specified user id 
+        /// liked the post associated with the specified post id.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> IsPostLiked(string userId, string postId)
+        {
+            try
+            {
+                var boolsSearched = await _graphClient.Cypher.Match("(user:User), (post:Post)")
+                    .Where((UserModel user) => user.Id == userId)
+                    .AndWhere((PostModel post) => post.Id == postId)
+                    .Return<bool>("EXISTS ((user)-[:LIKE]->(post))")
+                    .ResultsAsync;
+                return boolsSearched.Single();
+                   
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
         }
     }
 }

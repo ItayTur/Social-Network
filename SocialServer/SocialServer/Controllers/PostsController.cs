@@ -108,5 +108,26 @@ namespace SocialServer.Controllers
                 return InternalServerError();
             }
         }
+
+
+        [HttpPost]
+        [Route("api/Posts/IsPostLiked")]
+        public async Task<IHttpActionResult> IsPostLiked()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                var token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var isPostLiked = await _postsManager.IsPostLiked(token, httpRequest);
+                return Ok(isPostLiked);
+
+            }
+            catch (Exception e)
+            {
+
+                return InternalServerError();
+            }
+        }
+
     }
 }

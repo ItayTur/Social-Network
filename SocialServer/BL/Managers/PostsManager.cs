@@ -374,6 +374,25 @@ namespace BL.Managers
         }
 
 
+        /// <summary>
+        /// Checks if the user associated with specified user id 
+        /// liked the post associated with the specified post id.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> IsPostLiked(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string postId = httpRequest["PostId"];
+                return await _postsRepository.IsPostLiked(userId, postId);
+            }
+            catch (Exception)
+            {
 
+                throw;
+            }
+            
+        }
     }
 }

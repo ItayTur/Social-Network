@@ -72,14 +72,14 @@ namespace DAL.Repositories
             try
             {
                 return await _graphClient.Cypher.Match("(post:Post)-[:TAG]-(taggedUser:User)")
-                    .Where((UserModel user) => user.Id == userId)
+                    .Where((UserModel taggedUser) => taggedUser.Id == userId)
                     .Return(post => post.As<PostModel>())
                     .OrderByDescending("post.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;
@@ -99,7 +99,7 @@ namespace DAL.Repositories
         {
             try
             {
-                return await _graphClient.Cypher.Match("(post:Post)<-[:COMMENT]-(comment:Comment)-[:TAG]->(user:User)")
+                return await _graphClient.Cypher.Match("(post:Post)<-[:ON]-(comment:Comment)-[:TAG]->(user:User)")
                     .Where((UserModel user) => user.Id == userId)
                     .Return(post => post.As<PostModel>())
                     .OrderByDescending("post.DateTime")
@@ -131,7 +131,7 @@ namespace DAL.Repositories
                      .ResultsAsync;
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;
@@ -157,8 +157,8 @@ namespace DAL.Repositories
                     .AndWhere((PostModel post) => post.IsPublic==true)
                     .AndWhere("not (receivingUser)-[:FOLLOW]->(poster) and receivingUser<>poster")
                     .Return(post => post.As<PostModel>())
-                    .Limit(postsToShow)
                     .OrderByDescending("post.DateTime")
+                    .Limit(postsToShow)
                     .ResultsAsync;
             }
             catch (Exception e)

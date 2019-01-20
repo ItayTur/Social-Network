@@ -31,7 +31,8 @@ namespace BL.Managers
         /// <param name="storageManager"></param>
         public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager, ICommonOperationsManager commonOperationsManager)
         {
-            _getPostsHandlers = new GetPostsHandler[4];
+            int numberOfPostsHandler = 4;
+            _getPostsHandlers = new GetPostsHandler[numberOfPostsHandler];
             InitializePostsHandlers();
             _postsRepository = postsRepository;
             _storageManager = storageManager;
@@ -40,23 +41,26 @@ namespace BL.Managers
             _identityBaseUrl = ConfigurationManager.AppSettings["IdentityBaseUrl"];
         }
 
+
+
+        /// <summary>
+        /// Initializes the posts handlers array with the handling operartions.
+        /// </summary>
         private void InitializePostsHandlers()
         {
             int recommendationLvls;
             if (IntegerBiggerThanZeroValidation(ConfigurationManager.AppSettings["PostsRecommendationLvls"], out recommendationLvls))
             {
                 _getPostsHandlers[0] = GetTaggingUserPosts;
-                _getPostsHandlers[1] = GetFollowedPosts;
-                _getPostsHandlers[2] = GetPublicPosts;
+                _getPostsHandlers[1] = GetUserTaggedInCommentPosts;
+                _getPostsHandlers[2] = GetFollowedPosts;
+                _getPostsHandlers[3] = GetPublicPosts;
             }
             else
             {
                 throw new ArgumentException("The PostsRecommendationLvls value given in the configuration is not valid");
             }
         }
-
-
-
 
 
         /// <summary>
@@ -239,6 +243,8 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Gets the posts that the user 
         /// associated with the id extracted from the token is tagged in.
@@ -260,26 +266,31 @@ namespace BL.Managers
         }
 
 
+
         /// <summary>
         /// Gets the post that hasn't been added to the post returning collection.
         /// </summary>
         /// <param name="postsToReturn"></param>
         /// <param name="idsUsed"></param>
         /// <param name="taggingUserPosts"></param>
-        private static void GetUniquePosts(ICollection<PostModel> postsToReturn, HashSet<string> idsUsed, IEnumerable<PostModel> postsToCheck)
+        private void GetUniquePosts(ICollection<PostModel> postsToReturn, HashSet<string> idsUsed, IEnumerable<PostModel> postsToCheck)
         {
-            var postsList = postsToCheck.ToList();
-            foreach (var post in postsList)
+            try
             {
-                if (idsUsed.Contains(post.Id))
+                var postsList = postsToCheck.ToList();
+                foreach (var post in postsList)
                 {
-                    postsList.Remove(post);
+                    if (!idsUsed.Contains(post.Id))
+                    {
+                        postsToReturn.Add(post);
+                        idsUsed.Add(post.Id);
+                    }
                 }
-                else
-                {
-                    postsToReturn.Add(post);
-                    idsUsed.Add(post.Id);
-                }
+            }
+            catch (Exception e)
+            {
+
+                throw;
             }
         }
 
@@ -298,6 +309,7 @@ namespace BL.Managers
             var followedPosts = await _postsRepository.GetFollowedUsersPosts(userId, postsToShow);
             GetUniquePosts(postsToReturn, idsUsed, followedPosts);
         }
+
 
 
         /// <summary>

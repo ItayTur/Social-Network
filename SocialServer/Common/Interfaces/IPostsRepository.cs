@@ -84,7 +84,7 @@ namespace Common.Interfaces
         /// liked the post associated with the specified post id.
         /// </summary>
         /// <returns></returns>
-        Task<bool> IsPostLiked(string userId, string postId);
+        Task<bool> IsPostLikedBy(string userId, string postId);
 
         /// <summary>
         /// Deletes like connection between the post associated with the specified post id

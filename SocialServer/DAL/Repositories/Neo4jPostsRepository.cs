@@ -277,7 +277,7 @@ namespace DAL.Repositories
         /// liked the post associated with the specified post id.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> IsPostLiked(string userId, string postId)
+        public async Task<bool> IsPostLikedBy(string userId, string postId)
         {
             try
             {

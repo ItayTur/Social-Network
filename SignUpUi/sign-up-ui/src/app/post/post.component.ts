@@ -44,7 +44,7 @@ export class PostComponent implements OnInit {
   ngOnInit() {
     const formData = new FormData();
     formData.append("PostId", this.post.Id);
-    const response = this.postsService.IsPostLiked(formData).subscribe(
+    const response = this.postsService.IsPostLikedBy(formData).subscribe(
       success => {
         console.log(success);
         if (success) {

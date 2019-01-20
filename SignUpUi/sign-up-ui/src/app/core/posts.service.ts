@@ -22,8 +22,8 @@ export class PostsService {
     .pipe(catchError(this.errorHandler.handleError));
   }
 
-  IsPostLiked(formData: FormData): Observable<any> {
-    return this.httpClient.post(this.baseUrl+"/IsPostLiked", formData, { withCredentials: true })
+  IsPostLikedBy(formData: FormData): Observable<any> {
+    return this.httpClient.post(this.baseUrl+"/IsPostLikedBy", formData, { withCredentials: true })
     .pipe(catchError(this.errorHandler.handleError));
   }
 

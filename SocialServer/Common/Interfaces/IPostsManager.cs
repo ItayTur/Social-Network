@@ -49,7 +49,7 @@ namespace Common.Interfaces
         /// liked the post associated with the specified post id.
         /// </summary>
         /// <returns></returns>
-        Task<bool> IsPostLiked(string token, HttpRequest httpRequest);
+        Task<bool> IsPostLikedBy(string token, HttpRequest httpRequest);
 
 
         /// <summary>

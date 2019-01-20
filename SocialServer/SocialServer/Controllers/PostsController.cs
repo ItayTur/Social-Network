@@ -111,14 +111,14 @@ namespace SocialServer.Controllers
 
 
         [HttpPost]
-        [Route("api/Posts/IsPostLiked")]
-        public async Task<IHttpActionResult> IsPostLiked()
+        [Route("api/Posts/IsPostLikedBy")]
+        public async Task<IHttpActionResult> IsPostLikedBy()
         {
             try
             {
                 var httpRequest = HttpContext.Current.Request;
                 var token = _commonOperationsManager.GetCookieValue(Request, "authToken");
-                var isPostLiked = await _postsManager.IsPostLiked(token, httpRequest);
+                var isPostLiked = await _postsManager.IsPostLikedBy(token, httpRequest);
                 return Ok(isPostLiked);
 
             }

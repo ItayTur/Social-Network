@@ -401,13 +401,13 @@ namespace BL.Managers
         /// liked the post associated with the specified post id.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> IsPostLiked(string token, HttpRequest httpRequest)
+        public async Task<bool> IsPostLikedBy(string token, HttpRequest httpRequest)
         {
             try
             {
                 string userId = await _commonOperationsManager.VerifyToken(token);
                 string postId = httpRequest["PostId"];
-                return await _postsRepository.IsPostLiked(userId, postId);
+                return await _postsRepository.IsPostLikedBy(userId, postId);
             }
             catch (Exception)
             {

@@ -41,6 +41,11 @@ export class PostComponent implements OnInit {
       this.snackBarService.openSnackBar(err,"",10000);
     });
   }
+
+  AddComment() {
+
+  }
+
   ngOnInit() {
     const formData = new FormData();
     formData.append("PostId", this.post.Id);
@@ -56,4 +61,6 @@ export class PostComponent implements OnInit {
       }
     );
   }
+
+
 }

@@ -259,15 +259,15 @@ namespace DAL.Repositories
                .Set("likedPost.Likes = likedPost.Likes+1")
                .ExecuteWithoutResultsAsync();
 
-                
+
             }
             catch (Exception e)
             {
 
                 throw;
             }
-            
-                
+
+
         }
 
 
@@ -287,7 +287,7 @@ namespace DAL.Repositories
                     .Return<bool>("EXISTS ((user)-[:LIKE]->(post))")
                     .ResultsAsync;
                 return boolsSearched.Single();
-                   
+
             }
             catch (Exception e)
             {
@@ -319,6 +319,43 @@ namespace DAL.Repositories
 
                 throw;
             }
+        }
+
+
+        /// <summary>
+        /// Addes comment to the post associated with the specified post id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="postId"></param>
+        /// <param name="comment"></param>
+        /// <param name="taggedIds"></param>
+        /// <returns></returns>
+        public async Task AddComment(string userId, string postId, CommentModel comment, IEnumerable<TagDto> tags)
+        {
+            try
+            {
+                await _graphClient.Cypher.Match("(user:User), (post:Post)")
+                .Where((UserModel user) => user.Id == userId)
+                .AndWhere((PostModel post) => post.Id == postId)
+                .Create("(user)-[:COMMENT]->(comment:Comment {comment})-[:ON]->(post)")
+                .WithParam("comment", comment)
+                .ExecuteWithoutResultsAsync();
+
+                foreach (var tag in tags)
+                {
+                    await _graphClient.Cypher.Match("(commentAdded:Comment), (taggedUser:User)")
+                        .Where((CommentModel commentAdded) => commentAdded.Id == comment.Id)
+                        .AndWhere((UserModel taggedUser) => taggedUser.Id == tag.Id)
+                        .Create("(taggedUser)<-[:TAG]-(commentAdded)")
+                        .ExecuteWithoutResultsAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
     }
 }

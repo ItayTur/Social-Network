@@ -93,5 +93,16 @@ namespace Common.Interfaces
         /// <param name="likedPost"></param>
         /// <returns></returns>
         Task UnLikePost(string userId, string postId);
+
+
+        /// <summary>
+        /// Addes comment to the post associated with the specified post id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="postId"></param>
+        /// <param name="comment"></param>
+        /// <param name="taggedIds"></param>
+        /// <returns></returns>
+        Task AddComment(string userId, string postId, CommentModel comment, IEnumerable<TagDto> tags);
     }
 }

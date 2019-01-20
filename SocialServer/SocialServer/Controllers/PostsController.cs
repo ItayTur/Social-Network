@@ -1,14 +1,7 @@
-﻿using Common;
-using Common.Dtos;
-using Common.Interfaces;
+﻿using Common.Interfaces;
 using Common.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Authentication;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -65,13 +58,13 @@ namespace SocialServer.Controllers
 
                 return NotFound();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return InternalServerError();
             }
         }
 
-       
+
         [HttpGet]
         [Route("api/Posts/GetUsersPosts")]
         public async Task<IHttpActionResult> GetUsersPosts()
@@ -141,6 +134,31 @@ namespace SocialServer.Controllers
                 await _postsManager.UnLikePost(token, httpRequest);
                 return Ok();
 
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        [HttpPost]
+        [Route("api/Posts/AddComment")]
+        public async Task<IHttpActionResult> AddComment()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                string picPath = "";
+                if (!string.IsNullOrWhiteSpace(httpRequest["Pic"]))
+                {
+                    string fileName = _commonOperationsManager.GetNewGuid();
+                    picPath = HttpContext.Current.Server.MapPath("~/" + fileName);
+                }
+                await _postsManager.AddComment(httpRequest, token, picPath);
+                return Ok();
             }
             catch (Exception)
             {

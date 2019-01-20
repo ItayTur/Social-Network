@@ -8,9 +8,8 @@ namespace Common.Models
 {
     public class CommentModel
     {
+        public string Id { get; set; }
         public string Content { get; set; }
-        public  int Likes { get; set; }
         public string ImgUrl { get; set; }
-
     }
 }

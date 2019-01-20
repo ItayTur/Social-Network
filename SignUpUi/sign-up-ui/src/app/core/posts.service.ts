@@ -31,4 +31,9 @@ export class PostsService {
     return this.httpClient.post(this.baseUrl+"/UnLikePost",formData,{ withCredentials: true })
     .pipe(retry(3), catchError(this.errorHandler.handleError));
   }
+
+  AddComment(formData: FormData) {
+    return this.httpClient.post(this.baseUrl+'/AddComment', formData, {withCredentials: true})
+    .pipe(retry(3), catchError(this.errorHandler.handleError));
+  }
 }

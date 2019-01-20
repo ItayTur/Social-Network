@@ -70,8 +70,10 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task UpdatePost(PostModel updatedPost);
 
+
         /// <summary>
-        /// Creates like connection between the post specified 
+        /// Creates like connection between the post associated with the post id
+        /// and the user associated with user id.
         /// </summary>
         /// <param name="likedPost"></param>
         /// <returns></returns>
@@ -83,5 +85,13 @@ namespace Common.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<bool> IsPostLiked(string userId, string postId);
+
+        /// <summary>
+        /// Deletes like connection between the post associated with the specified post id
+        /// and the user associated with the specified user id 
+        /// </summary>
+        /// <param name="likedPost"></param>
+        /// <returns></returns>
+        Task UnLikePost(string userId, string postId);
     }
 }

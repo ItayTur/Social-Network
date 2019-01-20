@@ -27,12 +27,14 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task<IEnumerable<UserModel>> SearchTag(string text, string id);
 
+
         /// <summary>
         /// Gets posts to user. 
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         Task<IEnumerable<PostModel>> GetPosts(string token);
+
 
         /// <summary>
         /// Adds like to the post associated with id extracted from the http request.
@@ -41,11 +43,20 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task LikePost(string token, HttpRequest httpRequest);
 
+
         /// <summary>
         /// Checks if the user associated with specified user id 
         /// liked the post associated with the specified post id.
         /// </summary>
         /// <returns></returns>
         Task<bool> IsPostLiked(string token, HttpRequest httpRequest);
+
+
+        /// <summary>
+        /// Deletes like from the post associated with id extracted from the http request.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task UnLikePost(string token, HttpRequest httpRequest);
     }
 }

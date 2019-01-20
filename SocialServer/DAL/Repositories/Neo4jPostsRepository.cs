@@ -242,7 +242,8 @@ namespace DAL.Repositories
 
 
         /// <summary>
-        /// Creates like connection between the post specified 
+        /// Creates like connection between the post associated with the post id
+        /// and the user associated with user id.
         /// </summary>
         /// <param name="likedPost"></param>
         /// <returns></returns>
@@ -269,6 +270,8 @@ namespace DAL.Repositories
                 
         }
 
+
+
         /// <summary>
         /// Checks if the user associated with specified user id 
         /// liked the post associated with the specified post id.
@@ -285,6 +288,31 @@ namespace DAL.Repositories
                     .ResultsAsync;
                 return boolsSearched.Single();
                    
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Deletes like connection between the post associated with the specified post id
+        /// and the user associated with the specified user id 
+        /// </summary>
+        /// <param name="likedPost"></param>
+        /// <returns></returns>
+        public async Task UnLikePost(string userId, string postId)
+        {
+            try
+            {
+                await _graphClient.Cypher.Match("(likedPost: Post)<-[like:LIKE]-(user:User)")
+               .Where((UserModel user) => user.Id == userId)
+               .AndWhere((PostModel likedPost) => likedPost.Id == postId)
+               .Set("likedPost.Likes = likedPost.Likes-1")
+               .Delete("like")
+               .ExecuteWithoutResultsAsync();
             }
             catch (Exception e)
             {

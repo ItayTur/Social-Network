@@ -25,13 +25,22 @@ export class PostComponent implements OnInit {
       success => {
           this.post.Likes = this.post.Likes + 1;
           this.isLikeClicked = true;
-
-
       },
       err => this.snackBarService.openSnackBar(err, "", 10000)
     );
   }
 
+  UnLike() {
+    const formData = new FormData();
+    formData.append("PostId", this.post.Id);
+    this.postsService.UnLikePost(formData).subscribe(success => {
+      console.log(success);
+      this.isLikeClicked = false;
+      this.post.Likes -= 1;
+    }, err => {
+      this.snackBarService.openSnackBar(err,"",10000);
+    });
+  }
   ngOnInit() {
     const formData = new FormData();
     formData.append("PostId", this.post.Id);

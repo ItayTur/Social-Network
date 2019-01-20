@@ -26,4 +26,9 @@ export class PostsService {
     return this.httpClient.post(this.baseUrl+"/IsPostLiked", formData, { withCredentials: true })
     .pipe(catchError(this.errorHandler.handleError));
   }
+
+  UnLikePost(formData: FormData) {
+    return this.httpClient.post(this.baseUrl+"/UnLikePost",formData,{ withCredentials: true })
+    .pipe(retry(3), catchError(this.errorHandler.handleError));
+  }
 }

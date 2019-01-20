@@ -129,5 +129,25 @@ namespace SocialServer.Controllers
             }
         }
 
+
+        [HttpPost]
+        [Route("api/Posts/UnLikePost")]
+        public async Task<IHttpActionResult> UnLikePost()
+        {
+            try
+            {
+                var httpRequest = HttpContext.Current.Request;
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                await _postsManager.UnLikePost(token, httpRequest);
+                return Ok();
+
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
     }
 }

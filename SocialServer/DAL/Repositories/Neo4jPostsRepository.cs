@@ -355,7 +355,36 @@ namespace DAL.Repositories
 
                 throw;
             }
-            
+
+        }
+
+
+        /// <summary>
+        /// Gets the comments and their tags, of the post associated with the specified post id.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<CommentAndTaggedUsersDto>> GetCommentsOfPost(string postId, int commentsToShow)
+        {
+            try
+            {
+               return await _graphClient.Cypher.Match("(post:Post)<-[:ON]-(comment:Comment)-[:TAG]->(user:User)")
+                    .Where((PostModel post) => post.Id == postId)
+                    .Return((user, comment) =>
+                    new CommentAndTaggedUsersDto
+                    {
+                        Comment = comment.As<CommentModel>(),
+                        TaggedUsers = user.CollectAs<UserModel>()
+                    })
+                    .OrderByDescending("comment.DateTime")
+                    .Limit(commentsToShow)
+                    .ResultsAsync;
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
         }
     }
 }

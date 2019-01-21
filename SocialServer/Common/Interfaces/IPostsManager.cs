@@ -69,5 +69,14 @@ namespace Common.Interfaces
         /// <param name="path"></param>
         /// <returns></returns>
         Task AddComment(HttpRequest httpRequest, string token, string path);
+
+
+        /// <summary>
+        /// Gets the comments (with their tags) of the post associated with the post id specified.
+        /// </summary>
+        /// <param name="httpRequest"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<IEnumerable<CommentAndTaggedUsersDto>> GetCommentsOfPost(string postId, string token);
     }
 }

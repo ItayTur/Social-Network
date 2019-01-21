@@ -3,4 +3,5 @@ export class Comment {
   Content: string;
   ImgUrl: string;
   Pic: File;
+  DateTIme;
 }

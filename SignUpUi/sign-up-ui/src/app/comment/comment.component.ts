@@ -11,11 +11,11 @@ import { Observable } from 'rxjs';
   styleUrls: ['./comment.component.scss']
 })
 export class CommentComponent implements OnInit {
-  @Input() comment: Comment;
-  @Input() postId: string;
-  tags: any[];
+  @Input()
+  comment: Comment;
+  @Input()
+  taggedUsers: any[];
 
-  imgSrc: string | ArrayBuffer;
 
   constructor() { }
 

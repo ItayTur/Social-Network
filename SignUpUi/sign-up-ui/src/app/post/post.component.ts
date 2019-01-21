@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Post } from "../post-adding/post.model";
 import { PostsService } from "../core/posts.service";
 import { SnackBarService } from "../core/snack-bar.service";
+import { CommentWithTags } from "../comment/comment-with-tags.model";
 
 @Component({
   selector: "app-post",
@@ -16,21 +17,26 @@ export class PostComponent implements OnInit {
   @Input()
   post: Post;
   isLikeClicked = false;
-  comments: Comment[];
+  comments: CommentWithTags[];
   isCommentClicked = false;
-
+  isCommentsShow = false;
+  isCommentsLoad = false;
   addComment () {
     this.isCommentClicked = !this.isCommentClicked;
   }
 
-  showComments () {
-    this.postsService.GetComments(this.post.Id)
-    .subscribe(success => {
-      console.log(success);
-      this.comments = success;
-    } ,
-     err => this.snackBarService.openSnackBar(err,"",10000));
+  getComments() {
+    if (!this.isCommentsLoad) {
+      debugger;
+      this.postsService.GetComments(this.post.Id)
+    .subscribe( success => this.comments = success,
+      err => this.snackBarService.openSnackBar(err, "", 10000));
+      this.isCommentsLoad = true;
+    }
+    this.isCommentsShow = !this.isCommentsShow;
+
   }
+
   Like() {
     const formData = new FormData();
     formData.append("PostId", this.post.Id);
@@ -56,6 +62,10 @@ export class PostComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.isPostliked();
+  }
+
+  private isPostliked() {
     const formData = new FormData();
     formData.append("PostId", this.post.Id);
     const response = this.postsService.IsPostLikedBy(formData).subscribe(
@@ -70,6 +80,8 @@ export class PostComponent implements OnInit {
       }
     );
   }
+
+
 
 
 }

@@ -46,8 +46,10 @@
         </div>
 
       </div>
+
       <!-- Excerpt -->
-      <button type="button" mdbBtn color="primary" (click)="addComment()" mdbWavesEffect>Comment</button>
+      <button class="d-inline-block" size="sm" type="button" mdbBtn gradient="peach" (click)="addComment()" mdbWavesEffect>Comment</button>
+      <button size="sm" type="button" mdbBtn gradient="blue" (click)="getComments()" mdbWavesEffect>Show comments</button>
 
       <!-- Add Comment -->
       <section class="section" *ngIf="isCommentClicked">
@@ -55,6 +57,13 @@
         <app-add-comment [postId]="post.Id"></app-add-comment>
       </section>
     </mdb-card-body>
+
+
+    <!-- Comments -->
+    <section  class="section" *ngIf="isCommentsShow">
+      <app-comment *ngFor="let comment of comments" [comment]="comment.Comment" [taggedUsers]="comment.TaggedUsers"></app-comment>
+    </section>
+
     <!-- news -->
 
   </mdb-card>

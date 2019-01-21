@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dtos\CommentAndTaggedUsersDto.cs" />
     <Compile Include="Dtos\NewPostDto.cs" />
     <Compile Include="Dtos\TagDto.cs" />
     <Compile Include="Dtos\TokenDto.cs" />

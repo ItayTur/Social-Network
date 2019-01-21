@@ -38,7 +38,7 @@ export class PostsService {
   }
 
   GetComments(postId: string): Observable<any> {
-    return this.httpClient.get(this.baseUrl+"/GetCommentsOf/"+postId, { withCredentials: true })
+    return this.httpClient.get(this.baseUrl+"/GetCommentsOfPost/"+postId, { withCredentials: true })
     .pipe(catchError(this.errorHandler.handleError));
   }
 }

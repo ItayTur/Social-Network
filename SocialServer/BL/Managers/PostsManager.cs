@@ -75,7 +75,7 @@ namespace BL.Managers
             {
                 PostModel post = CreatePost(httpRequest["Content"], httpRequest["IsPublic"]);
                 List<TagDto> tags = GetTags(httpRequest);
-                await SetImageUrl(httpRequest.Files["Pic"], path, post);
+                post.ImgUrl = await GetImageUrl(httpRequest.Files["Pic"], path);
                 var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
                 post.WriterName = await GetFullName(token);
@@ -128,12 +128,16 @@ namespace BL.Managers
         /// <param name="path"></param>
         /// <param name="post"></param>
         /// <returns></returns>
-        private async Task SetImageUrl(HttpPostedFile picFile, string path, PostModel post)
+        private async Task<string> GetImageUrl(HttpPostedFile picFile, string path)
         {
+            string urlToReturn = "";
             if (picFile != null)
             {
-                post.ImgUrl = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
+                
+                urlToReturn = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
             }
+
+            return urlToReturn;
         }
 
 
@@ -415,6 +419,49 @@ namespace BL.Managers
                 throw;
             }
             
+        }
+
+
+        /// <summary>
+        /// Adds comment to the post associated with the post id
+        /// extracted from the http request.
+        /// </summary>
+        /// <param name="httpRequest"></param>
+        /// <param name="token"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public async Task AddComment(HttpRequest httpRequest, string token, string path)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string postId = httpRequest["PostId"];
+                List<TagDto> tags = GetTags(httpRequest);
+                CommentModel comment = CreateComment(httpRequest["Content"]);
+                comment.ImgUrl = await GetImageUrl(httpRequest.Files["Pic"], path);
+                await _postsRepository.AddComment(userId, postId, comment, tags);
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+            
+        }
+
+
+        /// <summary>
+        /// Creates a CommentModel instance.
+        /// </summary>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        private CommentModel CreateComment(string content)
+        {
+            return new CommentModel
+            {
+                Id = Guid.NewGuid().ToString(),
+                Content = content
+            };
         }
     }
 }

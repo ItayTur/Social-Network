@@ -58,5 +58,16 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         /// <returns></returns>
         Task UnLikePost(string token, HttpRequest httpRequest);
+
+
+        /// <summary>
+        /// Adds comment to the post associated with the post id
+        /// extracted from the http request.
+        /// </summary>
+        /// <param name="httpRequest"></param>
+        /// <param name="token"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        Task AddComment(HttpRequest httpRequest, string token, string path);
     }
 }

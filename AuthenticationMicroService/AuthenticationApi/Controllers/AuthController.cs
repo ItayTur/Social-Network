@@ -15,6 +15,13 @@ namespace AuthenticationApi.Controllers
         private ILoginTokenManager _loginTokenManager;
         private IFacebookAuthManager _facebookAuthManager;
 
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="authManager"></param>
+        /// <param name="loginTokenManager"></param>
+        /// <param name="facebookAuthManager"></param>
         public AuthController(IAuthManager authManager, ILoginTokenManager loginTokenManager, IFacebookAuthManager facebookAuthManager)
         {
             _authManager = authManager;

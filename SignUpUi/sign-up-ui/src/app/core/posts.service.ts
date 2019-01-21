@@ -36,4 +36,9 @@ export class PostsService {
     return this.httpClient.post(this.baseUrl+'/AddComment', formData, {withCredentials: true})
     .pipe(retry(3), catchError(this.errorHandler.handleError));
   }
+
+  GetComments(postId: string): Observable<any> {
+    return this.httpClient.get(this.baseUrl+"/GetCommentsOf/"+postId, { withCredentials: true })
+    .pipe(catchError(this.errorHandler.handleError));
+  }
 }

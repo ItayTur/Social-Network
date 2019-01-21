@@ -17,7 +17,21 @@ export class PostComponent implements OnInit {
   @Input()
   post: Post;
   isLikeClicked = false;
+  comments: Comment[];
+  isCommentClicked = false;
 
+  addComment () {
+    this.isCommentClicked = !this.isCommentClicked;
+  }
+
+  showComments () {
+    this.postsService.GetComments(this.post.Id)
+    .subscribe(success => {
+      console.log(success);
+      this.comments = success;
+    } ,
+     err => this.snackBarService.openSnackBar(err,"",10000));
+  }
   Like() {
     const formData = new FormData();
     formData.append("PostId", this.post.Id);
@@ -40,10 +54,6 @@ export class PostComponent implements OnInit {
     }, err => {
       this.snackBarService.openSnackBar(err,"",10000);
     });
-  }
-
-  AddComment() {
-
   }
 
   ngOnInit() {

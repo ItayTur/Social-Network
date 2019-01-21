@@ -1,7 +1,7 @@
 <form #commentForm="ngForm" >
 
   <!-- Tags -->
-    <tag-input [(ngModel)]="tags"  name="Tags"  [onlyFromAutocomplete]="true" class="mb-sm-2">
+    <tag-input [(ngModel)]="tags"  name="commentTags"  [onlyFromAutocomplete]="true" class="mb-sm-2">
         <tag-input-dropdown [autocompleteObservable]="requestedTags" [identifyBy]="'Id'" [displayBy]="'Email'"></tag-input-dropdown>
       </tag-input>
 
@@ -12,5 +12,5 @@
 
 
   <!-- Submit button -->
-  <button [disabled]="!comment.Content && !comment.ImgUrl && !comment.Pic" class="btn btn-primary btn-block mt-sm-2" type="submit" (click)="onSubmit()">Send</button>
+  <button [disabled]="!comment.Content && !comment.ImgUrl && !comment.Pic && !tags" class="btn btn-primary btn-block mt-sm-2" type="submit" (click)="onSubmit()">Send</button>
 </form>

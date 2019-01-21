@@ -458,6 +458,7 @@ namespace BL.Managers
         {
             return new CommentModel
             {
+                Id = Guid.NewGuid().ToString(),
                 Content = content
             };
         }

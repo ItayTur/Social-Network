@@ -133,6 +133,7 @@ namespace BL.Managers
             string urlToReturn = "";
             if (picFile != null)
             {
+                
                 urlToReturn = await _storageManager.AddPicToStorage(picFile, path).ConfigureAwait(false);
             }
 
@@ -440,7 +441,7 @@ namespace BL.Managers
                 comment.ImgUrl = await GetImageUrl(httpRequest.Files["Pic"], path);
                 await _postsRepository.AddComment(userId, postId, comment, tags);
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;

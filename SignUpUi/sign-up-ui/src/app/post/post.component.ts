@@ -2,7 +2,6 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Post } from "../post-adding/post.model";
 import { PostsService } from "../core/posts.service";
 import { SnackBarService } from "../core/snack-bar.service";
-import { post } from "selenium-webdriver/http";
 
 @Component({
   selector: "app-post",

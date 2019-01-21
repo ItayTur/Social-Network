@@ -21,7 +21,7 @@ export class AddCommentComponent implements OnInit {
   public requestedTags = (text: string): Observable<any> => this.tagsService.GetTags(text);
 
   onFileChanged(event) {
-
+    debugger;
     const pic = event.target.files[0];
     this.comment.Pic = pic;
 
@@ -33,7 +33,10 @@ export class AddCommentComponent implements OnInit {
 
   onSubmit() {
     const formData = new FormData();
-    formData.append("Pic",this.comment.Pic);
+    debugger;
+    if(this.comment.Pic) {
+      formData.append("Pic",this.comment.Pic,this.comment.Pic.name);
+    }
     formData.append("Content",this.comment.Content);
     formData.append("PostId",this.postId);
     formData.append("Tags",JSON.stringify(this.tags));

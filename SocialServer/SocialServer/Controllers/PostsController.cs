@@ -152,10 +152,9 @@ namespace SocialServer.Controllers
                 var httpRequest = HttpContext.Current.Request;
                 string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
                 string picPath = "";
-                if (!string.IsNullOrWhiteSpace(httpRequest["Pic"]))
+                if (httpRequest.Files["Pic"] != null)
                 {
-                    string fileName = _commonOperationsManager.GetNewGuid();
-                    picPath = HttpContext.Current.Server.MapPath("~/" + fileName);
+                    picPath = HttpContext.Current.Server.MapPath("~/"+ httpRequest.Files["Pic"].FileName);
                 }
                 await _postsManager.AddComment(httpRequest, token, picPath);
                 return Ok();

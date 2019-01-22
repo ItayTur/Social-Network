@@ -54,7 +54,7 @@
       <!-- Add Comment -->
       <section class="section" *ngIf="isCommentClicked">
         <hr class="my-4">
-        <app-add-comment [postId]="post.Id"></app-add-comment>
+        <app-add-comment  (commentAdded)="onCommentAdded($event)" [postId]="post.Id"></app-add-comment>
       </section>
     </mdb-card-body>
 

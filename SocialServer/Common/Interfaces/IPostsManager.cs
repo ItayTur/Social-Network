@@ -68,7 +68,7 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        Task AddComment(HttpRequest httpRequest, string token, string path);
+        Task<CommentModel> AddComment(HttpRequest httpRequest, string token, string path);
 
 
         /// <summary>

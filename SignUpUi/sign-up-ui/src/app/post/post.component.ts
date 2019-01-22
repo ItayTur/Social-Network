@@ -3,6 +3,8 @@ import { Post } from "../post-adding/post.model";
 import { PostsService } from "../core/posts.service";
 import { SnackBarService } from "../core/snack-bar.service";
 import { CommentWithTags } from "../comment/comment-with-tags.model";
+import { IdentityService } from "../core/identity.service";
+import { UserModel } from "../core/user.model";
 
 @Component({
   selector: "app-post",
@@ -12,36 +14,63 @@ import { CommentWithTags } from "../comment/comment-with-tags.model";
 export class PostComponent implements OnInit {
   constructor(
     private postsService: PostsService,
-    private snackBarService: SnackBarService
+    private snackBarService: SnackBarService,
+    private identityService: IdentityService
   ) {}
+
   @Input()
   post: Post;
   isLikeClicked = false;
-  comments: CommentWithTags[];
+  comments: CommentWithTags[] = [];
   isCommentClicked = false;
   isCommentsShow = false;
   isCommentsLoad = false;
-  addComment () {
+
+  addComment() {
     this.isCommentClicked = !this.isCommentClicked;
+  }
+
+  onCommentAdded(commentDto) {
+    const commentWithTags = new CommentWithTags();
+
+    this.identityService.getDetails().subscribe(
+      user => {
+        debugger;
+        commentWithTags.Writer.Id = user.Id;
+        commentWithTags.Writer.Name = user.FirstName + user.LastName;
+        commentWithTags.Writer.Email = user.Email;
+        commentWithTags.Comment = commentDto.commentAdded;
+        commentWithTags.TaggedUsers = commentDto.tags;
+        this.comments.unshift(commentWithTags);
+        this.isCommentsShow = true;
+        this.isCommentClicked = false;
+      },
+      err => {
+        this.snackBarService.openSnackBar(err, "", 10000);
+      }
+    );
   }
 
   getComments() {
     if (!this.isCommentsLoad) {
-      this.postsService.GetComments(this.post.Id)
-    .subscribe( success => {
-      if (success.length > 0) {
-        console.log(success);
-        this.comments = success;
-        this.isCommentsLoad = true;
-      } else {
-        this.snackBarService.openSnackBar("no comments has been send yet :`(","",5000);
-      }
-
-    },
-      err => this.snackBarService.openSnackBar(err, "", 10000));
+      this.postsService.GetComments(this.post.Id).subscribe(
+        success => {
+          if (success.length > 0) {
+            console.log(success);
+            this.comments = success;
+            this.isCommentsLoad = true;
+          } else {
+            this.snackBarService.openSnackBar(
+              "no comments has been send yet :`(",
+              "",
+              5000
+            );
+          }
+        },
+        err => this.snackBarService.openSnackBar(err, "", 10000)
+      );
     }
     this.isCommentsShow = !this.isCommentsShow;
-
   }
 
   Like() {
@@ -49,8 +78,8 @@ export class PostComponent implements OnInit {
     formData.append("PostId", this.post.Id);
     this.postsService.LikePost(formData).subscribe(
       success => {
-          this.post.Likes = this.post.Likes + 1;
-          this.isLikeClicked = true;
+        this.post.Likes = this.post.Likes + 1;
+        this.isLikeClicked = true;
       },
       err => this.snackBarService.openSnackBar(err, "", 10000)
     );
@@ -59,13 +88,16 @@ export class PostComponent implements OnInit {
   UnLike() {
     const formData = new FormData();
     formData.append("PostId", this.post.Id);
-    this.postsService.UnLikePost(formData).subscribe(success => {
-      console.log(success);
-      this.isLikeClicked = false;
-      this.post.Likes -= 1;
-    }, err => {
-      this.snackBarService.openSnackBar(err,"",10000);
-    });
+    this.postsService.UnLikePost(formData).subscribe(
+      success => {
+        console.log(success);
+        this.isLikeClicked = false;
+        this.post.Likes -= 1;
+      },
+      err => {
+        this.snackBarService.openSnackBar(err, "", 10000);
+      }
+    );
   }
 
   ngOnInit() {
@@ -83,12 +115,8 @@ export class PostComponent implements OnInit {
         }
       },
       err => {
-        this.snackBarService.openSnackBar(err,"",10000);
+        this.snackBarService.openSnackBar(err, "", 10000);
       }
     );
   }
-
-
-
-
 }

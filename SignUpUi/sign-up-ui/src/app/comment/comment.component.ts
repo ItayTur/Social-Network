@@ -13,11 +13,11 @@ import { User } from './user.model';
 })
 export class CommentComponent implements OnInit {
   @Input()
-  comment: Comment;
+  comment: Comment = new Comment();
   @Input()
-  taggedUsers: User[];
+  taggedUsers: User[] = [];
   @Input()
-  writer: User;
+  writer: User = new User();
 
 
   constructor() { }

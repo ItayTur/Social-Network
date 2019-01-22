@@ -15,6 +15,6 @@
     </mdb-card-body>
     <mdb-card-footer>
       <small class="text-muted date">{{comment.DateTime}}</small>
-      tags: <app-tags [taggedUsers]="taggedUsers"></app-tags>
+       <app-tags *ngIf="taggedUsers[0]" [taggedUsers]="taggedUsers"></app-tags>
     </mdb-card-footer>
   </mdb-card>

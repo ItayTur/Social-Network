@@ -30,6 +30,7 @@ export class PostComponent implements OnInit {
       this.postsService.GetComments(this.post.Id)
     .subscribe( success => {
       if (success.length > 0) {
+        console.log(success);
         this.comments = success;
         this.isCommentsLoad = true;
       } else {

@@ -26,6 +26,7 @@ import { PostComponent } from './post/post.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { CommentComponent } from './comment/comment.component';
 import { AddCommentComponent } from './add-comment/add-comment.component';
+import { TagsComponent } from './tags/tags.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { AddCommentComponent } from './add-comment/add-comment.component';
     PostComponent,
     NotificationsComponent,
     CommentComponent,
-    AddCommentComponent
+    AddCommentComponent,
+    TagsComponent
 
   ],
   imports: [

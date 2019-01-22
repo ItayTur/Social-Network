@@ -367,18 +367,10 @@ namespace DAL.Repositories
         {
             try
             {
-               return await _graphClient.Cypher.Match("(post:Post)<-[:ON]-(comment:Comment)-[:TAG]->(user:User)")
-                    .With("comment, post, user")
-                    .Match("(writer:User)-[:COMMENT]->(comment)")
-                    .Where((PostModel post) => post.Id == postId)
-                    .Return((user, comment, writer) =>
-                    new CommentAndTaggedUsersDto
-                    {
-                        Comment = comment.As<CommentModel>(),
-                        TaggedUsers = user.CollectAs<UserModel>(),
-                        Writer = writer.As<UserModel>()
-                    })
-                    .OrderByDescending("comment.DateTime")
+               return await _graphClient.Cypher.Match("(post:Post)")
+                    .With("[(post)<-[:ON]-(comment:Comment)<-[:COMMENT]-(writer:User) | {Comment: comment, TaggedUsers: [(comment)-[:TAG]->(taggedUser:User) | taggedUser], Writer: writer}] as result unwind result as res")
+                    .Return((res) =>res.As<CommentAndTaggedUsersDto>())
+                    .OrderByDescending("res.Comment.DateTime")
                     .Limit(commentsToShow)
                     .ResultsAsync;
 

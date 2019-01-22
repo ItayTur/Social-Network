@@ -27,11 +27,17 @@ export class PostComponent implements OnInit {
 
   getComments() {
     if (!this.isCommentsLoad) {
-      debugger;
       this.postsService.GetComments(this.post.Id)
-    .subscribe( success => this.comments = success,
+    .subscribe( success => {
+      if (success.length > 0) {
+        this.comments = success;
+        this.isCommentsLoad = true;
+      } else {
+        this.snackBarService.openSnackBar("no comments has been send yet :`(","",5000);
+      }
+
+    },
       err => this.snackBarService.openSnackBar(err, "", 10000));
-      this.isCommentsLoad = true;
     }
     this.isCommentsShow = !this.isCommentsShow;
 

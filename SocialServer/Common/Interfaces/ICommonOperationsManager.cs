@@ -29,5 +29,20 @@ namespace Common.Interfaces
         /// </summary>
         /// <returns></returns>
         string GetNewGuid();
+
+
+        /// <summary>
+        /// Verifies the string is not null, whitespace, or undefined; 
+        /// </summary>
+        /// <param name="stringToVerify"></param>
+        /// <returns></returns>
+        void VerifyString(string stringToVerify);
+
+
+        /// <summary>
+        /// Verifies the string specified is an integer bigger than zero.
+        /// </summary>
+        /// <param name="strignToVerify"></param>
+        int IntegerBiggerThanZero(string stringToVerify);
     }
 }

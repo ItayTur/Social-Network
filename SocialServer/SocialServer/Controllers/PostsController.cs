@@ -165,5 +165,21 @@ namespace SocialServer.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("api/Posts/GetCommentsOfPost/{postId}")]
+        public async Task<IHttpActionResult> GetCommentsOfPost(string postId)
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var comments = await _postsManager.GetCommentsOfPost(postId, token);
+                return Ok(comments);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

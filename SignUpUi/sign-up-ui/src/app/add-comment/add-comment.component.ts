@@ -33,7 +33,6 @@ export class AddCommentComponent implements OnInit {
 
   onSubmit() {
     const formData = new FormData();
-    debugger;
     if(this.comment.Pic) {
       formData.append("Pic",this.comment.Pic,this.comment.Pic.name);
     }

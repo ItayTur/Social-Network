@@ -16,7 +16,9 @@ namespace BL.Managers
     {
         private readonly string _authBaseUrl;
 
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public CommonOperationsManager()
         {
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
@@ -37,6 +39,7 @@ namespace BL.Managers
 
             throw new AuthenticationException();
         }
+
 
         /// <summary>
         /// Gets a new guid instance as string.
@@ -76,6 +79,34 @@ namespace BL.Managers
 
                 throw new Exception(e.Message);
             }
+        }
+
+        /// <summary>
+        /// Verifies the string is not null, whitespace, or undefined; 
+        /// </summary>
+        /// <param name="stringToVerify"></param>
+        /// <returns></returns>
+        public void VerifyString(string stringToVerify)
+        {
+            if (string.IsNullOrWhiteSpace(stringToVerify) || stringToVerify == "undefined")
+            {
+                throw new ArgumentException("the string is unvalid");
+            }
+        }
+
+
+        /// <summary>
+        /// Verifies the string specified is an integer bigger than zero.
+        /// </summary>
+        /// <param name="strignToVerify"></param>
+        public int IntegerBiggerThanZero(string stringToVerify)
+        {
+            if(!int.TryParse(stringToVerify, out int num) || num <= 0)
+            {
+                throw new ArgumentException("string is not integer or bigger than zero ");
+            }
+
+            return num;
         }
     }
 }

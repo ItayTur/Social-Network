@@ -460,8 +460,35 @@ namespace BL.Managers
             return new CommentModel
             {
                 Id = Guid.NewGuid().ToString(),
-                Content = content
+                Content = content=="undefined"? "":content,
+                DateTime = DateTime.Now
             };
+        }
+
+
+        /// <summary>
+        /// Gets the comments (with their tags) of the post associated with the post
+        /// id extracted from the http request specified.  
+        /// </summary>
+        /// <param name="httpRequest"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<CommentAndTaggedUsersDto>> GetCommentsOfPost(string postId,string token)
+        {
+            try
+            {
+                await _commonOperationsManager.VerifyToken(token);
+                string commentsToShowString = ConfigurationManager.AppSettings["CommentsToShow"];
+                _commonOperationsManager.VerifyString(postId);
+                int commentsToShow = _commonOperationsManager.IntegerBiggerThanZero(commentsToShowString);
+                return await _postsRepository.GetCommentsOfPost(postId, commentsToShow);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+           
         }
     }
 }

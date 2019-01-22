@@ -61,7 +61,7 @@
 
     <!-- Comments -->
     <section  class="section" *ngIf="isCommentsShow">
-      <app-comment *ngFor="let comment of comments" [comment]="comment.Comment" [taggedUsers]="comment.TaggedUsers"></app-comment>
+      <app-comment *ngFor="let comment of comments" [comment]="comment.Comment" [taggedUsers]="comment.TaggedUsers" [writer]="comment.Writer"></app-comment>
     </section>
 
     <!-- news -->

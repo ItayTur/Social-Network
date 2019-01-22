@@ -11,6 +11,6 @@ namespace Common.Dtos
     {
         public CommentModel Comment { get; set; }
         public IEnumerable<UserModel> TaggedUsers { get; set; }
-
+        public UserModel Writer { get; set; }
     }
 }

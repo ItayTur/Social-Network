@@ -4,6 +4,7 @@ import { TagsService } from '../core/tags.service';
 import { PostsService } from '../core/posts.service';
 import { SnackBarService } from '../core/snack-bar.service';
 import { Observable } from 'rxjs';
+import { User } from './user.model';
 
 @Component({
   selector: 'app-comment',
@@ -14,7 +15,9 @@ export class CommentComponent implements OnInit {
   @Input()
   comment: Comment;
   @Input()
-  taggedUsers: any[];
+  taggedUsers: User[];
+  @Input()
+  writer: User;
 
 
   constructor() { }

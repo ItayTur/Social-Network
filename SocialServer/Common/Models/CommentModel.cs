@@ -12,6 +12,5 @@ namespace Common.Models
         public string Content { get; set; }
         public string ImgUrl { get; set; }
         public DateTime DateTime { get; set; }
-        public string WriterName { get; set; }
     }
 }

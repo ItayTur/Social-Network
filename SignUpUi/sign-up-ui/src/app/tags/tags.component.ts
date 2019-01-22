@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { User } from '../comment/user.model';
 
 @Component({
   selector: 'app-tags',
@@ -7,7 +8,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class TagsComponent implements OnInit {
   @Input()
-  taggedUsers: any[];
+  taggedUsers: User[];
   constructor() { }
 
   ngOnInit() {

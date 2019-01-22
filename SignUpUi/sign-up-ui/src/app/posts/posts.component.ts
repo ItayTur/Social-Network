@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { PostsService } from '../core/posts.service';
 import { SnackBarService } from '../core/snack-bar.service';
 import { Post } from '../post-adding/post.model';
+import { PostWithTags } from './postWithTags.model';
 
 @Component({
   selector: 'app-posts',
@@ -9,7 +10,7 @@ import { Post } from '../post-adding/post.model';
   styleUrls: ['./posts.component.scss']
 })
 export class PostsComponent implements OnInit {
-  posts: Post[];
+  posts: PostWithTags[];
   constructor(private postService: PostsService, private snackBarService: SnackBarService) { }
 
   ngOnInit() {
@@ -19,6 +20,10 @@ export class PostsComponent implements OnInit {
       this.posts = servicePosts;
     } ,(err)=> this.snackBarService.openSnackBar(err,"",10000));
 
+  }
+
+  onPostAdded(addedPost) {
+    this.posts.unshift(addedPost);
   }
 
 

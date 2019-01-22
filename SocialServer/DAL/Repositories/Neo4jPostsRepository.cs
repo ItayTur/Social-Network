@@ -34,7 +34,7 @@ namespace DAL.Repositories
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(string posterId, PostModel post, IEnumerable<TagDto> tags)
+        public async Task<PostModel> Add(string posterId, PostModel post, IEnumerable<TagDto> tags)
         {
             try
             {
@@ -52,6 +52,7 @@ namespace DAL.Repositories
                         .CreateUnique("(taggingPost)-[:TAG]->(taggedUser)")
                         .ExecuteWithoutResultsAsync();
                 }
+                return post;
             }
             catch (Exception e)
             {
@@ -68,13 +69,13 @@ namespace DAL.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetTaggingUserPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetTaggingUserPosts(string userId, int postsToShow)
         {
             try
             {
-                return await _graphClient.Cypher.Match("(post:Post)-[:TAG]-(taggedUser:User)")
+                return await _graphClient.Cypher.Match("(post:Post)-[:TAG]->(taggedUser:User)")
                     .Where((UserModel taggedUser) => taggedUser.Id == userId)
-                    .Return(post => post.As<PostModel>())
+                    .Return((post, taggedUser) => new PostWithTagsDto { Post = post.As<PostModel>(), Tags = taggedUser.CollectAs<UserModel>()})
                     .OrderByDescending("post.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;

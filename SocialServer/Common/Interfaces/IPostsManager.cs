@@ -17,7 +17,7 @@ namespace Common.Interfaces
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        Task Add( HttpRequest httpRequest, string token, string path);
+        Task<PostModel> Add( HttpRequest httpRequest, string token, string path);
 
 
         /// <summary>

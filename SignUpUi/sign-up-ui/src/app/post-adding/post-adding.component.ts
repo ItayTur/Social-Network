@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { Post } from "./post.model";
 import { PostAddingService } from "../core/post-adding.service";
 import { SnackBarService } from '../core/snack-bar.service';
@@ -15,7 +15,7 @@ import { TagsService } from '../core/tags.service';
 export class PostAddingComponent implements OnInit {
   constructor(private postAddingService: PostAddingService,
     private tagsService: TagsService, private snackBarService: SnackBarService) { }
-
+  @Output() postAdded:EventEmitter<any> = new EventEmitter();
   post: Post = new Post("",true);
   tags: any[];
   imgSrc: string | ArrayBuffer;
@@ -35,8 +35,9 @@ export class PostAddingComponent implements OnInit {
 
   onSubmit() {
     this.postAddingService.AddPost(this.post, this.tags).subscribe(
-      success=> {
+      postAdded=> {
         console.log('done');
+        this.postAdded.emit({post: postAdded, tags: this.tags});
         this.cleanForm();
       },
     (err)=> { this.snackBarService.openSnackBar(err, "", 10000); });

@@ -69,7 +69,7 @@ namespace BL.Managers
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(HttpRequest httpRequest, string token, string path)
+        public async Task<PostModel> Add(HttpRequest httpRequest, string token, string path)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace BL.Managers
                 var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
                 post.WriterName = await GetFullName(token);
-                await _postsRepository.Add(userId, post, tags);
+                return await _postsRepository.Add(userId, post, tags);
             }
             catch (Exception e)
             {

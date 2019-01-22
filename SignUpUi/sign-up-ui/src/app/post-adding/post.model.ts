@@ -11,5 +11,6 @@ export class Post {
     Likes: number;
     ImgUrl: string;
     Id: string;
+    Tags: any[] = [];
 }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace BL.Managers
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    var response = await httpClient.PostAsJsonAsync(_authBaseUrl, tokenDto).ConfigureAwait(false);
+                    var response = await httpClient.PostAsJsonAsync(_authBaseUrl + "Auth", tokenDto).ConfigureAwait(false);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new AuthenticationException();
@@ -51,6 +52,21 @@ namespace BL.Managers
 
                 throw new Exception(e.Message);
             }
+        }
+
+        /// <summary>
+        /// Gets the value of the cookie name specified.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cookieName"></param>
+        /// <returns></returns>
+        public string GetCookieValue(HttpRequestMessage request, string cookieName)
+        {
+            CookieHeaderValue cookie = request.Headers.GetCookies(cookieName).FirstOrDefault();
+            if (cookie != null)
+                return cookie[cookieName].Value;
+
+            throw new AuthenticationException();
         }
 
     }

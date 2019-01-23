@@ -23,7 +23,7 @@ namespace BL.Helpers.XMPP
         /// </summary>
         /// <param name="authDto"></param>
         /// <returns></returns>
-        public async Task Register(XMPPAuthDto authDto) => await _xmpp.Register(authDto.Username, authDto.Password);
+        public async Task Register(NotificationsAuthDto authDto) => await _xmpp.Register(authDto.Username, authDto.Password);
 
         /// <summary>
         /// Sends a message to a specific user.

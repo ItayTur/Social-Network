@@ -16,14 +16,16 @@ namespace NotificationsMicroService.Controllers
     public class NotificationsController : ApiController
     {
         private readonly INotificationsManager _notificationsManager;
+        private readonly ICommonOperationsManager _commonOperationsManager;
 
-        public NotificationsController(INotificationsManager notificationsManager)
+        public NotificationsController(INotificationsManager notificationsManager, ICommonOperationsManager commonOperationsManager)
         {
             _notificationsManager = notificationsManager;
+            _commonOperationsManager = commonOperationsManager;
         }
 
         /// <summary>
-        /// Gets the user associated with the token specified.
+        /// Adds a user for notifications associated with the token.
         /// </summary>
         /// <returns></returns>
         public async Task<IHttpActionResult> PostRegister([FromBody] TokenDto token)
@@ -44,19 +46,29 @@ namespace NotificationsMicroService.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieves an individual cookie from the cookies collection
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="cookieName"></param>
-        /// <returns></returns>
-        private string GetCookie(HttpRequestMessage request, string cookieName)
-        {
-            CookieHeaderValue cookie = request.Headers.GetCookies(cookieName).FirstOrDefault();
-            if (cookie != null)
-                return cookie[cookieName].Value;
 
-            throw new AuthenticationException();
+        /// <summary>
+        /// Gets notification authentication.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="token"></param>
+        /// <returns>User</returns>
+        public async Task<IHttpActionResult> GetUserAuth()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, ConfigurationManager.AppSettings["UserTokenCookieName"]);
+                var notificationsAuth = await _notificationsManager.GetNotificationsAuth(token);
+                return Ok(notificationsAuth);
+            }
+            catch (AuthenticationException)
+            {
+                return BadRequest("Authentication was not approved");
+            }
+            catch (Exception e)
+            {
+                return InternalServerError(e);
+            }
         }
     }
 }

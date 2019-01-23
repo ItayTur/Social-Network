@@ -14,7 +14,7 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="authDto"></param>
         /// <returns></returns>
-        Task Register(XMPPAuthDto authDto);
+        Task Register(NotificationsAuthDto authDto);
 
         /// <summary>
         /// Sends a message to a specific user.

@@ -377,6 +377,22 @@ namespace BL.Managers
         }
 
         /// <summary>
+        /// Removes the user associated with the specified token from the database.
+        /// </summary>
+        /// <param name="token"></param>
+        private async Task RemoveNotificationsAuth(string token)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var response = await httpClient.DeleteAsync(_notificationsUrl + $"/DeleteUser/{token}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ArgumentException("Notifications server could not remove the user");
+                }
+            }
+        }
+
+        /// <summary>
         /// Addes mail to the auth table in the database.
         /// </summary>
         /// <param name="userEmail"></param>

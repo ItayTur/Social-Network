@@ -21,5 +21,14 @@ namespace Common.Interfaces
        /// <param name="userToAdd"></param>
        /// <returns></returns>
         Task Add(UserModel userToAdd);
+
+
+        /// <summary>
+        /// Gets all the users except the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserModel>> GetUsers(string userId, int usersToShow);
     }
 }

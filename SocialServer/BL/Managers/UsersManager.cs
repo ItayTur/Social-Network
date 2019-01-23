@@ -16,6 +16,7 @@ namespace BL.Managers
     {
 
         private readonly IUsersRepository _usersRepository;
+        private readonly ICommonOperationsManager _commonOperationsManager;
         private readonly string _authBaseUrl;
 
 
@@ -23,11 +24,14 @@ namespace BL.Managers
         /// Constructor.
         /// </summary>
         /// <param name="usersRepository"></param>
-        public UsersManager(IUsersRepository usersRepository)
+        public UsersManager(IUsersRepository usersRepository, ICommonOperationsManager commonOperationsManager)
         {
             _usersRepository = usersRepository;
+            _commonOperationsManager = commonOperationsManager;
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
         }
+
+
 
         /// <summary>
         /// Addes user with the email specified.
@@ -39,7 +43,7 @@ namespace BL.Managers
         {
             try
             {
-                string userId = await VerifyToken(token);
+                string userId = await _commonOperationsManager.VerifyToken(token);
                 UserModel userToAdd = CreateUser(email, userId, name);
                 await _usersRepository.Add(userToAdd);
             }
@@ -50,6 +54,8 @@ namespace BL.Managers
             }
             
         }
+
+
 
         /// <summary>
         /// Creates UserModel instance 
@@ -68,6 +74,8 @@ namespace BL.Managers
             };
         }
 
+
+
         /// <summary>
         /// Deletes the user associated with the specified token.
         /// </summary>
@@ -76,7 +84,7 @@ namespace BL.Managers
         {
             try
             {
-                string userId = await VerifyToken(token);
+                string userId = await _commonOperationsManager.VerifyToken(token);
                 await _usersRepository.Delete(userId);
             }
             catch (AuthenticationException e)
@@ -90,39 +98,29 @@ namespace BL.Managers
             }
         }
 
+
         /// <summary>
-        /// Verifies the specified token and return the user id.
+        /// Gets all the users except the user associated with the specified Id.
         /// </summary>
-        /// <param name="token"></param>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
         /// <returns></returns>
-        private async Task<string> VerifyToken(string token)
+        public async Task<IEnumerable<UserModel>> GetUsers(string token)
         {
-            TokenDto tokenDto = new TokenDto() { Token = token };
             try
             {
-                using (HttpClient httpClient = new HttpClient())
-                {
-                    var response = await httpClient.PostAsJsonAsync(_authBaseUrl, tokenDto).ConfigureAwait(false);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new AuthenticationException();
-                    }
-                    else
-                    {
-                        return await response.Content.ReadAsAsync<string>();
-                    }
-                }
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string usersToShowString = ConfigurationManager.AppSettings["UsersToShow"];
+                _commonOperationsManager.VerifyString(usersToShowString);
+                int usersToShow = _commonOperationsManager.IntegerBiggerThanZero(usersToShowString);
+                return await _usersRepository.GetUsers(userId, usersToShow);
             }
-            catch (AuthenticationException e)
-            {
-                throw e;
-            }
-            catch (Exception e)
+            catch (Exception)
             {
 
-                throw e;
+                throw;
             }
-
         }
+
     }
 }

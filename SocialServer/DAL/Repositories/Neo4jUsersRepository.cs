@@ -48,6 +48,8 @@ namespace DAL.Repositories
             }
         }
 
+
+
         /// <summary>
         /// Deletes the user associated with the specified Id.
         /// </summary>
@@ -68,6 +70,31 @@ namespace DAL.Repositories
                 throw e;
             }
             
+        }
+
+
+
+        /// <summary>
+        /// Gets all the users except the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserModel>> GetUsers(string userId, int usersToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(u:User)")
+                    .Where((UserModel u) => u.Id != userId)
+                    .Return(u => u.As<UserModel>())
+                    .Limit(usersToShow)
+                    .ResultsAsync;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
         }
     }
 }

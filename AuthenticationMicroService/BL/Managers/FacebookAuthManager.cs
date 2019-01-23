@@ -20,6 +20,7 @@ namespace BL.Managers
         private readonly ILoginTokenManager _loginTokenManager;
         private readonly string _identityUrl;
         private readonly string _socialUrl;
+        private readonly string _notificationsUrl;
 
         /// <summary>
         /// Constructor.
@@ -32,6 +33,7 @@ namespace BL.Managers
             _loginTokenManager = loginTokenManager;
             _identityUrl = ConfigurationManager.AppSettings["IdentityUrl"];
             _socialUrl = ConfigurationManager.AppSettings["SocialUrl"];
+            _notificationsUrl = ConfigurationManager.AppSettings["NotificationsUrl"];
         }
 
 
@@ -126,7 +128,8 @@ namespace BL.Managers
                 Task addUserTask = AddUserToUsersDb(appToken, facebookUserDto, userId);
                 Task addAuthTask = AddUserToFacebookAuthDb(facebookUserDto.id, userId);
                 Task addUserToGraphTask = AddUserToGraphDb(appToken, facebookUserDto);
-                Task.WaitAll(addUserTask, addAuthTask, addUserToGraphTask);
+                Task addUserToXMPPTask = AddUserToXMPPDb(appToken);
+                Task.WaitAll(addUserTask, addAuthTask, addUserToGraphTask, addUserToXMPPTask);
             }
             catch (AggregateException ae)
             {
@@ -183,6 +186,36 @@ namespace BL.Managers
                 throw new AddUserToGraphException(e.Message);
             }
             
+        }
+
+        /// <summary>
+        /// Addes user to XMPP database.
+        /// </summary>
+        /// <param name="appToken"></param>
+        /// <param name="facebookUserDto"></param>
+        /// <returns></returns>
+        private async Task AddUserToXMPPDb(string appToken)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {                    
+                    var response = await httpClient.PostAsJsonAsync(_notificationsUrl + "Notifications/Register", new AccessTokenDto() { Token = appToken}).ConfigureAwait(continueOnCapturedContext: false);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Couldn't connect to notifications server");
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                throw new AddUserToXMPPDbException(e.Message);
+            }
+            catch (Exception e)
+            {
+                throw new AddUserToXMPPDbException(e.Message);
+            }
+
         }
 
         /// <summary>

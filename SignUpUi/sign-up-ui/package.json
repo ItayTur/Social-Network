@@ -38,7 +38,9 @@
     "ngx-cookie-service": "^2.1.0",
     "ngx-facebook": "^2.4.0",
     "rxjs": "^6.0.0-rc.1",
+    "signalr": "^2.4.0",
     "web-animations-js": "^2.3.1",
+    "xmpp-bosh-client": "^0.4.1",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {

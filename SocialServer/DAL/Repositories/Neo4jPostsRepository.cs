@@ -64,6 +64,8 @@ namespace DAL.Repositories
         }
 
 
+
+
         /// <summary>
         /// Gets the posts tagging the user associated with the specified id. 
         /// </summary>
@@ -73,10 +75,11 @@ namespace DAL.Repositories
         {
             try
             {
-                return await _graphClient.Cypher.Match("(post:Post)-[:TAG]->(taggedUser:User)")
+                return await _graphClient.Cypher.Match("(taggedUser:User)")
                     .Where((UserModel taggedUser) => taggedUser.Id == userId)
-                    .Return((post, taggedUser) => new PostWithTagsDto { Post = post.As<PostModel>(), Tags = taggedUser.CollectAs<UserModel>()})
-                    .OrderByDescending("post.DateTime")
+                    .With("[(p:Post)-[:TAG]->(u1) | {Post: p, Tags:[(p)-[:TAG]->(u2:User) | u2] }] as res unwind res as result")
+                    .Return((result) => result.As<PostWithTagsDto>())
+                    .OrderByDescending("result.Post.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;
 
@@ -91,20 +94,22 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Gets the posts the user associated with the id specified is tagged on.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="postsToShow"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
         {
             try
             {
-                return await _graphClient.Cypher.Match("(post:Post)<-[:ON]-(comment:Comment)-[:TAG]->(user:User)")
-                    .Where((UserModel user) => user.Id == userId)
-                    .Return(post => post.As<PostModel>())
-                    .OrderByDescending("post.DateTime")
+                return await _graphClient.Cypher.Match("(taggedUser:User)")
+                    .Where((UserModel taggedUser) => taggedUser.Id == userId)
+                    .With("[(p:Post)<-[:ON]-(c:Comment)-[:TAG]->(u1) | {Post: p, Tags:[(c)-[:TAG]->(u2:User) | u2] }] as res unwind res as result")
+                    .Return((result) => result.As<PostWithTagsDto>())
+                    .OrderByDescending("result.Post.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;
             }
@@ -116,12 +121,13 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Gets the posts that's been published by the users the specified user follow. 
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetFollowedUsersPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetFollowedUsersPosts(string userId, int postsToShow)
         {
             try
             {
@@ -150,7 +156,7 @@ namespace DAL.Repositories
         /// <param name="userId"></param>
         /// <param name="postsAmountLeft"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetPublicPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetPublicPosts(string userId, int postsToShow)
         {
             try
             {
@@ -195,6 +201,7 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Gets the post associated with the specified id.
         /// </summary>
@@ -219,6 +226,7 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Update the post associated with the id extracted from the instance specified.
         /// </summary>
@@ -240,6 +248,7 @@ namespace DAL.Repositories
                 throw;
             }
         }
+
 
 
         /// <summary>
@@ -298,6 +307,7 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Deletes like connection between the post associated with the specified post id
         /// and the user associated with the specified user id 
@@ -321,6 +331,8 @@ namespace DAL.Repositories
                 throw;
             }
         }
+
+
 
 
         /// <summary>
@@ -359,6 +371,8 @@ namespace DAL.Repositories
             }
 
         }
+
+
 
 
         /// <summary>

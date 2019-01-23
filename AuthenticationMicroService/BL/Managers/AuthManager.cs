@@ -21,6 +21,7 @@ namespace BL.Managers
         private readonly ILoginTokenManager _loginTokenManager;
         private readonly string _socialUrl;
         private readonly string _identityUrl;
+        private readonly string _notificationsUrl;
 
         /// <summary>
         /// Constructor.
@@ -33,6 +34,7 @@ namespace BL.Managers
             _loginTokenManager = loginTokenManager;
             _identityUrl = ConfigurationManager.AppSettings["IdentityUrl"];
             _socialUrl = ConfigurationManager.AppSettings["SocialUrl"];
+            _notificationsUrl = ConfigurationManager.AppSettings["NotificationsUrl"];
         }
 
 
@@ -125,28 +127,25 @@ namespace BL.Managers
             {
                 Task addUserTask = AddUserToUsersDb(appToken, registrationDto, userId);
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
+
                 Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email, registrationDto.FirstName+ " "+registrationDto.LastName);
-                await Task.WhenAll(addUserTask, addAuthTask, addUserNodeTask);
+                
+
+                
+                Task addUserToNotificationTask = AddUserToNotificationsDb(appToken);
+
+                await Task.WhenAll(addUserTask, addAuthTask, addUserNodeTask, addUserToNotificationTask);
+
             }
             catch (AggregateException ae)
             {
-                bool isAddUserFail = false, isAddAuthFail = false, isAddToGraphFail = false;
-                foreach (var exception in ae.InnerExceptions)
-                {
-                    if (exception is AddAuthToDbException)
-                    {
-                        isAddAuthFail = true;
-                    }
-                    if (exception is AddUserToDbException)
-                    {
-                        isAddUserFail = true;
-                    }
-                    if (exception is AddUserToGraphException)
-                    {
-                        isAddToGraphFail = true;
-                    }
-                }
-                await RollbackSuccededTask(isAddAuthFail, isAddUserFail, isAddToGraphFail, appToken, registrationDto.Email);
+                Task removeUserTaskawait = RemoveIdentity(appToken);
+                Task removeAuthTaskawait = RemoveAuthFromDb(userId);
+                Task removeUserToGraphTask = RemoveGraphNode(appToken);
+                Task removeUserToNotificationTask = RemoveNotificationsAuth(appToken);
+
+                await Task.WhenAll(removeUserTaskawait, removeAuthTaskawait, removeUserToGraphTask, removeUserToNotificationTask);
+
                 throw new Exception("Internal server error");
             }
 
@@ -191,63 +190,32 @@ namespace BL.Managers
 
         }
 
-
-
         /// <summary>
-        /// If only one of the specified tasks failed a rollback is preformed on the other.
+        /// Addes user to Notifications database.
         /// </summary>
-        /// <param name="isAddAuthFail"></param>
-        /// <param name="isAddUserFail"></param>
-        private async Task RollbackSuccededTask(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraphFail, string token, string email)
-        {
-            if (isAddAuthFail && !isAddUserFail && !isAddToGraphFail)
-            {
-                await RemoveIdentity(token);
-                await RemoveGraphNode(token);
-            }
-            else if (!isAddAuthFail && isAddUserFail && !isAddToGraphFail)
-            {
-                await RemoveAuthFromDb(email);
-                await RemoveGraphNode(token);
-
-            }
-            else if (!isAddAuthFail && !isAddUserFail && isAddToGraphFail)
-            {
-                await RemoveAuthFromDb(email);
-                await RemoveIdentity(token);
-
-            }
-
-            else
-            {
-                await RollbackOnTwoAdditionsFail(isAddAuthFail, isAddUserFail, isAddToGraphFail, token, email);
-            }
-        }
-
-
-
-        /// <summary>
-        /// Rollbacks when two database additions failed.
-        /// </summary>
-        /// <param name="isAddAuthFail"></param>
-        /// <param name="isAddUserFail"></param>
-        /// <param name="isAddToGraghFail"></param>
-        /// <param name="token"></param>
-        /// <param name="facebookId"></param>
+        /// <param name="appToken"></param>
+        /// <param name="facebookUserDto"></param>
         /// <returns></returns>
-        private async Task RollbackOnTwoAdditionsFail(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraghFail, string token, string email)
+        private async Task AddUserToNotificationsDb(string appToken)
         {
-            if (!isAddAuthFail && isAddUserFail && isAddToGraghFail)
+            try
             {
-                await RemoveAuthFromDb(email);
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.PostAsJsonAsync(_notificationsUrl + "Notifications/Register", new AccessTokenDto() { Token = appToken });
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Couldn't connect to notifications server");
+                    }
+                }
             }
-            else if (isAddAuthFail && !isAddUserFail && isAddToGraghFail)
+            catch (HttpRequestException e)
             {
-                await RemoveIdentity(token);
+                throw new AddUserToXMPPDbException(e.Message);
             }
-            else if (isAddAuthFail && isAddUserFail && !isAddToGraghFail)
+            catch (Exception e)
             {
-                await RemoveGraphNode(token);
+                throw new AddUserToXMPPDbException(e.Message);
             }
         }
 
@@ -296,6 +264,23 @@ namespace BL.Managers
                 throw e;
             }
 
+        }
+
+
+        /// <summary>
+        /// Removes the user associated with the specified token from the database.
+        /// </summary>
+        /// <param name="token"></param>
+        private async Task RemoveNotificationsAuth(string token)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var response = await httpClient.DeleteAsync(_notificationsUrl + $"/DeleteUser/{token}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new ArgumentException("Notifications server could not remove the user");
+                }
+            }
         }
 
 

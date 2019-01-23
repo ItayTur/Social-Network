@@ -32,8 +32,8 @@ namespace SocialServer.Controllers
                 {
                     picPath = HttpContext.Current.Server.MapPath("~/" + httpRequest.Files["Pic"].FileName);
                 }
-                await _postsManager.Add(httpRequest, token, picPath);
-                return Ok();
+                var postToReturn = await _postsManager.Add(httpRequest, token, picPath);
+                return Ok(postToReturn);
 
             }
             catch (Exception e)

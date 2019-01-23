@@ -15,7 +15,6 @@ export class PostsComponent implements OnInit {
   ngOnInit() {
     this.postService.GetPosts()
     .subscribe((servicePosts)=> {
-      debugger;
       console.log(servicePosts);
       this.posts = servicePosts;
     } ,(err)=> this.snackBarService.openSnackBar(err,"",10000));
@@ -23,6 +22,7 @@ export class PostsComponent implements OnInit {
   }
 
   onPostAdded(addedPost) {
+    debugger;
     this.posts.unshift(addedPost);
   }
 

@@ -31,7 +31,7 @@ namespace BL.Managers
         /// <param name="storageManager"></param>
         public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager, ICommonOperationsManager commonOperationsManager)
         {
-            int numberOfPostsHandler = 4;
+            int numberOfPostsHandler = 5;
             _getPostsHandlers = new GetPostsHandler[numberOfPostsHandler];
             InitializePostsHandlers();
             _postsRepository = postsRepository;
@@ -55,6 +55,7 @@ namespace BL.Managers
                 _getPostsHandlers[1] = GetUserTaggedInCommentPosts;
                 _getPostsHandlers[2] = GetFollowedPosts;
                 _getPostsHandlers[3] = GetPublicPosts;
+                _getPostsHandlers[4] = GetUserPosts;
             }
             else
             {
@@ -227,10 +228,12 @@ namespace BL.Managers
                 {
                     HashSet<string> usedIds = new HashSet<string>();
                     List<PostWithTagsDto> postsToReturn = new List<PostWithTagsDto>();
-                    for (int i = 0; i < _getPostsHandlers.Length && postsToReturn.Count < postsToShow; i++)
+                    for (int i = 0; i < _getPostsHandlers.Length && 0 < postsToShow; i++)
                     {
+                        int postsBeforAddition = postsToReturn.Count;
                         await _getPostsHandlers[i].Invoke(postsToShow, userId, postsToReturn, usedIds);
-                        postsToShow = postsToShow - postsToReturn.Count;
+                        int postAdded = postsToReturn.Count - postsBeforAddition;
+                        postsToShow -= postAdded;
                     }
                     return postsToReturn;
                 }
@@ -240,7 +243,7 @@ namespace BL.Managers
                 }
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;
@@ -344,6 +347,25 @@ namespace BL.Managers
             GetUniquePosts(postsToReturn, idsUsed, publicPosts);
         }
 
+
+
+        /// <summary>
+        /// Gets the post of the user associated with the specified Id.
+        /// </summary>
+        /// <returns></returns>
+        private async Task GetUserPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
+        {
+            try
+            {
+                var userPosts = await _postsRepository.GetUserPosts(userId, postsToShow);
+                GetUniquePosts(postsToReturn, idsUsed, userPosts);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         /// <summary>
         /// Verifys the posts to show number extracted from the app-config.

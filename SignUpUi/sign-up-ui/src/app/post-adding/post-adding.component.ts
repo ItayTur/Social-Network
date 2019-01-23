@@ -13,11 +13,14 @@ import { TagsService } from '../core/tags.service';
   styleUrls: ['./post-adding.component.scss']
 })
 export class PostAddingComponent implements OnInit {
+
   constructor(private postAddingService: PostAddingService,
     private tagsService: TagsService, private snackBarService: SnackBarService) { }
+
+
   @Output() postAdded:EventEmitter<any> = new EventEmitter();
   post: Post = new Post("",true);
-  tags: any[];
+  tags: any[] = [];
   imgSrc: string | ArrayBuffer;
   public requestedTags = (text: string): Observable<any> => this.tagsService.GetTags(text);
 
@@ -37,17 +40,17 @@ export class PostAddingComponent implements OnInit {
     this.postAddingService.AddPost(this.post, this.tags).subscribe(
       postAdded=> {
         console.log('done');
-        this.postAdded.emit({post: postAdded, tags: this.tags});
+        this.postAdded.emit({Post: postAdded, Tags: this.tags});
         this.cleanForm();
       },
     (err)=> { this.snackBarService.openSnackBar(err, "", 10000); });
   }
 
   private cleanForm() {
-    this.post.Content=null;
-    this.tags = null;
+    this.post.Content="";
+    this.tags = [];
     this.post.pic = null;
-    this.imgSrc = null;
+    this.imgSrc = "";
   }
 
   ngOnInit() {

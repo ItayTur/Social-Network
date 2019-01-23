@@ -39,7 +39,6 @@ export class PostComponent implements OnInit {
 
     this.identityService.getDetails().subscribe(
       user => {
-        debugger;
         commentWithTags.Writer.Id = user.Id;
         commentWithTags.Writer.Name = user.FirstName + user.LastName;
         commentWithTags.Writer.Email = user.Email;

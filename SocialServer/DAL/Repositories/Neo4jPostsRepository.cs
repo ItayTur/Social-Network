@@ -397,5 +397,30 @@ namespace DAL.Repositories
                 throw;
             }
         }
+
+
+
+        /// <summary>
+        /// Gets the post of he user associated with the specified Id.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostWithTagsDto>> GetUserPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(u1:User)-[:POST]->(p:Post)")
+                    .Where((UserModel u1)=>u1.Id==userId)
+                    .OptionalMatch("(p)-[:TAG]->(u2:User)")
+                    .Return((p, u2) => new PostWithTagsDto { Post = p.As<PostModel>(), Tags = u2.CollectAsDistinct<UserModel>() })
+                     .OrderByDescending("p.DateTime")
+                     .Limit(postsToShow)
+                     .ResultsAsync;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
     }
 }

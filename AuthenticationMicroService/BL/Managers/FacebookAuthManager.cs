@@ -34,7 +34,11 @@ namespace BL.Managers
             _socialUrl = ConfigurationManager.AppSettings["SocialUrl"];
         }
 
-
+        /// <summary>
+        /// Signs in the user associated with the data extracted from the facebook token.
+        /// </summary>
+        /// <param name="facebookToken"></param>
+        /// <returns></returns>
         public async Task<string> SignIn(string facebookToken)
         {
             using (HttpClient httpClient = new HttpClient())
@@ -167,6 +171,7 @@ namespace BL.Managers
                     var dataToSend = new JObject();
                     dataToSend.Add("token", JToken.FromObject(appToken));
                     dataToSend.Add("email", JToken.FromObject(facebookUserDto.email));
+                    dataToSend.Add("name", JToken.FromObject(facebookUserDto.name));
                     var response = await httpClient.PostAsJsonAsync(_socialUrl+"Users/AddUser",dataToSend);
                     if (!response.IsSuccessStatusCode)
                     {

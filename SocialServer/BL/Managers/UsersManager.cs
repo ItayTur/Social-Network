@@ -35,12 +35,12 @@ namespace BL.Managers
         /// <param name="token"></param>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task Add(string token, string email)
+        public async Task Add(string token, string email, string name)
         {
             try
             {
                 string userId = await VerifyToken(token);
-                UserModel userToAdd = CreateUser(email, userId);
+                UserModel userToAdd = CreateUser(email, userId, name);
                 await _usersRepository.Add(userToAdd);
             }
             catch (Exception)
@@ -58,12 +58,13 @@ namespace BL.Managers
         /// <param name="email"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        private UserModel CreateUser(string email, string userId)
+        private UserModel CreateUser(string email, string userId, string name)
         {
             return new UserModel()
             {
                 Id = userId,
-                Email = email
+                Email = email,
+                Name = name
             };
         }
 

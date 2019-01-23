@@ -36,8 +36,9 @@ namespace SocialServer.Controllers
             {
                 string token = data["token"].ToObject<string>();
                 string email = data["email"].ToObject<string>();
-                VerifyUserData(token, email);
-                await _usersManager.Add(token, email);
+                string name = data["name"].ToObject<string>();
+                VerifyUserData(token, email, name);
+                await _usersManager.Add(token, email, name);
                 return Ok();
             }
             catch (Exception)
@@ -53,9 +54,9 @@ namespace SocialServer.Controllers
         /// </summary>
         /// <param name="token"></param>
         /// <param name="email"></param>
-        private void VerifyUserData(string token, string email)
+        private void VerifyUserData(string token, string email, string name)
         {
-            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException();
             }

@@ -104,12 +104,12 @@ namespace BL.Managers
             catch (DuplicateKeyException ex)
             {
                 LoggerFactory.GetInstance().AllLogger().Log(ex.Message);
-                throw;
+                throw ex;
             }
             catch (Exception ex)
             {
                 LoggerFactory.GetInstance().AllLogger().Log(ex.Message);
-                throw;
+                throw ex;
             }
         }
 
@@ -127,10 +127,15 @@ namespace BL.Managers
             {
                 Task addUserTask = AddUserToUsersDb(appToken, registrationDto, userId);
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
-                Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email);
+
+                Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email, registrationDto.FirstName+ " "+registrationDto.LastName);
+                
+
+                
                 Task addUserToNotificationTask = AddUserToNotificationsDb(appToken);
 
                 await Task.WhenAll(addUserTask, addAuthTask, addUserNodeTask, addUserToNotificationTask);
+
             }
             catch (AggregateException ae)
             {
@@ -154,7 +159,7 @@ namespace BL.Managers
         /// <param name="appToken"></param>
         /// <param name="facebookUserDto"></param>
         /// <returns></returns>
-        private async Task AddUserToGraphDb(string appToken, string email)
+        private async Task AddUserToGraphDb(string appToken, string email, string name)
         {
             try
             {
@@ -163,7 +168,8 @@ namespace BL.Managers
                     var dataToSend = new JObject
                     {
                         { "token", JToken.FromObject(appToken) },
-                        { "email", JToken.FromObject(email) }
+                        { "email", JToken.FromObject(email) },
+                        { "name", JToken.FromObject(name) }
                     };
                     var response = await httpClient.PostAsJsonAsync(_socialUrl + "Users/AddUser", dataToSend);
                     if (!response.IsSuccessStatusCode)

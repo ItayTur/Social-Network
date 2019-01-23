@@ -5,6 +5,7 @@ import { SnackBarService } from "../core/snack-bar.service";
 import { CommentWithTags } from "../comment/comment-with-tags.model";
 import { IdentityService } from "../core/identity.service";
 import { UserModel } from "../core/user.model";
+import { TagsComponent } from "../tags/tags.component";
 
 @Component({
   selector: "app-post",
@@ -20,6 +21,9 @@ export class PostComponent implements OnInit {
 
   @Input()
   post: Post;
+  @Input()
+  tags = [];
+
   isLikeClicked = false;
   comments: CommentWithTags[] = [];
   isCommentClicked = false;
@@ -35,7 +39,6 @@ export class PostComponent implements OnInit {
 
     this.identityService.getDetails().subscribe(
       user => {
-        debugger;
         commentWithTags.Writer.Id = user.Id;
         commentWithTags.Writer.Name = user.FirstName + user.LastName;
         commentWithTags.Writer.Email = user.Email;

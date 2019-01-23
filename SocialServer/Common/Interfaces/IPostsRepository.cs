@@ -13,7 +13,7 @@ namespace Common.Interfaces
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        Task Add(string posterId, PostModel post, IEnumerable<TagDto> tags);
+        Task<PostModel> Add(string posterId, PostModel post, IEnumerable<TagDto> tags);
 
 
         /// <summary>
@@ -29,7 +29,8 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetFollowedUsersPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetFollowedUsersPosts(string userId, int postsToShow);
+
 
 
         /// <summary>
@@ -38,7 +39,8 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="postsAmountLeft"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetPublicPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetPublicPosts(string userId, int postsToShow);
+
 
 
         /// <summary>
@@ -46,7 +48,9 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetTaggingUserPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetTaggingUserPosts(string userId, int postsToShow);
+
+
 
         /// <summary>
         /// Gets the posts the user associated with the id specified is tagged on.
@@ -54,7 +58,16 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="postsToShow"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetUserTaggedInCommentPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetUserTaggedInCommentPosts(string userId, int postsToShow);
+
+
+        /// <summary>
+        /// Gets the post of the user associated with the specified Id.
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<PostWithTagsDto>> GetUserPosts(string userId, int postsToShow);
+
+
 
         /// <summary>
         /// Gets the post associated with the specified id.
@@ -62,6 +75,8 @@ namespace Common.Interfaces
         /// <param name="postId"></param>
         /// <returns></returns>
         Task<PostModel> GetPostById(string postId);
+
+
 
         /// <summary>
         /// Update the post associated with the id extracted from the instance specified.
@@ -79,12 +94,16 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task LikePost(string postId, string userId);
 
+
+
         /// <summary>
         /// Checks if the user associated with specified user id 
         /// liked the post associated with the specified post id.
         /// </summary>
         /// <returns></returns>
         Task<bool> IsPostLikedBy(string userId, string postId);
+
+
 
         /// <summary>
         /// Deletes like connection between the post associated with the specified post id
@@ -104,6 +123,7 @@ namespace Common.Interfaces
         /// <param name="taggedIds"></param>
         /// <returns></returns>
         Task<CommentModel> AddComment(string userId, string postId, CommentModel comment, IEnumerable<TagDto> tags);
+
 
         /// <summary>
         /// Gets the comments and their tags, of the post associated with the specified post id.

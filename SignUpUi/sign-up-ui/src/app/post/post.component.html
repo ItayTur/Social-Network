@@ -59,6 +59,11 @@
     </mdb-card-body>
 
 
+    <mdb-card-footer>
+      <small class="text-muted date">{{post.DateTime}}</small>
+       <app-tags *ngIf="tags.length>0" [taggedUsers]="tags"></app-tags>
+    </mdb-card-footer>
+
     <!-- Comments -->
     <section  class="section" *ngIf="isCommentsShow">
       <app-comment *ngFor="let comment of comments" [comment]="comment.Comment" [taggedUsers]="comment.TaggedUsers" [writer]="comment.Writer"></app-comment>

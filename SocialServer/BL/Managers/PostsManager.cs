@@ -12,7 +12,7 @@ using System.Web;
 
 namespace BL.Managers
 {
-    public delegate Task GetPostsHandler(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed);
+    public delegate Task GetPostsHandler(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed);
 
     public class PostsManager : IPostsManager
     {
@@ -31,7 +31,7 @@ namespace BL.Managers
         /// <param name="storageManager"></param>
         public PostsManager(IPostsRepository postsRepository, IStorageManager storageManager, ICommonOperationsManager commonOperationsManager)
         {
-            int numberOfPostsHandler = 4;
+            int numberOfPostsHandler = 5;
             _getPostsHandlers = new GetPostsHandler[numberOfPostsHandler];
             InitializePostsHandlers();
             _postsRepository = postsRepository;
@@ -55,6 +55,7 @@ namespace BL.Managers
                 _getPostsHandlers[1] = GetUserTaggedInCommentPosts;
                 _getPostsHandlers[2] = GetFollowedPosts;
                 _getPostsHandlers[3] = GetPublicPosts;
+                _getPostsHandlers[4] = GetUserPosts;
             }
             else
             {
@@ -69,7 +70,7 @@ namespace BL.Managers
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(HttpRequest httpRequest, string token, string path)
+        public async Task<PostModel> Add(HttpRequest httpRequest, string token, string path)
         {
             try
             {
@@ -79,7 +80,7 @@ namespace BL.Managers
                 var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
                 post.WriterName = await GetFullName(token);
-                await _postsRepository.Add(userId, post, tags);
+                return await _postsRepository.Add(userId, post, tags);
             }
             catch (Exception e)
             {
@@ -217,7 +218,7 @@ namespace BL.Managers
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetPosts(string token)
+        public async Task<IEnumerable<PostWithTagsDto>> GetPosts(string token)
         {
             try
             {
@@ -226,11 +227,13 @@ namespace BL.Managers
                 if (IntegerBiggerThanZeroValidation(ConfigurationManager.AppSettings["PostsToShow"], out postsToShow))
                 {
                     HashSet<string> usedIds = new HashSet<string>();
-                    List<PostModel> postsToReturn = new List<PostModel>();
-                    for (int i = 0; i < _getPostsHandlers.Length && postsToReturn.Count < postsToShow; i++)
+                    List<PostWithTagsDto> postsToReturn = new List<PostWithTagsDto>();
+                    for (int i = 0; i < _getPostsHandlers.Length && 0 < postsToShow; i++)
                     {
+                        int postsBeforAddition = postsToReturn.Count;
                         await _getPostsHandlers[i].Invoke(postsToShow, userId, postsToReturn, usedIds);
-                        postsToShow = postsToShow - postsToReturn.Count;
+                        int postAdded = postsToReturn.Count - postsBeforAddition;
+                        postsToShow -= postAdded;
                     }
                     return postsToReturn;
                 }
@@ -240,7 +243,7 @@ namespace BL.Managers
                 }
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;
@@ -255,11 +258,11 @@ namespace BL.Managers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        private async Task GetTaggingUserPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        private async Task GetTaggingUserPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             try
             {
-                IEnumerable<PostModel> taggingUserPosts = await _postsRepository.GetTaggingUserPosts(userId, postsToShow);
+                IEnumerable<PostWithTagsDto> taggingUserPosts = await _postsRepository.GetTaggingUserPosts(userId, postsToShow);
                 GetUniquePosts(postsToReturn, idsUsed, taggingUserPosts);
             }
             catch (Exception)
@@ -277,17 +280,17 @@ namespace BL.Managers
         /// <param name="postsToReturn"></param>
         /// <param name="idsUsed"></param>
         /// <param name="taggingUserPosts"></param>
-        private void GetUniquePosts(ICollection<PostModel> postsToReturn, HashSet<string> idsUsed, IEnumerable<PostModel> postsToCheck)
+        private void GetUniquePosts(ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed, IEnumerable<PostWithTagsDto> postsToCheck)
         {
             try
             {
                 var postsList = postsToCheck.ToList();
-                foreach (var post in postsList)
+                foreach (var dto in postsList)
                 {
-                    if (!idsUsed.Contains(post.Id))
+                    if (!idsUsed.Contains(dto.Post.Id))
                     {
-                        postsToReturn.Add(post);
-                        idsUsed.Add(post.Id);
+                        postsToReturn.Add(dto);
+                        idsUsed.Add(dto.Post.Id);
                     }
                 }
             }
@@ -308,7 +311,7 @@ namespace BL.Managers
         /// <param name="postsToReturn"></param>
         /// <param name="idsUsed"></param>
         /// <returns></returns>
-        private async Task GetFollowedPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        private async Task GetFollowedPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             var followedPosts = await _postsRepository.GetFollowedUsersPosts(userId, postsToShow);
             GetUniquePosts(postsToReturn, idsUsed, followedPosts);
@@ -322,7 +325,7 @@ namespace BL.Managers
         /// <param name="userId"></param>
         /// <param name="postsToShow"></param>
         /// <returns></returns>
-        public async Task GetUserTaggedInCommentPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        public async Task GetUserTaggedInCommentPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             var taggedInCommentsPosts = await _postsRepository.GetUserTaggedInCommentPosts(userId, postsToShow);
             GetUniquePosts(postsToReturn, idsUsed, taggedInCommentsPosts);
@@ -338,12 +341,31 @@ namespace BL.Managers
         /// <param name="postsToReturn"></param>
         /// <param name="idsUsed"></param>
         /// <returns></returns>
-        private async Task GetPublicPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        private async Task GetPublicPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             var publicPosts = await _postsRepository.GetPublicPosts(userId, postsToShow);
             GetUniquePosts(postsToReturn, idsUsed, publicPosts);
         }
 
+
+
+        /// <summary>
+        /// Gets the post of the user associated with the specified Id.
+        /// </summary>
+        /// <returns></returns>
+        private async Task GetUserPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
+        {
+            try
+            {
+                var userPosts = await _postsRepository.GetUserPosts(userId, postsToShow);
+                GetUniquePosts(postsToReturn, idsUsed, userPosts);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         /// <summary>
         /// Verifys the posts to show number extracted from the app-config.

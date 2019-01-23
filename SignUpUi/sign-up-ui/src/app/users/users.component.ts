@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../core/users.service';
-import { User } from '../comment/user.model';
+import { UserWithRelations } from '../user/user-with-relations.model';
 import { SnackBarService } from '../core/snack-bar.service';
 
 @Component({
@@ -10,12 +10,14 @@ import { SnackBarService } from '../core/snack-bar.service';
 })
 export class UsersComponent implements OnInit {
 
-  users: User[] = [];
+  users: UserWithRelations[] = [];
 
   constructor(private usersService: UsersService, private snackBarService: SnackBarService) { }
 
   ngOnInit() {
-    this.usersService.getUsers().subscribe( users => this.users = users,
+    this.usersService.getUsers().subscribe( users => {
+       debugger;
+        this.users = users; } ,
        err => this.snackBarService.openSnackBar(err,"",5000));
   }
 

@@ -14,14 +14,15 @@
 
       <!-- Brief -->
       <div class="brief">
-        <a class="name">{{user.Name}}</a>
-        <div class="Email">{{user.Email}}</div>
+        <a class="name">{{userWithRelations.User.Name}}</a>
+        <div class="Email">{{userWithRelations.User.Email}}</div>
       </div>
 
       <!-- Feed footer -->
-      <button size="sm" type="button" mdbBtn class="success-color"   mdbWavesEffect>follow</button>
-      <button size="sm" type="button" mdbBtn class="warning-color"  mdbWavesEffect>unfollow</button>
-      <button size="sm" type="button" mdbBtn class="danger-color"  mdbWavesEffect>block</button>
+      <button size="sm" type="button" mdbBtn class="success-color" *ngIf="!userWithRelations.IsFollow && !userWithRelations.IsBlock"   mdbWavesEffect>follow</button>
+      <button size="sm" type="button" mdbBtn class="warning-color" *ngIf="userWithRelations.IsFollow"  mdbWavesEffect>unfollow</button>
+      <button size="sm" type="button" mdbBtn class="danger-color"  *ngIf="!userWithRelations.IsBlock">block</button>
+      <button size="sm" type="button" mdbBtn class="danger-color"  *ngIf="userWithRelations.IsBlock">unblock</button>
 
 
     </div>

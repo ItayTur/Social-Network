@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using Common.Dtos;
+using Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,6 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="usersToShow"></param>
         /// <returns></returns>
-        Task<IEnumerable<UserModel>> GetUsers(string token);
+        Task<IEnumerable<UserWithRelationsDto>> GetUsers(string token);
     }
 }

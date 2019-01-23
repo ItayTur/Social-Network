@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { User } from '../comment/user.model';
+import { UserWithRelations } from './user-with-relations.model';
 
 @Component({
   selector: 'app-user',
@@ -7,7 +7,7 @@ import { User } from '../comment/user.model';
   styleUrls: ['./user.component.scss']
 })
 export class UserComponent implements OnInit {
-  @Input() user:User = new User();
+  @Input() userWithRelations:UserWithRelations = new UserWithRelations();
   constructor() { }
 
   ngOnInit() {

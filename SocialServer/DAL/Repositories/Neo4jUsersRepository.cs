@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Common.Dtos;
+using Common.Interfaces;
 using Common.Models;
 using Neo4jClient;
 using System;
@@ -48,6 +49,8 @@ namespace DAL.Repositories
             }
         }
 
+
+
         /// <summary>
         /// Deletes the user associated with the specified Id.
         /// </summary>
@@ -68,6 +71,122 @@ namespace DAL.Repositories
                 throw e;
             }
             
+        }
+
+
+
+        /// <summary>
+        /// Gets all the users except the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserModel>> GetUsers(string userId, int usersToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(u:User)")
+                    .Where((UserModel u) => u.Id != userId)
+                    .Return(u => u.As<UserModel>())
+                    .Limit(usersToShow)
+                    .ResultsAsync;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets the users that's being followed by the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserWithRelationsDto>> GetUserFollowings(string userId, int usersToShow)
+        {
+            try
+            {
+                var usersToReturn = await _graphClient.Cypher.Match("(u1:User)-[:FOLLOW]->(u2:User)")
+                    .Where((UserModel u1) => u1.Id == userId)
+                    .Return(u2 => new UserWithRelationsDto { User=u2.As<UserModel>()})
+                    .Limit(usersToShow)
+                    .ResultsAsync;
+
+                foreach (var user in usersToReturn)
+                {
+                    user.IsFollow = true;
+                }
+                return usersToReturn;
+
+
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the users that the user associated with the specified Id is not following.
+        /// </summary>
+        /// <param name="usersToReturn"></param>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <param name="usedIds"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserWithRelationsDto>> GetUserUnfollowings(string userId, int usersToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(u1:User),(u2:User)")
+                    .Where((UserModel u1) => u1.Id == userId)
+                    .AndWhere("not (u1)-[:FOLLOW]->(u2) AND not (u1)-[:BLOCK]->(u2)")
+                    .Return(u2 => new UserWithRelationsDto { User = u2.As<UserModel>() })
+                    .Limit(usersToShow)
+                    .ResultsAsync;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the users that the user associated with the specified Id blockes.
+        /// </summary>
+        /// <param name="usersToReturn"></param>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <param name="usedIds"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserWithRelationsDto>> GetBloackedUsers(string userId, int usersToShow)
+        {
+            try
+            {
+                var usersToReturn = await _graphClient.Cypher.Match("(u1:User)-[:BLOCK]->(u2:User)")
+                    .Where((UserModel u1) => u1.Id == userId)
+                    .Return(u2 => new UserWithRelationsDto { User = u2.As<UserModel>() })
+                    .Limit(usersToShow)
+                    .ResultsAsync;
+
+                foreach (var user in usersToReturn)
+                {
+                    user.IsBlock = true;
+                }
+
+                return usersToReturn;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
     }
 }

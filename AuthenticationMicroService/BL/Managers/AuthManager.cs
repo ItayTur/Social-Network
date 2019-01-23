@@ -129,9 +129,6 @@ namespace BL.Managers
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
 
                 Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email, registrationDto.FirstName+ " "+registrationDto.LastName);
-                
-
-                
                 Task addUserToNotificationTask = AddUserToNotificationsDb(appToken);
 
                 await Task.WhenAll(addUserTask, addAuthTask, addUserNodeTask, addUserToNotificationTask);
@@ -190,6 +187,8 @@ namespace BL.Managers
 
         }
 
+
+
         /// <summary>
         /// Addes user to Notifications database.
         /// </summary>
@@ -239,7 +238,6 @@ namespace BL.Managers
 
 
 
-
         /// <summary>
         /// Removes the user associated with the specified id from the graph DB.
         /// </summary>
@@ -265,6 +263,7 @@ namespace BL.Managers
             }
 
         }
+
 
 
         /// <summary>

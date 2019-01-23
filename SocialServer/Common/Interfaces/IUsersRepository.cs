@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Common.Dtos;
 using Common.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Common.Interfaces
 {
@@ -15,11 +13,52 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         Task Delete(string userId);
 
-       /// <summary>
-       /// Adds user to the database.
-       /// </summary>
-       /// <param name="userToAdd"></param>
-       /// <returns></returns>
+        /// <summary>
+        /// Adds user to the database.
+        /// </summary>
+        /// <param name="userToAdd"></param>
+        /// <returns></returns>
         Task Add(UserModel userToAdd);
+
+
+        /// <summary>
+        /// Gets all the users except the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserModel>> GetUsers(string userId, int usersToShow);
+
+
+        /// <summary>
+        /// Gets the users that's being followed by the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserWithRelationsDto>> GetUserFollowings(string userId, int usersToShow);
+
+
+        /// <summary>
+        /// Gets the users that the user associated with the specified Id is not following.
+        /// </summary>
+        /// <param name="usersToReturn"></param>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <param name="usedIds"></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserWithRelationsDto>> GetUserUnfollowings(string userId, int usersToShow);
+
+
+
+        /// <summary>
+        /// Gets the users that the user associated with the specified Id blockes.
+        /// </summary>
+        /// <param name="usersToReturn"></param>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <param name="usedIds"></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserWithRelationsDto>> GetBloackedUsers(string userId, int usersToShow);
     }
 }

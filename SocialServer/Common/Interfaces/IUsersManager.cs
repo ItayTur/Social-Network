@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Common.Dtos;
+using Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,5 +23,13 @@ namespace Common.Interfaces
         /// <param name="email"></param>
         /// <returns></returns>
         Task Add(string token, string email, string name);
+
+        /// <summary>
+        /// Gets all the users except the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserWithRelationsDto>> GetUsers(string token);
     }
 }

@@ -47,6 +47,7 @@
     <Compile Include="Dtos\PostWithTagsDto.cs" />
     <Compile Include="Dtos\TagDto.cs" />
     <Compile Include="Dtos\TokenDto.cs" />
+    <Compile Include="Dtos\UserWithRelationsDto.cs" />
     <Compile Include="Interfaces\ICommonOperationsManager.cs" />
     <Compile Include="Interfaces\IPostsManager.cs" />
     <Compile Include="Interfaces\IPostsRepository.cs" />

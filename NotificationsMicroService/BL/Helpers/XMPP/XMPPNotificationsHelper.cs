@@ -16,14 +16,28 @@ namespace BL.Helpers.XMPP
         {
             _xmpp = new XMPP();
         }
-        
 
-        // public Task Login(string username, string password) => _xmpp.Connect(username, password);
 
+        /// <summary>
+        /// Registers a user to the notifications service.
+        /// </summary>
+        /// <param name="authDto"></param>
+        /// <returns></returns>
         public async Task Register(XMPPAuthDto authDto) => await _xmpp.Register(authDto.Username, authDto.Password);
 
+        /// <summary>
+        /// Sends a message to a specific user.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="toUser"></param>
+        /// <returns></returns>
         public async Task SendMessageToUser(string message, string toUser) => await _xmpp.SendPrivateMessage(message, toUser);
-
+        
+        /// <summary>
+        /// Delets a registered user.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task DeleteUser(string userName) => await _xmpp.RemoveUser(userName);
     }
 }

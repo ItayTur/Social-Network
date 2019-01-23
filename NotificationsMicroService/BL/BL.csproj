@@ -186,6 +186,7 @@
     <Compile Include="Helpers\XMPP\RegisterAccountHandler.cs" />
     <Compile Include="Helpers\XMPP\XMPP.cs" />
     <Compile Include="Helpers\XMPP\XMPPNotificationsHelper.cs" />
+    <Compile Include="Managers\CommonOperationsManager.cs" />
     <Compile Include="Managers\ConnectionsToUsersManager.cs" />
     <Compile Include="Managers\NotificationsManager.cs" />
     <Compile Include="Managers\UsersManager.cs" />

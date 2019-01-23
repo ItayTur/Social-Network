@@ -151,7 +151,7 @@ namespace BL.Managers
         private List<TagDto> GetTags(HttpRequest httpRequest)
         {
             List<TagDto> tags = new List<TagDto>();
-            if (httpRequest["Tags"] != "undefined")
+            if (httpRequest["Tags"] != "undefined" && httpRequest["Tags"] !="null" && !string.IsNullOrWhiteSpace(httpRequest["Tags"]))
             {
                 tags = JsonConvert.DeserializeObject<List<TagDto>>((httpRequest["Tags"]));
             }
@@ -430,7 +430,7 @@ namespace BL.Managers
         /// <param name="token"></param>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task AddComment(HttpRequest httpRequest, string token, string path)
+        public async Task<CommentModel> AddComment(HttpRequest httpRequest, string token, string path)
         {
             try
             {
@@ -439,7 +439,7 @@ namespace BL.Managers
                 List<TagDto> tags = GetTags(httpRequest);
                 CommentModel comment = CreateComment(httpRequest["Content"]);
                 comment.ImgUrl = await GetImageUrl(httpRequest.Files["Pic"], path);
-                await _postsRepository.AddComment(userId, postId, comment, tags);
+                return await _postsRepository.AddComment(userId, postId, comment, tags);
             }
             catch (Exception e)
             {

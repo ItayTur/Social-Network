@@ -103,7 +103,7 @@ namespace Common.Interfaces
         /// <param name="comment"></param>
         /// <param name="taggedIds"></param>
         /// <returns></returns>
-        Task AddComment(string userId, string postId, CommentModel comment, IEnumerable<TagDto> tags);
+        Task<CommentModel> AddComment(string userId, string postId, CommentModel comment, IEnumerable<TagDto> tags);
 
         /// <summary>
         /// Gets the comments and their tags, of the post associated with the specified post id.

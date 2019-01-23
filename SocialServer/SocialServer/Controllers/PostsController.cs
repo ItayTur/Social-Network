@@ -155,8 +155,8 @@ namespace SocialServer.Controllers
                 {
                     picPath = HttpContext.Current.Server.MapPath("~/"+ httpRequest.Files["Pic"].FileName);
                 }
-                await _postsManager.AddComment(httpRequest, token, picPath);
-                return Ok();
+                var commentAdded = await _postsManager.AddComment(httpRequest, token, picPath);
+                return Ok(commentAdded);
             }
             catch (Exception)
             {

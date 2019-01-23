@@ -20,6 +20,6 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         /// <param name="email"></param>
         /// <returns></returns>
-        Task Add(string token, string email);
+        Task Add(string token, string email, string name);
     }
 }

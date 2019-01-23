@@ -128,28 +128,19 @@ namespace BL.Managers
                 Task addUserTask = AddUserToUsersDb(appToken, facebookUserDto, userId);
                 Task addAuthTask = AddUserToFacebookAuthDb(facebookUserDto.id, userId);
                 Task addUserToGraphTask = AddUserToGraphDb(appToken, facebookUserDto);
-                Task addUserToXMPPTask = AddUserToXMPPDb(appToken);
-                Task.WaitAll(addUserTask, addAuthTask, addUserToGraphTask, addUserToXMPPTask);
+                Task addUserToNotificationTask = AddUserToNotificationsDb(appToken);
+
+                await Task.WhenAll(addUserTask, addAuthTask, addUserToGraphTask, addUserToNotificationTask);
             }
             catch (AggregateException ae)
             {
-                bool isAddUserFail = false, isAddAuthFail = false, isAddToGraphFail = false;
-                foreach (var exception in ae.InnerExceptions)
-                {
-                    if (exception is AddAuthToDbException)
-                    {
-                        isAddAuthFail = true;
-                    }
-                    else if (exception is AddUserToDbException)
-                    {
-                        isAddUserFail = true;
-                    }
-                    else if (exception is AddUserToGraphException)
-                    {
-                        isAddToGraphFail = true;
-                    }
-                }
-                await RollbackSuccededTasks(isAddAuthFail, isAddUserFail, isAddToGraphFail, appToken, facebookUserDto.id);
+                Task removeUserTaskawait = RemoveIdentity(appToken);
+                Task removeAuthTaskawait = RemoveFBAuth(facebookUserDto.id);
+                Task removeUserToGraphTask = RemoveGraphNode(appToken); 
+                Task removeUserToNotificationTask = RemoveNotificationsAuth(appToken);
+
+                await Task.WhenAll(removeUserTaskawait, removeAuthTaskawait, removeUserToGraphTask, removeUserToNotificationTask);
+
                 throw new Exception("Internal server error");
             }
 
@@ -189,18 +180,18 @@ namespace BL.Managers
         }
 
         /// <summary>
-        /// Addes user to XMPP database.
+        /// Addes user to Notifications database.
         /// </summary>
         /// <param name="appToken"></param>
         /// <param name="facebookUserDto"></param>
         /// <returns></returns>
-        private async Task AddUserToXMPPDb(string appToken)
+        private async Task AddUserToNotificationsDb(string appToken)
         {
             try
             {
                 using (HttpClient httpClient = new HttpClient())
                 {                    
-                    var response = await httpClient.PostAsJsonAsync(_notificationsUrl + "Notifications/Register", new AccessTokenDto() { Token = appToken}).ConfigureAwait(continueOnCapturedContext: false);
+                    var response = await httpClient.PostAsJsonAsync(_notificationsUrl + "Notifications/Register", new AccessTokenDto() { Token = appToken});
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Couldn't connect to notifications server");
@@ -215,7 +206,6 @@ namespace BL.Managers
             {
                 throw new AddUserToXMPPDbException(e.Message);
             }
-
         }
 
         /// <summary>
@@ -264,64 +254,7 @@ namespace BL.Managers
                 Email = facebookUser.email
             };
         }
-
-        /// <summary>
-        /// If only one of the specified tasks failed a rollback is preformed on the other.
-        /// </summary>
-        /// <param name="isAddAuthFail"></param>
-        /// <param name="isAddUserFail"></param>
-        private async Task RollbackSuccededTasks(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraphFail, string token, string facebookId)
-        {
-            if (isAddAuthFail && !isAddUserFail && !isAddToGraphFail)
-            {
-                await RemoveIdentity(token);
-                await RemoveGraphNode(token);
-            }
-            else if (!isAddAuthFail && isAddUserFail && !isAddToGraphFail)
-            {
-                await RemoveFBAuth(facebookId);
-                await RemoveGraphNode(token);
-
-            }
-            else if (!isAddAuthFail && !isAddUserFail && isAddToGraphFail)
-            {
-                await RemoveFBAuth(facebookId);
-                await RemoveIdentity(token);
-
-            }
-
-            else
-            {
-                await RollbackOnTwoAdditionsFail(isAddAuthFail, isAddUserFail, isAddToGraphFail, token,facebookId);
-            }
-        }
-
-
-        /// <summary>
-        /// Rollbacks when two database additions failed.
-        /// </summary>
-        /// <param name="isAddAuthFail"></param>
-        /// <param name="isAddUserFail"></param>
-        /// <param name="isAddToGraghFail"></param>
-        /// <param name="token"></param>
-        /// <param name="facebookId"></param>
-        /// <returns></returns>
-        private async Task RollbackOnTwoAdditionsFail(bool isAddAuthFail, bool isAddUserFail, bool isAddToGraghFail, string token, string facebookId)
-        {
-            if(!isAddAuthFail && isAddUserFail && isAddToGraghFail)
-            {
-                await RemoveFBAuth(facebookId);
-            }
-            else if(isAddAuthFail && !isAddUserFail && isAddToGraghFail)
-            {
-                await RemoveIdentity(token);
-            }
-            else if (isAddAuthFail && isAddUserFail && !isAddToGraghFail)
-            {
-                await RemoveGraphNode(token);
-            }
-        }
-
+        
 
         /// <summary>
         /// Removes the user associated with the specified id from the graph DB.

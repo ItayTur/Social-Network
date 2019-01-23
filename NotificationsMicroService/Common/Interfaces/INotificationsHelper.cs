@@ -12,5 +12,6 @@ namespace Common.Interfaces
         Task Register(XMPPAuthDto authDto);
         //Task Login(string username, string password);
         Task SendMessageToUser(string message, string toUser);
+        Task DeleteUser(string userName);
     }
 }

@@ -10,5 +10,6 @@ namespace Common.Interfaces
     public interface INotificationsManager
     {
         Task<XMPPAuthDto> Register(string token);
+        Task DeleteUser(string token);
     }
 }

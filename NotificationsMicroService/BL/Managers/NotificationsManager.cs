@@ -19,15 +19,34 @@ namespace BL.Managers
         {
             _notificationsHelper = notificationsHelper;
         }
+       
 
         public async Task<XMPPAuthDto> Register(string token)
         {
             try
             {
-               // string userId = await VerfiyToken(token);
+                string userId = await VerfiyToken(token);
                 var auth = new XMPPAuthDto() { Username = token, Password = token };
                 await _notificationsHelper.Register(auth);
                 return auth;
+            }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception();
+            }
+        }
+
+        public async Task DeleteUser(string token)
+        {
+            try
+            {
+                string userId = await VerfiyToken(token);
+                await _notificationsHelper.DeleteUser(userId);
             }
             catch (AuthenticationException)
             {

@@ -29,6 +29,6 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="usersToShow"></param>
         /// <returns></returns>
-        Task<IEnumerable<UserModel>> GetUsers(string token)
+        Task<IEnumerable<UserModel>> GetUsers(string token);
     }
 }

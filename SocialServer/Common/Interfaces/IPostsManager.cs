@@ -17,7 +17,7 @@ namespace Common.Interfaces
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        Task Add( HttpRequest httpRequest, string token, string path);
+        Task<PostModel> Add( HttpRequest httpRequest, string token, string path);
 
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetPosts(string token);
+        Task<IEnumerable<PostWithTagsDto>> GetPosts(string token);
 
 
         /// <summary>

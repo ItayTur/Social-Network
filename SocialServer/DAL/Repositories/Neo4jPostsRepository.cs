@@ -34,7 +34,7 @@ namespace DAL.Repositories
         /// <param name="posterId"></param>
         /// <param name="post"></param>
         /// <param name="tagIds"></param>
-        public async Task Add(string posterId, PostModel post, IEnumerable<TagDto> tags)
+        public async Task<PostModel> Add(string posterId, PostModel post, IEnumerable<TagDto> tags)
         {
             try
             {
@@ -52,6 +52,7 @@ namespace DAL.Repositories
                         .CreateUnique("(taggingPost)-[:TAG]->(taggedUser)")
                         .ExecuteWithoutResultsAsync();
                 }
+                return post;
             }
             catch (Exception e)
             {
@@ -63,19 +64,22 @@ namespace DAL.Repositories
         }
 
 
+
+
         /// <summary>
         /// Gets the posts tagging the user associated with the specified id. 
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetTaggingUserPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetTaggingUserPosts(string userId, int postsToShow)
         {
             try
             {
-                return await _graphClient.Cypher.Match("(post:Post)-[:TAG]-(taggedUser:User)")
+                return await _graphClient.Cypher.Match("(taggedUser:User)")
                     .Where((UserModel taggedUser) => taggedUser.Id == userId)
-                    .Return(post => post.As<PostModel>())
-                    .OrderByDescending("post.DateTime")
+                    .With("[(p:Post)-[:TAG]->(u1) | {Post: p, Tags:[(p)-[:TAG]->(u2:User) | u2] }] as res unwind res as result")
+                    .Return((result) => result.As<PostWithTagsDto>())
+                    .OrderByDescending("result.Post.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;
 
@@ -90,24 +94,26 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Gets the posts the user associated with the id specified is tagged on.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="postsToShow"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
         {
             try
             {
-                return await _graphClient.Cypher.Match("(post:Post)<-[:ON]-(comment:Comment)-[:TAG]->(user:User)")
-                    .Where((UserModel user) => user.Id == userId)
-                    .Return(post => post.As<PostModel>())
-                    .OrderByDescending("post.DateTime")
+                return await _graphClient.Cypher.Match("(p:Post)<-[:ON]-(c:Comment)-[:TAG]->(taggedUser:User)")
+                    .Where((UserModel taggedUser) => taggedUser.Id == userId)
+                    .OptionalMatch("(p)-[:TAG]->(u1:User)")
+                    .Return((p,u1) => new PostWithTagsDto { Post = p.As<PostModel>(), Tags = u1.CollectAs<UserModel>() })
+                    .OrderByDescending("p.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;
@@ -115,18 +121,20 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Gets the posts that's been published by the users the specified user follow. 
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetFollowedUsersPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetFollowedUsersPosts(string userId, int postsToShow)
         {
             try
             {
                 return await _graphClient.Cypher.Match("(recievingUser: User)-[:FOLLOW]->(postingUser: User)-[:POST]->(post: Post)")
                      .Where((UserModel recievingUser) => recievingUser.Id == userId)
-                     .Return(post => post.As<PostModel>())
+                     .OptionalMatch("(post:Post)-[:TAG]->(tagged:User)")
+                     .Return((post, tagged) => new PostWithTagsDto {Post = post.As<PostModel>(), Tags = tagged.CollectAsDistinct<UserModel>() })
                      .OrderByDescending("post.DateTime")
                      .Limit(postsToShow)
                      .ResultsAsync;
@@ -149,18 +157,16 @@ namespace DAL.Repositories
         /// <param name="userId"></param>
         /// <param name="postsAmountLeft"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetPublicPosts(string userId, int postsToShow)
+        public async Task<IEnumerable<PostWithTagsDto>> GetPublicPosts(string userId, int postsToShow)
         {
             try
             {
-                return await _graphClient.Cypher.Match("(poster: User)-[:POST]->(post: Post), (receivingUser:User)")
-                    .Where((UserModel receivingUser) => receivingUser.Id == userId)
-                    .AndWhere((PostModel post) => post.IsPublic == true)
-                    .AndWhere("not (receivingUser)-[:FOLLOW]->(poster) and receivingUser<>poster")
-                    .Return(post => post.As<PostModel>())
-                    .OrderByDescending("post.DateTime")
-                    .Limit(postsToShow)
-                    .ResultsAsync;
+                return await _graphClient.Cypher.Match("(p:Post{IsPublic: true})")
+                     .OptionalMatch("(p)-[:TAG]->(u:User)")
+                     .Return((p, u) => new PostWithTagsDto { Post = p.As<PostModel>(), Tags = u.CollectAsDistinct<UserModel>() })
+                     .OrderByDescending("p.DateTime")
+                     .Limit(postsToShow)
+                     .ResultsAsync;
             }
             catch (Exception e)
             {
@@ -194,6 +200,7 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Gets the post associated with the specified id.
         /// </summary>
@@ -218,6 +225,7 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Update the post associated with the id extracted from the instance specified.
         /// </summary>
@@ -239,6 +247,7 @@ namespace DAL.Repositories
                 throw;
             }
         }
+
 
 
         /// <summary>
@@ -297,6 +306,7 @@ namespace DAL.Repositories
         }
 
 
+
         /// <summary>
         /// Deletes like connection between the post associated with the specified post id
         /// and the user associated with the specified user id 
@@ -320,6 +330,8 @@ namespace DAL.Repositories
                 throw;
             }
         }
+
+
 
 
         /// <summary>
@@ -360,6 +372,8 @@ namespace DAL.Repositories
         }
 
 
+
+
         /// <summary>
         /// Gets the comments and their tags, of the post associated with the specified post id.
         /// </summary>
@@ -376,6 +390,31 @@ namespace DAL.Repositories
                     .Limit(commentsToShow)
                     .ResultsAsync;
 
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
+
+
+        /// <summary>
+        /// Gets the post of he user associated with the specified Id.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<PostWithTagsDto>> GetUserPosts(string userId, int postsToShow)
+        {
+            try
+            {
+                return await _graphClient.Cypher.Match("(u1:User)-[:POST]->(p:Post)")
+                    .Where((UserModel u1)=>u1.Id==userId)
+                    .OptionalMatch("(p)-[:TAG]->(u2:User)")
+                    .Return((p, u2) => new PostWithTagsDto { Post = p.As<PostModel>(), Tags = u2.CollectAsDistinct<UserModel>() })
+                     .OrderByDescending("p.DateTime")
+                     .Limit(postsToShow)
+                     .ResultsAsync;
             }
             catch (Exception e)
             {

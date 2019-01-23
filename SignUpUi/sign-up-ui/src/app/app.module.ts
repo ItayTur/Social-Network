@@ -21,7 +21,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { UserInfoComponent } from './user-info/user-info.component';
 import { RegisterComponent } from './register/register.component';
+import { PostsComponent } from './posts/posts.component';
+import { PostComponent } from './post/post.component';
 import { NotificationsComponent } from './notifications/notifications.component';
+import { CommentComponent } from './comment/comment.component';
+import { AddCommentComponent } from './add-comment/add-comment.component';
+import { TagsComponent } from './tags/tags.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +37,12 @@ import { NotificationsComponent } from './notifications/notifications.component'
     PostAddingComponent,
     UserInfoComponent,
     RegisterComponent,
-    NotificationsComponent
+    PostsComponent,
+    PostComponent,
+    NotificationsComponent,
+    CommentComponent,
+    AddCommentComponent,
+    TagsComponent
 
   ],
   imports: [

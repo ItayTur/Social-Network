@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Managers\AWSStorageManager.cs" />
+    <Compile Include="Managers\CommonOperationsManager.cs" />
     <Compile Include="Managers\PostsManager.cs" />
     <Compile Include="Managers\UsersManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

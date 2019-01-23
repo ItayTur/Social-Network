@@ -126,7 +126,7 @@ namespace BL.Managers
                 Task addUserTask = AddUserToUsersDb(appToken, registrationDto, userId);
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
                 Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email);
-                Task.WaitAll(addUserTask, addAuthTask, addUserNodeTask);
+                await Task.WhenAll(addUserTask, addAuthTask, addUserNodeTask);
             }
             catch (AggregateException ae)
             {
@@ -171,7 +171,7 @@ namespace BL.Managers
                         { "token", JToken.FromObject(appToken) },
                         { "email", JToken.FromObject(email) }
                     };
-                    var response = await httpClient.PostAsJsonAsync(_socialUrl + "Users/AddUser", dataToSend).ConfigureAwait(continueOnCapturedContext: false);
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl + "Users/AddUser", dataToSend);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new AddUserToGraphException();
@@ -337,7 +337,7 @@ namespace BL.Managers
         {
             try
             {
-                await _authRepository.Add(new AuthModel(email, password, userId)).ConfigureAwait(continueOnCapturedContext: false);
+                await _authRepository.Add(new AuthModel(email, password, userId));
             }
             catch (Exception e)
             {
@@ -372,7 +372,7 @@ namespace BL.Managers
                     var data = new JObject();
                     data.Add("user", JToken.FromObject(user));
                     data.Add("token", JToken.FromObject(appToken));
-                    var response = await httpClient.PostAsJsonAsync(_identityUrl, data).ConfigureAwait(continueOnCapturedContext: false);
+                    var response = await httpClient.PostAsJsonAsync(_identityUrl, data);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Identity server could not add the user");

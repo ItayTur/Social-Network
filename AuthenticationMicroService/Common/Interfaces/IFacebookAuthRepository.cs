@@ -9,9 +9,9 @@ namespace Common.Interfaces
 {
     public interface IFacebookAuthRepository
     {               
-        FacebookAuthModel GetAuthByFacebookId(string facebookId);       
+        FacebookAuthModel GetAuthByFacebookId(string facebookId);
 
-        void Add(FacebookAuthModel newUser);
+        Task Add(FacebookAuthModel newUser);
 
         bool IsFacebookIdFree(string facebookId);
 

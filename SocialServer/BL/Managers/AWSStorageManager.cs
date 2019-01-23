@@ -39,9 +39,10 @@ namespace BL.Managers
             IAmazonS3 s3Client = new AmazonS3Client(bucketRegion);
             try
             {
+                string key = Guid.NewGuid().ToString();
                 var fileTrnsferUtility = new TransferUtility(s3Client);
-                await fileTrnsferUtility.UploadAsync(path, _bucketName).ConfigureAwait(false);
-                return _imgBaseUrl + picFile.FileName;
+                await fileTrnsferUtility.UploadAsync(path, _bucketName, key).ConfigureAwait(false);
+                return _imgBaseUrl+ key;
             }
             catch (Exception e)
             {

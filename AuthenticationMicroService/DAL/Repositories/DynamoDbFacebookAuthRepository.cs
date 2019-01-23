@@ -11,11 +11,11 @@ namespace DAL.Repositories
 {
     public class DynamoDbFacebookAuthRepository : IFacebookAuthRepository
     {
-        public void Add(FacebookAuthModel newUser)
+        public async Task Add(FacebookAuthModel newUser)
         {
             using (DynamoDbContext dbContext = new DynamoDbContext())
             {
-                dbContext.Save(newUser);
+                await dbContext.SaveAsync(newUser);
             }
         }
 

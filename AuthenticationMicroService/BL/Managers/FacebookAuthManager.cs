@@ -170,7 +170,7 @@ namespace BL.Managers
                     var dataToSend = new JObject();
                     dataToSend.Add("token", JToken.FromObject(appToken));
                     dataToSend.Add("email", JToken.FromObject(facebookUserDto.email));
-                    var response = await httpClient.PostAsJsonAsync(_socialUrl+"Users/AddUser",dataToSend).ConfigureAwait(continueOnCapturedContext: false);
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl+"Users/AddUser",dataToSend);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Couldn't connect to social server");
@@ -233,7 +233,7 @@ namespace BL.Managers
                     var data = new JObject();
                     data.Add("user", JToken.FromObject(user));
                     data.Add("token", JToken.FromObject(appToken));
-                    var response = await httpClient.PostAsJsonAsync(_identityUrl, data).ConfigureAwait(continueOnCapturedContext: false);
+                    var response = await httpClient.PostAsJsonAsync(_identityUrl, data);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Identity server could not add the user");
@@ -397,11 +397,11 @@ namespace BL.Managers
         /// </summary>
         /// <param name="userEmail"></param>
         /// <returns></returns>
-        private Task AddUserToFacebookAuthDb(string facebookId, string userId)
+        private async Task AddUserToFacebookAuthDb(string facebookId, string userId)
         {
             try
             {
-                return Task.Run(() => _facebookAuthRepository.Add(new FacebookAuthModel(facebookId, userId)));
+                await _facebookAuthRepository.Add(new FacebookAuthModel(facebookId, userId));
             }
             catch (Exception e)
             {

@@ -330,7 +330,7 @@ namespace DAL.Repositories
         /// <param name="comment"></param>
         /// <param name="taggedIds"></param>
         /// <returns></returns>
-        public async Task AddComment(string userId, string postId, CommentModel comment, IEnumerable<TagDto> tags)
+        public async Task<CommentModel> AddComment(string userId, string postId, CommentModel comment, IEnumerable<TagDto> tags)
         {
             try
             {
@@ -349,8 +349,9 @@ namespace DAL.Repositories
                         .Create("(taggedUser)<-[:TAG]-(commentAdded)")
                         .ExecuteWithoutResultsAsync();
                 }
+                return comment;
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;
@@ -367,9 +368,10 @@ namespace DAL.Repositories
         {
             try
             {
-               return await _graphClient.Cypher.Match("(post:Post)")
+                return await _graphClient.Cypher.Match("(post:Post)")
+                    .Where((PostModel post) => post.Id == postId)
                     .With("[(post)<-[:ON]-(comment:Comment)<-[:COMMENT]-(writer:User) | {Comment: comment, TaggedUsers: [(comment)-[:TAG]->(taggedUser:User) | taggedUser], Writer: writer}] as result unwind result as res")
-                    .Return((res) =>res.As<CommentAndTaggedUsersDto>())
+                    .Return((res) => res.As<CommentAndTaggedUsersDto>())
                     .OrderByDescending("res.Comment.DateTime")
                     .Limit(commentsToShow)
                     .ResultsAsync;

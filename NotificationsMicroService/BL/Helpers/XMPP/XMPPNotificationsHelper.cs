@@ -20,7 +20,7 @@ namespace BL.Helpers.XMPP
 
         // public Task Login(string username, string password) => _xmpp.Connect(username, password);
 
-        public async Task Register(XMPPAuthDto authDto) => /*await _xmpp.Register(authDto.Username, authDto.Password);*/ await _xmpp.RemoveUser("wakka");
+        public async Task Register(XMPPAuthDto authDto) => await _xmpp.Register(authDto.Username, authDto.Password);
 
         public async Task SendMessageToUser(string message, string toUser) => await _xmpp.SendPrivateMessage(message, toUser);
 

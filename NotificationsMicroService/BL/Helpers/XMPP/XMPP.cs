@@ -52,6 +52,12 @@ namespace BL.Helpers.XMPP
 
         }
 
+        /// <summary>
+        /// Get a connection to ejabber.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         private async Task Connect(string userName, string password)
         {
             _client.Username = userName;
@@ -60,6 +66,12 @@ namespace BL.Helpers.XMPP
             await _client.SendAsync(new Presence(Show.Chat));
         }
 
+        /// <summary>
+        /// Register a new user.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public async Task Register(string userName, string password)
         {
             _client.RegistrationHandler = new RegisterAccountHandler(_client);
@@ -68,6 +80,10 @@ namespace BL.Helpers.XMPP
             await _client.ConnectAsync();
         }
 
+        /// <summary>
+        /// Gets the users roster.
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<string>> GetRoster()
         {
             var res = await _client.RequestRosterAsync();
@@ -75,6 +91,11 @@ namespace BL.Helpers.XMPP
             return roster.GetRoster().Select(r => r.Jid.User);
         }
 
+        /// <summary>
+        /// Removes a registered user.
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task RemoveUser(string userName)
         {
             //JGJG: Don't know how to implement it yet
@@ -82,12 +103,19 @@ namespace BL.Helpers.XMPP
          
         }
 
-
+        /// <summary>
+        /// Sends a message to a specific user.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
         public async Task SendPrivateMessage(string message, string to)
         {
             await Connect(_userName, _password);
             await _client.SendAsync(new Message(new Jid(to, _domain, null), message));
         }
+
+
 
         private void OnSessionStateChanged(SessionState sessionState)
         {

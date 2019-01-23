@@ -9,7 +9,18 @@ namespace Common.Interfaces
 {
     public interface INotificationsManager
     {
+        /// <summary>
+        /// Registers a new user to the notifications server.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         Task<XMPPAuthDto> Register(string token);
+
+        /// <summary>
+        /// Delets a registered user.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         Task DeleteUser(string token);
     }
 }

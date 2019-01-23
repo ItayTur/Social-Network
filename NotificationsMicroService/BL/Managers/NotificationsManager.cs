@@ -14,18 +14,24 @@ namespace BL.Managers
     public class NotificationsManager : INotificationsManager
     {
         private readonly INotificationsHelper _notificationsHelper;
+        private readonly ICommonOperationsManager _commonOperationsManager;
 
-        public NotificationsManager(INotificationsHelper notificationsHelper)
+        public NotificationsManager(INotificationsHelper notificationsHelper, ICommonOperationsManager commonOperationsManager)
         {
             _notificationsHelper = notificationsHelper;
+            _commonOperationsManager = commonOperationsManager;
         }
        
-
+        /// <summary>
+        /// Registers a new user to the notifications server.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task<XMPPAuthDto> Register(string token)
         {
             try
             {
-                string userId = await VerfiyToken(token);
+                string userId = await _commonOperationsManager.VerifyToken(token);
                 var auth = new XMPPAuthDto() { Username = token, Password = token };
                 await _notificationsHelper.Register(auth);
                 return auth;
@@ -41,11 +47,16 @@ namespace BL.Managers
             }
         }
 
+        /// <summary>
+        /// Delets a registered user.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public async Task DeleteUser(string token)
         {
             try
             {
-                string userId = await VerfiyToken(token);
+                string userId = await _commonOperationsManager.VerifyToken(token);
                 await _notificationsHelper.DeleteUser(userId);
             }
             catch (AuthenticationException)
@@ -56,35 +67,6 @@ namespace BL.Managers
             {
 
                 throw new Exception();
-            }
-        }
-
-        /// <summary>
-        /// Verifies the token validity.
-        /// </summary>
-        /// <param name="token"></param>
-        private async Task<string> VerfiyToken(string token)
-        {
-            using (HttpClient httpClient = new HttpClient())
-            {
-                try
-                {
-                    var authUrl = ConfigurationManager.AppSettings["AuthBaseUrl"] + "Auth";
-                    var tokentDto = new TokenDto(token);
-                    var response = await httpClient.PostAsJsonAsync(authUrl, tokentDto);
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new AuthenticationException();
-                    }
-                    var content = await response.Content.ReadAsAsync<string>();
-                    return content;
-                }
-                catch (Exception e)
-                {
-
-                    throw e;
-                }
-
             }
         }
     }

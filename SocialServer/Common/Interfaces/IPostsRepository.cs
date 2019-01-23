@@ -54,7 +54,7 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="postsToShow"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostWithTagsDto>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
+        Task<IEnumerable<PostWithTagsDto>> GetUserTaggedInCommentPosts(string userId, int postsToShow);
 
         /// <summary>
         /// Gets the post associated with the specified id.

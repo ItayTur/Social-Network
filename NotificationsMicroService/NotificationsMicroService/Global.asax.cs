@@ -19,7 +19,8 @@ namespace NotificationsMicroService
             //SimpleInjector registrations.
             container.Register<INotificationsManager, NotificationsManager>(Lifestyle.Singleton);
             container.Register<INotificationsHelper, XMPPNotificationsHelper>(Lifestyle.Singleton);
-
+            container.Register<ICommonOperationsManager, CommonOperationsManager>(Lifestyle.Singleton);
+            
             container.RegisterWebApiControllers(GlobalConfiguration.Configuration);
 
 

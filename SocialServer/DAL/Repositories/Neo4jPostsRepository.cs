@@ -133,7 +133,8 @@ namespace DAL.Repositories
             {
                 return await _graphClient.Cypher.Match("(recievingUser: User)-[:FOLLOW]->(postingUser: User)-[:POST]->(post: Post)")
                      .Where((UserModel recievingUser) => recievingUser.Id == userId)
-                     .Return(post => post.As<PostModel>())
+                     .OptionalMatch("(post:Post)-[:TAG]->(tagged:User)")
+                     .Return((post, tagged) => new PostWithTagsDto {Post = post.As<PostModel>(), Tags = tagged.CollectAsDistinct<UserModel>() })
                      .OrderByDescending("post.DateTime")
                      .Limit(postsToShow)
                      .ResultsAsync;
@@ -160,14 +161,12 @@ namespace DAL.Repositories
         {
             try
             {
-                return await _graphClient.Cypher.Match("(poster: User)-[:POST]->(post: Post), (receivingUser:User)")
-                    .Where((UserModel receivingUser) => receivingUser.Id == userId)
-                    .AndWhere((PostModel post) => post.IsPublic == true)
-                    .AndWhere("not (receivingUser)-[:FOLLOW]->(poster) and receivingUser<>poster")
-                    .Return(post => post.As<PostModel>())
-                    .OrderByDescending("post.DateTime")
-                    .Limit(postsToShow)
-                    .ResultsAsync;
+                return await _graphClient.Cypher.Match("(p:Post{IsPublic: true})")
+                     .OptionalMatch("(p)-[:TAG]->(u:User)")
+                     .Return((p, u) => new PostWithTagsDto { Post = p.As<PostModel>(), Tags = u.CollectAsDistinct<UserModel>() })
+                     .OrderByDescending("post.DateTime")
+                     .Limit(postsToShow)
+                     .ResultsAsync;
             }
             catch (Exception e)
             {

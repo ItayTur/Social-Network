@@ -29,7 +29,7 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetFollowedUsersPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetFollowedUsersPosts(string userId, int postsToShow);
 
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="postsAmountLeft"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetPublicPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetPublicPosts(string userId, int postsToShow);
 
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetTaggingUserPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetTaggingUserPosts(string userId, int postsToShow);
 
         /// <summary>
         /// Gets the posts the user associated with the id specified is tagged on.
@@ -54,7 +54,7 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <param name="postsToShow"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetUserTaggedInCommentPosts(string userId, int postsToShow);
+        Task<IEnumerable<PostWithTagsDto>> GetUserTaggedInCommentPosts(string userId, int postsToShow)
 
         /// <summary>
         /// Gets the post associated with the specified id.

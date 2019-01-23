@@ -12,7 +12,7 @@ using System.Web;
 
 namespace BL.Managers
 {
-    public delegate Task GetPostsHandler(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed);
+    public delegate Task GetPostsHandler(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed);
 
     public class PostsManager : IPostsManager
     {
@@ -217,7 +217,7 @@ namespace BL.Managers
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<PostModel>> GetPosts(string token)
+        public async Task<IEnumerable<PostWithTagsDto>> GetPosts(string token)
         {
             try
             {
@@ -226,7 +226,7 @@ namespace BL.Managers
                 if (IntegerBiggerThanZeroValidation(ConfigurationManager.AppSettings["PostsToShow"], out postsToShow))
                 {
                     HashSet<string> usedIds = new HashSet<string>();
-                    List<PostModel> postsToReturn = new List<PostModel>();
+                    List<PostWithTagsDto> postsToReturn = new List<PostWithTagsDto>();
                     for (int i = 0; i < _getPostsHandlers.Length && postsToReturn.Count < postsToShow; i++)
                     {
                         await _getPostsHandlers[i].Invoke(postsToShow, userId, postsToReturn, usedIds);
@@ -255,11 +255,11 @@ namespace BL.Managers
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        private async Task GetTaggingUserPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        private async Task GetTaggingUserPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             try
             {
-                IEnumerable<PostModel> taggingUserPosts = await _postsRepository.GetTaggingUserPosts(userId, postsToShow);
+                IEnumerable<PostWithTagsDto> taggingUserPosts = await _postsRepository.GetTaggingUserPosts(userId, postsToShow);
                 GetUniquePosts(postsToReturn, idsUsed, taggingUserPosts);
             }
             catch (Exception)
@@ -277,17 +277,17 @@ namespace BL.Managers
         /// <param name="postsToReturn"></param>
         /// <param name="idsUsed"></param>
         /// <param name="taggingUserPosts"></param>
-        private void GetUniquePosts(ICollection<PostModel> postsToReturn, HashSet<string> idsUsed, IEnumerable<PostModel> postsToCheck)
+        private void GetUniquePosts(ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed, IEnumerable<PostWithTagsDto> postsToCheck)
         {
             try
             {
                 var postsList = postsToCheck.ToList();
-                foreach (var post in postsList)
+                foreach (var dto in postsList)
                 {
-                    if (!idsUsed.Contains(post.Id))
+                    if (!idsUsed.Contains(dto.Post.Id))
                     {
-                        postsToReturn.Add(post);
-                        idsUsed.Add(post.Id);
+                        postsToReturn.Add(dto);
+                        idsUsed.Add(dto.Post.Id);
                     }
                 }
             }
@@ -308,7 +308,7 @@ namespace BL.Managers
         /// <param name="postsToReturn"></param>
         /// <param name="idsUsed"></param>
         /// <returns></returns>
-        private async Task GetFollowedPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        private async Task GetFollowedPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             var followedPosts = await _postsRepository.GetFollowedUsersPosts(userId, postsToShow);
             GetUniquePosts(postsToReturn, idsUsed, followedPosts);
@@ -322,7 +322,7 @@ namespace BL.Managers
         /// <param name="userId"></param>
         /// <param name="postsToShow"></param>
         /// <returns></returns>
-        public async Task GetUserTaggedInCommentPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        public async Task GetUserTaggedInCommentPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             var taggedInCommentsPosts = await _postsRepository.GetUserTaggedInCommentPosts(userId, postsToShow);
             GetUniquePosts(postsToReturn, idsUsed, taggedInCommentsPosts);
@@ -338,7 +338,7 @@ namespace BL.Managers
         /// <param name="postsToReturn"></param>
         /// <param name="idsUsed"></param>
         /// <returns></returns>
-        private async Task GetPublicPosts(int postsToShow, string userId, ICollection<PostModel> postsToReturn, HashSet<string> idsUsed)
+        private async Task GetPublicPosts(int postsToShow, string userId, ICollection<PostWithTagsDto> postsToReturn, HashSet<string> idsUsed)
         {
             var publicPosts = await _postsRepository.GetPublicPosts(userId, postsToShow);
             GetUniquePosts(postsToReturn, idsUsed, publicPosts);

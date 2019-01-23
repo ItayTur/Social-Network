@@ -33,7 +33,7 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<IEnumerable<PostModel>> GetPosts(string token);
+        Task<IEnumerable<PostWithTagsDto>> GetPosts(string token);
 
 
         /// <summary>

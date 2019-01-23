@@ -1,0 +1,33 @@
+<!-- Newsfeed -->
+<div class="mdb-feed">
+
+  <!-- First news -->
+  <div class="news">
+
+    <!-- Label -->
+    <div class="label">
+      <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-1-mini.jpg" class="rounded-circle z-depth-1-half">
+    </div>
+
+    <!-- Excerpt -->
+    <div class="excerpt">
+
+      <!-- Brief -->
+      <div class="brief">
+        <a class="name">{{userWithRelations.User.Name}}</a>
+        <div class="Email">{{userWithRelations.User.Email}}</div>
+      </div>
+
+      <!-- Feed footer -->
+      <button size="sm" type="button" mdbBtn class="success-color" *ngIf="!userWithRelations.IsFollow && !userWithRelations.IsBlock"   mdbWavesEffect>follow</button>
+      <button size="sm" type="button" mdbBtn class="warning-color" *ngIf="userWithRelations.IsFollow"  mdbWavesEffect>unfollow</button>
+      <button size="sm" type="button" mdbBtn class="danger-color"  *ngIf="!userWithRelations.IsBlock">block</button>
+      <button size="sm" type="button" mdbBtn class="danger-color"  *ngIf="userWithRelations.IsBlock">unblock</button>
+
+
+    </div>
+    <!-- Excerpt -->
+
+  </div>
+  <!-- First news -->
+</div>

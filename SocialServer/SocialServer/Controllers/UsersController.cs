@@ -14,14 +14,16 @@ namespace SocialServer.Controllers
     public class UsersController : ApiController
     {
         private readonly IUsersManager _usersManager;
+        private readonly ICommonOperationsManager _commonOperationsManager;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="usersManager"></param>
-        public UsersController(IUsersManager usersManager)
+        public UsersController(IUsersManager usersManager, ICommonOperationsManager commonOperationsManager)
         {
             _usersManager = usersManager;
+            _commonOperationsManager = commonOperationsManager;
         }
 
 
@@ -49,6 +51,8 @@ namespace SocialServer.Controllers
             
         }
 
+
+
         /// <summary>
         /// Verifies the token and email specified.
         /// </summary>
@@ -63,12 +67,12 @@ namespace SocialServer.Controllers
         }
 
 
+        [HttpDelete]
+        [Route("api/users/DeleteUserByToken/{token}")]
         /// <summary>
         /// Deletes the user associated with the specified ID.
         /// </summary>
         /// <returns></returns>
-        [HttpDelete]
-        [Route("api/users/DeleteUserByToken/{token}")]
         public async Task<IHttpActionResult> DeleteUserByToken(string token)
         {
             try
@@ -82,5 +86,30 @@ namespace SocialServer.Controllers
                 return InternalServerError();
             }
         }
+
+
+
+        [HttpGet]
+        [Route("api/users/GetUsers")]
+        /// <summary>
+        /// Gets all the users except the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="usersToShow"></param>
+        /// <returns></returns>
+        public async Task<IHttpActionResult> GetUsers()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var usersToReturn = await _usersManager.GetUsers(token);
+                return Ok(usersToReturn);
+            }
+            catch (Exception e)
+            {
+
+                return InternalServerError();
+            }
+        } 
     }
 }

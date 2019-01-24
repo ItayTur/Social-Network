@@ -76,23 +76,13 @@ namespace DAL.Repositories
             try
             {
                 return await _graphClient.Cypher.Match("(u3:User)-[:POST]->(p1:Post)-[:TAG]->(u1:User)")
-                    .Where((UserModel u1) => u1.Id == userId)
-                    .AndWhere("not (u3)-[:BLOCK]-(u1)")
-                    .OptionalMatch("(p1)-[:TAG]->(u2:User)")
-                    .Return((p1, u2) => new PostWithTagsDto { Post = p1.As<PostModel>(), Tags = u2.CollectAs<UserModel>() })
-                    .OrderByDescending("p1.DateTime")
-                    .Limit(postsToShow)
-                    .ResultsAsync;
-                    
-
-
-                //return await _graphClient.Cypher.Match("(taggedUser:User)")
-                //    .Where((UserModel taggedUser) => taggedUser.Id == userId)
-                //    .With("[(p:Post)-[:TAG]->(u1) | {Post: p, Tags:[(p)-[:TAG]->(u2:User) | u2] }] as res unwind res as result")
-                //    .Return((result) => result.As<PostWithTagsDto>())
-                //    .OrderByDescending("result.Post.DateTime")
-                //    .Limit(postsToShow)
-                //    .ResultsAsync;
+                   .Where((UserModel u1) => u1.Id == userId)
+                   .AndWhere("not (u3)-[:BLOCK]-(u1)")
+                   .OptionalMatch("(p1)-[:TAG]->(u2:User)")
+                   .Return((p1, u2) => new PostWithTagsDto { Post = p1.As<PostModel>(), Tags = u2.CollectAs<UserModel>() })
+                   .OrderByDescending("p1.DateTime")
+                   .Limit(postsToShow)
+                   .ResultsAsync;
 
             }
             catch (Exception e)
@@ -116,11 +106,12 @@ namespace DAL.Repositories
         {
             try
             {
-                return await _graphClient.Cypher.Match("(p:Post)<-[:ON]-(c:Comment)-[:TAG]->(taggedUser:User)")
-                    .Where((UserModel taggedUser) => taggedUser.Id == userId)
-                    .OptionalMatch("(p)-[:TAG]->(u1:User)")
-                    .Return((p,u1) => new PostWithTagsDto { Post = p.As<PostModel>(), Tags = u1.CollectAs<UserModel>() })
-                    .OrderByDescending("p.DateTime")
+                return await _graphClient.Cypher.Match("(poster:User)-[:POST]->(post:Post)<-[:ON]-(comment:Comment)-[:TAG]->(user:User)")
+                    .Where((UserModel user) => user.Id == userId)
+                    .AndWhere("not (poster)-[:BLOCK]-(user)")
+                    .OptionalMatch("(post)-[:TAG]->(tag:User)")
+                    .Return((post, tag) => new PostWithTagsDto { Post = post.As<PostModel>(), Tags = tag.CollectAs<UserModel>() })
+                    .OrderByDescending("post.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;
             }
@@ -145,7 +136,7 @@ namespace DAL.Repositories
                 return await _graphClient.Cypher.Match("(recievingUser: User)-[:FOLLOW]->(postingUser: User)-[:POST]->(post: Post)")
                      .Where((UserModel recievingUser) => recievingUser.Id == userId)
                      .OptionalMatch("(post:Post)-[:TAG]->(tagged:User)")
-                     .Return((post, tagged) => new PostWithTagsDto {Post = post.As<PostModel>(), Tags = tagged.CollectAsDistinct<UserModel>() })
+                     .Return((post, tagged) => new PostWithTagsDto { Post = post.As<PostModel>(), Tags = tagged.CollectAsDistinct<UserModel>() })
                      .OrderByDescending("post.DateTime")
                      .Limit(postsToShow)
                      .ResultsAsync;
@@ -172,10 +163,12 @@ namespace DAL.Repositories
         {
             try
             {
-                return await _graphClient.Cypher.Match("(p:Post{IsPublic: true})")
-                     .OptionalMatch("(p)-[:TAG]->(u:User)")
-                     .Return((p, u) => new PostWithTagsDto { Post = p.As<PostModel>(), Tags = u.CollectAsDistinct<UserModel>() })
-                     .OrderByDescending("p.DateTime")
+                return await _graphClient.Cypher.Match("(poster:User)-[:POST]->(post:Post{IsPublic: true}), (user:User)")
+                     .Where((UserModel user) => user.Id == userId)
+                     .AndWhere("not (user)-[:BLOCK]-(poster)")
+                     .OptionalMatch("(post)-[:TAG]->(tag:User)")
+                     .Return((post, tag) => new PostWithTagsDto { Post = post.As<PostModel>(), Tags = tag.CollectAsDistinct<UserModel>() })
+                     .OrderByDescending("post.DateTime")
                      .Limit(postsToShow)
                      .ResultsAsync;
             }

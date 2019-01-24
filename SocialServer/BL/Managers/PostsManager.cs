@@ -472,7 +472,19 @@ namespace BL.Managers
                 List<TagDto> tags = GetTags(httpRequest);
                 CommentModel comment = CreateComment(httpRequest["Content"]);
                 comment.ImgUrl = await GetImageUrl(httpRequest.Files["Pic"], path);
-                return await _postsRepository.AddComment(userId, postId, comment, tags);
+                var addedComment = await _postsRepository.AddComment(userId, postId, comment, tags);
+                try
+                {
+                    var postUser = await _postsRepository.GetPostUser(postId);
+                    string myUsername = await GetFullName(token);
+                    await _commonOperationsManager.SendNotification(postUser.Id, $"{myUsername} commented on one of your posts", token);
+                }
+                catch (Exception e)
+                {
+
+                    //Log/Handle notification was not sent. Does not affect general state of like operation.
+                }
+                return addedComment;
             }
             catch (Exception e)
             {

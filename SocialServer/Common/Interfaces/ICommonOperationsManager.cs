@@ -44,5 +44,14 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="strignToVerify"></param>
         int IntegerBiggerThanZero(string stringToVerify);
+
+
+        /// <summary>
+        /// Sends a notification to a specific user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Task SendNotification(string userId, string message, string appToken);
     }
 }

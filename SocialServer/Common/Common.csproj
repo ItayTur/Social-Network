@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Dtos\CommentAndTaggedUsersDto.cs" />
     <Compile Include="Dtos\NewPostDto.cs" />
+    <Compile Include="Dtos\NotificationMessageDto.cs" />
     <Compile Include="Dtos\PostWithTagsDto.cs" />
     <Compile Include="Dtos\TagDto.cs" />
     <Compile Include="Dtos\TokenDto.cs" />

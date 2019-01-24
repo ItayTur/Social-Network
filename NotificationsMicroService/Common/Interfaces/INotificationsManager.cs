@@ -29,5 +29,12 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         /// <returns></returns>
         Task<NotificationsAuthDto> GetNotificationsAuth(string token);
+
+        /// <summary>
+        /// Sends a message to a user.
+        /// </summary>
+        /// <param name="notificationMessageDto"></param>
+        /// <returns></returns>
+        Task SendMessageToUser(NotificationMessageDto notificationMessageDto);
     }
 }

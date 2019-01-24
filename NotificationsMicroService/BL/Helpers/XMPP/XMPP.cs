@@ -62,6 +62,7 @@ namespace BL.Helpers.XMPP
         {
             _client.Username = userName;
             _client.Password = password;
+            _client.RegistrationHandler = null;
             _channel = await _client.ConnectAsync();
             await _client.SendAsync(new Presence(Show.Chat));
         }
@@ -78,6 +79,7 @@ namespace BL.Helpers.XMPP
             _client.Username = userName;
             _client.Password = password;
             await _client.ConnectAsync();
+            await _client.DisconnectAsync();
         }
 
         /// <summary>

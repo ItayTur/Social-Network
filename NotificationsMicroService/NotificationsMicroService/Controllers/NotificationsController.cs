@@ -28,6 +28,8 @@ namespace NotificationsMicroService.Controllers
         /// Adds a user for notifications associated with the token.
         /// </summary>
         /// <returns></returns>
+        [HttpPost]
+        [Route("api/Notifications/Register")]
         public async Task<IHttpActionResult> PostRegister([FromBody] TokenDto token)
         {
             try
@@ -68,6 +70,31 @@ namespace NotificationsMicroService.Controllers
             catch (Exception e)
             {
                 return InternalServerError(e);
+            }
+        }
+
+
+        /// <summary>
+        /// Send a message to a user.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/Notifications/SendMessage")]
+        public async Task<IHttpActionResult> PostSendMessage([FromBody] NotificationMessageDto notificationMessageDto)
+        {
+            try
+            {
+                await _notificationsManager.SendMessageToUser(notificationMessageDto);
+                return Ok();
+            }
+            catch (AuthenticationException)
+            {
+                return BadRequest("Authentication was not approved");
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
             }
         }
     }

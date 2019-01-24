@@ -20,7 +20,7 @@
 
       <!-- Feed footer -->
       <button size="sm" type="button" mdbBtn class="success-color" *ngIf="!userWithRelations.IsFollow && !userWithRelations.IsBlock" (click)="createFollow()"  mdbWavesEffect>follow</button>
-      <button size="sm" type="button" mdbBtn class="warning-color" *ngIf="userWithRelations.IsFollow"  mdbWavesEffect>unfollow</button>
+      <button size="sm" type="button" mdbBtn class="warning-color" *ngIf="userWithRelations.IsFollow" (click)="deleteFollow()"  mdbWavesEffect>unfollow</button>
       <button size="sm" type="button" mdbBtn class="danger-color"  *ngIf="!userWithRelations.IsBlock">block</button>
       <button size="sm" type="button" mdbBtn class="danger-color"  *ngIf="userWithRelations.IsBlock">unblock</button>
 

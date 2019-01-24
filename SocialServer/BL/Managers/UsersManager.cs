@@ -270,7 +270,7 @@ namespace BL.Managers
             {
                 string followerId = await _commonOperationsManager.VerifyToken(token);
                 string followedById = httpRequest["FollowedById"];
-                await _usersRepository.DeleteFollow(followedById, followedById);
+                await _usersRepository.DeleteFollow(followerId, followedById);
             }
             catch (Exception e)
             {

@@ -50,4 +50,5 @@ namespace Common.Interfaces
         /// <param name="followedById"></param>
         /// <returns></returns>
         Task DeleteFollow(string token, HttpRequest httpRequest);
+    }
 }

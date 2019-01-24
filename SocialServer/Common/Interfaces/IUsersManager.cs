@@ -40,5 +40,25 @@ namespace Common.Interfaces
         /// <param name="followedById"></param>
         /// <returns></returns>
         Task CreateFollow(string token, HttpRequest httpRequest);
+
+        /// <summary>
+        /// Deletes follow relation between the user associated with the id
+        /// extracted from the token and the user associated with the id extracted 
+        /// from the http request.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        Task DeleteFollow(string token, HttpRequest httpRequest);
+
+
+        /// <summary>
+        /// Creates block relation between the users associated with the specified ids 
+        /// extracted from the token and the httpRequest.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        Task CreateBlock(string token, HttpRequest httpRequest);
     }
 }

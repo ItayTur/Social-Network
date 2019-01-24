@@ -22,4 +22,23 @@ export class UserComponent implements OnInit {
       err => this.snackBarService.openSnackBar(err,"",5000));
   }
 
+  deleteFollow() {
+    const formData: FormData = new FormData();
+    formData.append("FollowedById", this.userWithRelations.User.Id);
+    this.usersService.deleteFollow(formData).subscribe(success => this.userWithRelations.IsFollow=false,
+      err => this.snackBarService.openSnackBar(err,"",5000));
+  }
+
+  createBlock() {
+    const formData: FormData = new FormData();
+    formData.append("BlockedId",this.userWithRelations.User.Id);
+    this.usersService.createBlock(formData).subscribe(
+      success => {
+        this.userWithRelations.IsBlock = true;
+        this.userWithRelations.IsFollow = false;
+      },
+      err => this.snackBarService.openSnackBar(err, "", 5000)
+    );
+  }
+
 }

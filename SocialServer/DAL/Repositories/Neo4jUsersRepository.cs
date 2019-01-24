@@ -137,7 +137,7 @@ namespace DAL.Repositories
             {
                 return await _graphClient.Cypher.Match("(u1:User),(u2:User)")
                     .Where((UserModel u1) => u1.Id == userId)
-                    .AndWhere("not (u1)-[:FOLLOW]->(u2) AND not (u1)-[:BLOCK]->(u2)")
+                    .AndWhere("not (u1)-[:FOLLOW]->(u2) AND not (u1)-[:BLOCK]->(u2) AND u1<>u2")
                     .Return(u2 => new UserWithRelationsDto { User = u2.As<UserModel>() })
                     .Limit(usersToShow)
                     .ResultsAsync;
@@ -158,7 +158,7 @@ namespace DAL.Repositories
         /// <param name="usersToShow"></param>
         /// <param name="usedIds"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<UserWithRelationsDto>> GetBloackedUsers(string userId, int usersToShow)
+        public async Task<IEnumerable<UserWithRelationsDto>> GetBlockedUsers(string userId, int usersToShow)
         {
             try
             {
@@ -195,6 +195,55 @@ namespace DAL.Repositories
                     .ExecuteWithoutResultsAsync();
             }
             catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Deletes follow relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        public async Task DeleteFollow(string followerId, string followedById)
+        {
+            try
+            {
+                await _graphClient.Cypher.Match("(userFollow:User)-[r:FOLLOW]->(userFollowedBy:User)")
+                    .Where((UserModel userFollow) => userFollow.Id == followerId)
+                    .AndWhere((UserModel userFollowedBy) => userFollowedBy.Id == followedById)
+                    .Delete("r")
+                    .ExecuteWithoutResultsAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+        /// <summary>
+        /// Creates block relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="blockerId"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        public async Task CreateBlock(string blockerId, string blockedId)
+        {
+            try
+            {
+                await _graphClient.Cypher
+                    .Match("(blocker:User), (blocked:User)")
+                    .Where((UserModel blocker) => blocker.Id == blockerId)
+                    .AndWhere((UserModel blocked) => blocked.Id == blockedId)
+                    .OptionalMatch("(blocker)-[r:FOLLOW]->(blocked)")
+                    .Create("(blocker)-[:BLOCK]->(blocked)")
+                    .Delete("r")
+                    .ExecuteWithoutResultsAsync();
+            }
+            catch (Exception e)
             {
 
                 throw;

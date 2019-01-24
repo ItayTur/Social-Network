@@ -16,7 +16,6 @@ export class UsersComponent implements OnInit {
 
   ngOnInit() {
     this.usersService.getUsers().subscribe( users => {
-       debugger;
         this.users = users; } ,
        err => this.snackBarService.openSnackBar(err,"",5000));
   }

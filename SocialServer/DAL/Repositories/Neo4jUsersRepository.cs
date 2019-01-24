@@ -201,6 +201,8 @@ namespace DAL.Repositories
             }
         }
 
+
+
         /// <summary>
         /// Deletes follow relation between the users associated with the specified ids.
         /// </summary>
@@ -223,6 +225,8 @@ namespace DAL.Repositories
                 throw e;
             }
         }
+
+
 
         /// <summary>
         /// Creates block relation between the users associated with the specified ids.

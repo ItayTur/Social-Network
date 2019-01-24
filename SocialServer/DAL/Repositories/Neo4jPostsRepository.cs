@@ -75,13 +75,24 @@ namespace DAL.Repositories
         {
             try
             {
-                return await _graphClient.Cypher.Match("(taggedUser:User)")
-                    .Where((UserModel taggedUser) => taggedUser.Id == userId)
-                    .With("[(p:Post)-[:TAG]->(u1) | {Post: p, Tags:[(p)-[:TAG]->(u2:User) | u2] }] as res unwind res as result")
-                    .Return((result) => result.As<PostWithTagsDto>())
-                    .OrderByDescending("result.Post.DateTime")
+                return await _graphClient.Cypher.Match("(u3:User)-[:POST]->(p1:Post)-[:TAG]->(u1:User)")
+                    .Where((UserModel u1) => u1.Id == userId)
+                    .AndWhere("not (u3)-[:BLOCK]-(u1)")
+                    .OptionalMatch("(p1)-[:TAG]->(u2:User)")
+                    .Return((p1, u2) => new PostWithTagsDto { Post = p1.As<PostModel>(), Tags = u2.CollectAs<UserModel>() })
+                    .OrderByDescending("p1.DateTime")
                     .Limit(postsToShow)
                     .ResultsAsync;
+                    
+
+
+                //return await _graphClient.Cypher.Match("(taggedUser:User)")
+                //    .Where((UserModel taggedUser) => taggedUser.Id == userId)
+                //    .With("[(p:Post)-[:TAG]->(u1) | {Post: p, Tags:[(p)-[:TAG]->(u2:User) | u2] }] as res unwind res as result")
+                //    .Return((result) => result.As<PostWithTagsDto>())
+                //    .OrderByDescending("result.Post.DateTime")
+                //    .Limit(postsToShow)
+                //    .ResultsAsync;
 
             }
             catch (Exception e)

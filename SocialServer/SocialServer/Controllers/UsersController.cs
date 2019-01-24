@@ -133,5 +133,24 @@ namespace SocialServer.Controllers
         }
 
 
+        [HttpPost]
+        [Route("api/Users/DeleteFollow")]
+        public async Task<IHttpActionResult> DeleteFollow()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var httpRequest = HttpContext.Current.Request;
+                await _usersManager.DeleteFollow(token, httpRequest);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
     }
 }

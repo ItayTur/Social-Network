@@ -254,5 +254,29 @@ namespace BL.Managers
                 throw e;
             }
         }
+
+
+        /// <summary>
+        /// Deletes follow relation between the user associated with the id
+        /// extracted from the token and the user associated with the id extracted 
+        /// from the http request.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        public async Task DeleteFollow(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string followerId = await _commonOperationsManager.VerifyToken(token);
+                string followedById = httpRequest["FollowedById"];
+                await _usersRepository.DeleteFollow(followedById, followedById);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
     }
 }

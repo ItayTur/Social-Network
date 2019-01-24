@@ -68,5 +68,14 @@ namespace Common.Interfaces
         /// <param name="followedById"></param>
         /// <returns></returns>
         Task CreateFollow(string followerId, string followedById);
+
+
+        /// <summary>
+        /// Deletes follow relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        Task DeleteFollow(string followerId, string followedById);
     }
 }

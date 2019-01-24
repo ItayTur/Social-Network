@@ -200,5 +200,28 @@ namespace DAL.Repositories
                 throw;
             }
         }
+
+        /// <summary>
+        /// Deletes follow relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        public async Task DeleteFollow(string followerId, string followedById)
+        {
+            try
+            {
+                await _graphClient.Cypher.Match("(userFollow:User)-[r:FOLLOW]->(userFollowedBy:User)")
+                    .Where((UserModel userFollow) => userFollow.Id == followerId)
+                    .AndWhere((UserModel userFollowedBy) => userFollowedBy.Id == followedById)
+                    .Delete("r")
+                    .ExecuteWithoutResultsAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
     }
 }

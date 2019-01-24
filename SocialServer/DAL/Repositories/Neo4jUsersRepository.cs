@@ -158,7 +158,7 @@ namespace DAL.Repositories
         /// <param name="usersToShow"></param>
         /// <param name="usedIds"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<UserWithRelationsDto>> GetBloackedUsers(string userId, int usersToShow)
+        public async Task<IEnumerable<UserWithRelationsDto>> GetBlockedUsers(string userId, int usersToShow)
         {
             try
             {
@@ -221,6 +221,31 @@ namespace DAL.Repositories
             {
 
                 throw e;
+            }
+        }
+
+        /// <summary>
+        /// Creates block relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="blockerId"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        public async Task CreateBlock(string blockerId, string blockedId)
+        {
+            try
+            {
+                await _graphClient.Cypher.Match("(blocker:User), (blocked:User)")
+                    .Where((UserModel blocker) => blocker.Id == blockerId)
+                    .AndWhere((UserModel blocked) => blocked.Id == blockedId)
+                    .OptionalMatch("(blocker)-[r:FOLLOW]->(blocked)")
+                    .Delete("r")
+                    .CreateUnique("(blocker)-[:BLOCK]->(blocked)")
+                    .ExecuteWithoutResultsAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }

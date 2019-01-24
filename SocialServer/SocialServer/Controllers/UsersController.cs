@@ -152,5 +152,22 @@ namespace SocialServer.Controllers
         }
 
 
+        [HttpPost]
+        [Route("api/Users/CreateBlock")]
+        public async Task<IHttpActionResult> CreateBlock()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var httpRequest = HttpContext.Current.Request;
+                await _usersManager.CreateBlock(token, httpRequest);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
     }
 }

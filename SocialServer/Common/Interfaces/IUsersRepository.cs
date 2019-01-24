@@ -49,8 +49,7 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task<IEnumerable<UserWithRelationsDto>> GetUserUnfollowings(string userId, int usersToShow);
 
-
-
+        
         /// <summary>
         /// Gets the users that the user associated with the specified Id blockes.
         /// </summary>
@@ -60,5 +59,14 @@ namespace Common.Interfaces
         /// <param name="usedIds"></param>
         /// <returns></returns>
         Task<IEnumerable<UserWithRelationsDto>> GetBloackedUsers(string userId, int usersToShow);
+
+
+        /// <summary>
+        /// Creates follow relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        Task CreateFollow(string followerId, string followedById);
     }
 }

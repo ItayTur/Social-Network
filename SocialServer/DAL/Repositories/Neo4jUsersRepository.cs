@@ -74,7 +74,6 @@ namespace DAL.Repositories
         }
 
 
-
         /// <summary>
         /// Gets all the users except the user associated with the specified Id.
         /// </summary>
@@ -98,6 +97,7 @@ namespace DAL.Repositories
             }
         }
 
+
         /// <summary>
         /// Gets the users that's being followed by the user associated with the specified Id.
         /// </summary>
@@ -108,18 +108,11 @@ namespace DAL.Repositories
         {
             try
             {
-                var usersToReturn = await _graphClient.Cypher.Match("(u1:User)-[:FOLLOW]->(u2:User)")
+                return await _graphClient.Cypher.Match("(u1:User)-[r:FOLLOW]->(u2:User)")
                     .Where((UserModel u1) => u1.Id == userId)
-                    .Return(u2 => new UserWithRelationsDto { User=u2.As<UserModel>()})
+                    .Return((u2,r) => new UserWithRelationsDto { User=u2.As<UserModel>(), IsFollow = r!=null})
                     .Limit(usersToShow)
                     .ResultsAsync;
-
-                foreach (var user in usersToReturn)
-                {
-                    user.IsFollow = true;
-                }
-                return usersToReturn;
-
 
             }
             catch (Exception e)
@@ -169,23 +162,42 @@ namespace DAL.Repositories
         {
             try
             {
-                var usersToReturn = await _graphClient.Cypher.Match("(u1:User)-[:BLOCK]->(u2:User)")
+                return await _graphClient.Cypher.Match("(u1:User)-[r:BLOCK]->(u2:User)")
                     .Where((UserModel u1) => u1.Id == userId)
-                    .Return(u2 => new UserWithRelationsDto { User = u2.As<UserModel>() })
+                    .Return((u2,r) => new UserWithRelationsDto { User = u2.As<UserModel>(), IsBlock = r!=null })
                     .Limit(usersToShow)
                     .ResultsAsync;
 
-                foreach (var user in usersToReturn)
-                {
-                    user.IsBlock = true;
-                }
-
-                return usersToReturn;
+               
             }
             catch (Exception e)
             {
 
                 throw e;
+            }
+        }
+
+
+        /// <summary>
+        /// Creates follow relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        public async Task CreateFollow(string followerId, string followedById)
+        {
+            try
+            {
+                await _graphClient.Cypher.Match("(userFollow:User), (userFollowedBy:User)")
+                    .Where((UserModel userFollow) => userFollow.Id == followedById)
+                    .AndWhere((UserModel userFollowedBy) => userFollowedBy.Id == followedById)
+                    .CreateUnique("(userFollow)-[:FOLLOW]->(userFollowedBy)")
+                    .ExecuteWithoutResultsAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }

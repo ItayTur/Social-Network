@@ -22,13 +22,12 @@ namespace Common.Interfaces
 
 
         /// <summary>
-        /// Gets all the users except the user associated with the specified Id.
+        /// Gets the followers of the user associated with the specified Id.
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="usersToShow"></param>
+        /// <param name=""></param>
         /// <returns></returns>
-        Task<IEnumerable<UserModel>> GetUsers(string userId, int usersToShow);
-
+        Task<IEnumerable<UserWithRelationsDto>> GetFollowers(string userId, int usersToShow);
 
         /// <summary>
         /// Gets the users that's being followed by the user associated with the specified Id.

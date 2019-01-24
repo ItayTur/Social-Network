@@ -137,7 +137,7 @@ namespace DAL.Repositories
             {
                 return await _graphClient.Cypher.Match("(u1:User),(u2:User)")
                     .Where((UserModel u1) => u1.Id == userId)
-                    .AndWhere("not (u1)-[:FOLLOW]->(u2) AND not (u1)-[:BLOCK]->(u2)")
+                    .AndWhere("not (u1)-[:FOLLOW]->(u2) AND not (u1)-[:BLOCK]->(u2) AND u1<>u2")
                     .Return(u2 => new UserWithRelationsDto { User = u2.As<UserModel>() })
                     .Limit(usersToShow)
                     .ResultsAsync;
@@ -234,15 +234,16 @@ namespace DAL.Repositories
         {
             try
             {
-                await _graphClient.Cypher.Match("(blocker:User), (blocked:User)")
+                await _graphClient.Cypher
+                    .Match("(blocker:User), (blocked:User)")
                     .Where((UserModel blocker) => blocker.Id == blockerId)
                     .AndWhere((UserModel blocked) => blocked.Id == blockedId)
                     .OptionalMatch("(blocker)-[r:FOLLOW]->(blocked)")
+                    .Create("(blocker)-[:BLOCK]->(blocked)")
                     .Delete("r")
-                    .CreateUnique("(blocker)-[:BLOCK]->(blocked)")
                     .ExecuteWithoutResultsAsync();
             }
-            catch (Exception)
+            catch (Exception e)
             {
 
                 throw;

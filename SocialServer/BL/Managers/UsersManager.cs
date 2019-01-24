@@ -292,7 +292,7 @@ namespace BL.Managers
             {
                 string blockerId = await _commonOperationsManager.VerifyToken(token);
                 string blockedId = httpRequest["BlockedId"];
-                await _usersRepository.DeleteFollow(blockerId, blockedId);
+                await _usersRepository.CreateBlock(blockerId, blockedId);
             }
             catch (Exception e)
             {

@@ -135,7 +135,7 @@ namespace DAL.Repositories
             {
                 return await _graphClient.Cypher.Match("(u1:User),(u2:User)")
                     .Where((UserModel u1) => u1.Id == userId)
-                    .AndWhere("not (u1)-[:FOLLOW]->(u2) AND not (u1)-[:BLOCK]->(u2) AND u1<>u2")
+                    .AndWhere("not (u1)-[:FOLLOW]->(u2) AND not (u1)-[:BLOCK]-(u2) AND u1<>u2")
                     .Return(u2 => new UserWithRelationsDto { User = u2.As<UserModel>() })
                     .Limit(usersToShow)
                     .ResultsAsync;
@@ -242,6 +242,32 @@ namespace DAL.Repositories
                     .AndWhere((UserModel blocked) => blocked.Id == blockedId)
                     .OptionalMatch("(blocker)-[r:FOLLOW]-(blocked)")
                     .Merge("(blocker)-[:BLOCK]->(blocked)")
+                    .Delete("r")
+                    .ExecuteWithoutResultsAsync();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Deletes block relation between the users associated with 
+        /// the specified ids.
+        /// </summary>
+        /// <param name="blockerId"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        public async Task DeleteBlock(string blockerId, string blockedId)
+        {
+            try
+            {
+                await _graphClient.Cypher
+                    .Match("(blocker:User)-[r:BLOCK]->(blocked:User)")
+                    .Where((UserModel blocker) => blocker.Id == blockerId)
+                    .AndWhere((UserModel blocked) => blocked.Id == blockedId)
                     .Delete("r")
                     .ExecuteWithoutResultsAsync();
             }

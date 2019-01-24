@@ -14,7 +14,7 @@ namespace Common.Interfaces
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        Task<XMPPAuthDto> Register(string token);
+        Task<NotificationsAuthDto> Register(string token);
 
         /// <summary>
         /// Delets a registered user.
@@ -22,5 +22,12 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         /// <returns></returns>
         Task DeleteUser(string token);
+
+        /// <summary>
+        /// Gets the notifications auth.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        Task<NotificationsAuthDto> GetNotificationsAuth(string token);
     }
 }

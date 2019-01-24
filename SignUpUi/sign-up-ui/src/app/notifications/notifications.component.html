@@ -1,3 +1,24 @@
-<p>
-  notifications works!
-</p>
+<mdb-card class="w-25 p-3 wow fadeInRight" data-wow-delay="0.3s">
+  <mdb-card-body class="z-depth-2">
+    <!--Header-->
+    <div class="text-center">
+      <h3 class="dark-grey-text">
+        <strong>Notifications</strong>
+      </h3>
+      <hr>
+    </div>
+    <!--Body-->
+    <div class="w-100 text-center">
+    <div *ngIf="notifications?.length <= 0">
+      <p>No notifications to show</p>
+    </div>
+    <div *ngIf="notifications?.length > 0">
+      <ul>
+        <li *ngFor="let notification of notifications">
+          {{ notification }}
+        </li>
+      </ul>
+    </div>
+    </div>
+  </mdb-card-body>
+</mdb-card>

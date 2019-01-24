@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.Dtos
 {
-    public class XMPPAuthDto
+    public class NotificationsAuthDto
     {
         public string Username { get; set; }
         public string Password { get; set; }

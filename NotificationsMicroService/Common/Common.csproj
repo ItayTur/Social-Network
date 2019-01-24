@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dtos\ToeknDto.cs" />
-    <Compile Include="Dtos\XMPPAuthDto.cs" />
+    <Compile Include="Dtos\NotificationsAuthDto.cs" />
     <Compile Include="Interfaces\ICommonOperationsManager.cs" />
     <Compile Include="Interfaces\IConnectionsToUsersManager.cs" />
     <Compile Include="Interfaces\IConnectionsToUsersRepository.cs" />

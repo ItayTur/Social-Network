@@ -27,12 +27,12 @@ namespace BL.Managers
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public async Task<XMPPAuthDto> Register(string token)
+        public async Task<NotificationsAuthDto> Register(string token)
         {
             try
             {
                 string userId = await _commonOperationsManager.VerifyToken(token);
-                var auth = new XMPPAuthDto() { Username = token, Password = token };
+                var auth = new NotificationsAuthDto() { Username = userId, Password = userId };
                 await _notificationsHelper.Register(auth);
                 return auth;
             }
@@ -67,6 +67,30 @@ namespace BL.Managers
             {
 
                 throw new Exception();
+            }
+        }
+
+        /// <summary>
+        /// Gets the notifications auth.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public async Task<NotificationsAuthDto> GetNotificationsAuth(string token)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                var auth = new NotificationsAuthDto() { Username = userId, Password = userId };
+                return auth;
+            }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
             }
         }
     }

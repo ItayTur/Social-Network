@@ -189,7 +189,7 @@ namespace DAL.Repositories
             try
             {
                 await _graphClient.Cypher.Match("(userFollow:User), (userFollowedBy:User)")
-                    .Where((UserModel userFollow) => userFollow.Id == followedById)
+                    .Where((UserModel userFollow) => userFollow.Id == followerId)
                     .AndWhere((UserModel userFollowedBy) => userFollowedBy.Id == followedById)
                     .CreateUnique("(userFollow)-[:FOLLOW]->(userFollowedBy)")
                     .ExecuteWithoutResultsAsync();

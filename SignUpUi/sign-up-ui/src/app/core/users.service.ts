@@ -17,4 +17,9 @@ export class UsersService {
     return this.httpClient.get(this.usersBaseUrl+"/GetUsers", { withCredentials: true })
     .pipe(catchError(this.errHandler.handleError));
   }
+
+  createFollow(formData: FormData): Observable<any> {
+    return this.httpClient.post(this.usersBaseUrl+"/CreateFollow", formData, {withCredentials: true})
+    .pipe(catchError(this.errHandler.handleError));
+  }
 }

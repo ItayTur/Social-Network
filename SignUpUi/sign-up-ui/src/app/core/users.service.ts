@@ -27,4 +27,9 @@ export class UsersService {
     return this.httpClient.post(this.usersBaseUrl+"/DeleteFollow", formData, {withCredentials: true})
     .pipe(catchError(this.errHandler.handleError));
   }
+
+  createBlock (formData: FormData): Observable<any> {
+    return this.httpClient.post(this.usersBaseUrl+'/CreateBlock', formData, {withCredentials: true})
+    .pipe(catchError(this.errHandler.handleError));
+  }
 }

@@ -283,8 +283,8 @@ namespace BL.Managers
         /// Creates block relation between the users associated with the specified ids 
         /// extracted from the token and the httpRequest.
         /// </summary>
-        /// <param name="blockerId"></param>
-        /// <param name="blockedId"></param>
+        /// <param name="token"></param>
+        /// <param name="httpRequest"></param>
         /// <returns></returns>
         public async Task CreateBlock(string token, HttpRequest httpRequest)
         {

@@ -6,7 +6,7 @@ export class RegistrationInfoModel {
     address: string;
     job: string;
     birthDate: Date;
-  
+
     constructor(password:string, email: string, firstName: string, lastName: string, address: string, job: string, birthDate:Date) {
       this.password = password;
       this.email = email;
@@ -16,4 +16,4 @@ export class RegistrationInfoModel {
       this.job = job;
       this.birthDate = birthDate;
     }
-  }
+}

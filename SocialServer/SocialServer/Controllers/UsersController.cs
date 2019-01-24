@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace SocialServer.Controllers
@@ -111,5 +112,26 @@ namespace SocialServer.Controllers
                 return InternalServerError();
             }
         } 
+
+
+        [HttpPost]
+        [Route("api/Users/CreateFollow")]
+        public async Task<IHttpActionResult> CreateFollow()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var httpRequest = HttpContext.Current.Request;
+                await _usersManager.CreateFollow(token, httpRequest);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
     }
 }

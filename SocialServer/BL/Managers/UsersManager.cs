@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BL.Managers
 {
@@ -225,6 +226,27 @@ namespace BL.Managers
             {
                 var blockedUsers = await _usersRepository.GetBloackedUsers(userId, usersToShow);
                 CheckUniqueId(usersToReturn, usedIds, blockedUsers);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+
+        /// <summary>
+        /// Creates follow relation between the users associated with the specified ids.
+        /// </summary>
+        /// <param name="followerId"></param>
+        /// <param name="followedById"></param>
+        /// <returns></returns>
+        public async Task CreateFollow(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string followerId = await _commonOperationsManager.VerifyToken(token);
+                await _usersRepository.CreateFollow(followerId, httpRequest["FollowedById"]);
             }
             catch (Exception e)
             {

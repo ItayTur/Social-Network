@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dtos\NotificationMessageDto.cs" />
     <Compile Include="Dtos\ToeknDto.cs" />
     <Compile Include="Dtos\NotificationsAuthDto.cs" />
     <Compile Include="Interfaces\ICommonOperationsManager.cs" />

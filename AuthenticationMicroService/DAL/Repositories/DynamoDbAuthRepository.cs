@@ -1,4 +1,5 @@
-﻿using Common.Interfaces;
+﻿using Amazon.DynamoDBv2.DocumentModel;
+using Common.Interfaces;
 using Common.Models;
 using DAL.Data;
 using System;
@@ -51,9 +52,11 @@ namespace DAL.Repositories
         {
             try
             {
+
                 using (DynamoDbContext dbContext = new DynamoDbContext())
                 {
-                    await dbContext.SaveAsync(updatedUser).ConfigureAwait(false);
+                   
+                    await dbContext.SaveAsync(updatedUser);
                 }
             }
             catch (Exception e)

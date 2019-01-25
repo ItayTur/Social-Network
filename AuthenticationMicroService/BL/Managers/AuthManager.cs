@@ -68,9 +68,34 @@ namespace BL.Managers
         /// <param name="token"></param>
         /// <param name="blockedId"></param>
         /// <returns></returns>
-        private Task<string> GetUserEmailById(string token, string blockedId)
+        private async Task<string> GetUserEmailById(string token, string blockedId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string emailToReturn = "";
+                JObject dataToSend = new JObject();
+                dataToSend.Add("token", token);
+                dataToSend.Add("userId", blockedId);
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.PostAsJsonAsync(_identityUrl + "/GetUserEmailById", dataToSend);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        emailToReturn = await response.Content.ReadAsAsync<string>();
+                    }
+                    else
+                    {
+                        throw new Exception("couldn't connect to identity server");
+                    }
+
+                    return emailToReturn;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
 

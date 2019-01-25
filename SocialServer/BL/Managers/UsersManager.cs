@@ -309,7 +309,7 @@ namespace BL.Managers
         }
 
         /// <summary>
-        /// Checks for system block conditions and is qualify activates it.
+        /// Checks for system block conditions and if qualify activates it.
         /// </summary>
         /// <param name="blockedId"></param>
         /// <param name="token"></param>
@@ -349,7 +349,7 @@ namespace BL.Managers
                     var resposnse = await httpClient.PostAsJsonAsync(_authBaseUrl + "/BlockUser", dataToSend);
                     if (!resposnse.IsSuccessStatusCode)
                     {
-                        throw new Exception("couldn't ");
+                        throw new Exception("couldn't connect to auth server");
                     }
                 }
             }

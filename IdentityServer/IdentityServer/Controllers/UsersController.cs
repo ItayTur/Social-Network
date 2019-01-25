@@ -136,5 +136,24 @@ namespace IdentityServer.Controllers
                 return InternalServerError();
             }
         }
+
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/Users/GetUserEmailById")]
+        public async Task<IHttpActionResult> GetUserEmailById(JObject data)
+        {
+            try
+            {
+                string token = data["token"].ToObject<string>();
+                string userId = data["userId"].ToObject<string>();
+                string emailToReturn = await _usersManager.GetUserEmailById(token, userId);
+                return Ok(emailToReturn);
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
     }
 }

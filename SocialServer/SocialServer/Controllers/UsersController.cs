@@ -108,6 +108,8 @@ namespace SocialServer.Controllers
         }
 
 
+        [HttpGet]
+        [Route("api/Users/GetFollowers")]
         /// <summary>
         /// Gets the followers of the user associated with Id extracted from the token.
         /// </summary>

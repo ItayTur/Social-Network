@@ -39,10 +39,36 @@ namespace BL.Managers
 
 
         /// <summary>
-        /// Blocks a user from entering the app.
+        /// Activates the system block on the user associated with the specified Id.
         /// </summary>
-        /// <param name="email"></param>
-        public void BlockUser(string email)
+        /// <param name="token"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        public async Task BlockUser(string token, string blockedId)
+        {
+            try
+            {
+                await _loginTokenManager.VerifyAsync(token);
+                string userEmail = await GetUserEmailById(token, blockedId);
+                var blockedUser = _authRepository.GetAuthByEmail(userEmail);
+                blockedUser.IsBLocked = true;
+                await _authRepository.Update(blockedUser);
+
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+        /// <summary>
+        /// Gets the email of the user associated with the specified id.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        private Task<string> GetUserEmailById(string token, string blockedId)
         {
             throw new NotImplementedException();
         }
@@ -404,7 +430,10 @@ namespace BL.Managers
         }
 
 
-
+        /// <summary>
+        /// Genrates unique Id.
+        /// </summary>
+        /// <returns></returns>
         private string GenerateUserId()
         {
             return Guid.NewGuid().ToString();

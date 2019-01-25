@@ -11,7 +11,7 @@ namespace Common.Interfaces
     {        
         AuthModel GetAuthByEmail(string email);
 
-        void Update(AuthModel updatedUser);
+        Task Update(AuthModel updatedUser);
 
         Task Add(AuthModel newUser);
 

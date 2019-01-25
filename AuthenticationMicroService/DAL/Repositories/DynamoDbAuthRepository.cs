@@ -47,9 +47,20 @@ namespace DAL.Repositories
             }
         }
 
-        public void Update(AuthModel updatedUser)
+        public async Task Update(AuthModel updatedUser)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (DynamoDbContext dbContext = new DynamoDbContext())
+                {
+                    await dbContext.SaveAsync(updatedUser).ConfigureAwait(false);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
 
         public async Task Delete(string userEmail)
@@ -60,5 +71,7 @@ namespace DAL.Repositories
                 //TODO: log
             }
         }
+
+        
     }
 }

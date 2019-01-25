@@ -1,5 +1,6 @@
 ﻿using Common.Dtos;
 using Common.Interfaces;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Data.Linq;
 using System.Security.Authentication;
@@ -143,5 +144,23 @@ namespace AuthenticationApi.Controllers
 
         }
 
+
+        [HttpPost]
+        [Route("api/Auth/BlockUser")]
+        public async Task<IHttpActionResult> BlockUser([FromBody] JObject data)
+        {
+            try
+            {
+                string token = data["token"].ToObject<string>();
+                string blockedId = data["blockedId"].ToObject<string>();
+                await _authManager.BlockUser(token, blockedId);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
     }
 }

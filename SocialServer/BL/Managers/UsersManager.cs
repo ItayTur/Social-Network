@@ -1,9 +1,11 @@
 ﻿using Common.Dtos;
 using Common.Interfaces;
 using Common.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Net.Http;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using System.Web;
@@ -297,11 +299,64 @@ namespace BL.Managers
                 string blockerId = await _commonOperationsManager.VerifyToken(token);
                 string blockedId = httpRequest["BlockedId"];
                 await _usersRepository.CreateBlock(blockerId, blockedId);
+                await CheckSystemBlock(blockedId, token);
             }
             catch (Exception e)
             {
 
                 throw e;
+            }
+        }
+
+        /// <summary>
+        /// Checks for system block conditions and is qualify activates it.
+        /// </summary>
+        /// <param name="blockedId"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private async Task CheckSystemBlock(string blockedId, string token)
+        {
+            try
+            {
+
+                var blocksCountTask = _usersRepository.GetBlocksCount(blockedId);
+                string blocksLimitString = ConfigurationManager.AppSettings["BlocksLimit"];
+                int blocksLimit = _commonOperationsManager.IntegerBiggerThanZero(blocksLimitString);
+                await blocksCountTask;
+                var blocks = blocksCountTask.Result;
+                if (blocks > blocksLimit)
+                {
+                    JObject dataToSend = new JObject();
+                    dataToSend.Add("token", JToken.FromObject(token));
+                    dataToSend.Add("blockedId", JToken.FromObject(blockedId));
+                    await BlockUser(dataToSend);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+            
+        }
+
+        private async Task BlockUser(JObject dataToSend)
+        {
+            try
+            {
+                using(HttpClient httpClient = new HttpClient())
+                {
+                    var resposnse = await httpClient.PostAsJsonAsync(_authBaseUrl + "/BlockUser", dataToSend);
+                    if (!resposnse.IsSuccessStatusCode)
+                    {
+                        throw new Exception("couldn't ");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                //Write to log
             }
         }
 

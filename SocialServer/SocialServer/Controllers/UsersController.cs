@@ -121,8 +121,8 @@ namespace SocialServer.Controllers
             try
             {
                 string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
-                await _usersManager.GetFollowers(token);
-                return Ok();
+                var users = await _usersManager.GetFollowers(token);
+                return Ok(users);
             }
             catch (Exception e)
             {

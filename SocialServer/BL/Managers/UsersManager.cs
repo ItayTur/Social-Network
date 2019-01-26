@@ -327,5 +327,28 @@ namespace BL.Managers
                 throw e;
             }
         }
+
+
+        /// <summary>
+        /// Gets the followers of the user associated with Id extracted from the token.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<UserWithRelationsDto>> GetFollowers(string token)
+        {
+            try
+            {
+                string userId = await _commonOperationsManager.VerifyToken(token);
+                string followersToShowString = ConfigurationManager.AppSettings["UsersToShow"];
+                int followersToShow = _commonOperationsManager.IntegerBiggerThanZero(followersToShowString);
+                return await _usersRepository.GetFollowers(userId, followersToShow);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
     }
 }

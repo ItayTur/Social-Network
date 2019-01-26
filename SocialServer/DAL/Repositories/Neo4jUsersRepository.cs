@@ -73,25 +73,27 @@ namespace DAL.Repositories
 
 
         /// <summary>
-        /// Gets all the users except the user associated with the specified Id.
+        /// Gets the followers of the user associated with the specified Id.
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="usersToShow"></param>
+        /// <param name=""></param>
         /// <returns></returns>
-        public async Task<IEnumerable<UserModel>> GetUsers(string userId, int usersToShow)
+        public async Task<IEnumerable<UserWithRelationsDto>> GetFollowers(string userId, int usersToShow)
         {
             try
             {
-                return await _graphClient.Cypher.Match("(u:User)")
-                    .Where((UserModel u) => u.Id != userId)
-                    .Return(u => u.As<UserModel>())
+                return await _graphClient.Cypher
+                    .Match("(follower:User)-[:FOLLOW]->(user:User)")
+                    .Where((UserModel user) => user.Id == userId)
+                    .OptionalMatch("(follower:User)<-[r:FOLLOW]-(user:User)")
+                    .Return((follower, r) => new UserWithRelationsDto { User = follower.As<UserModel>(), IsFollow = r != null })
                     .Limit(usersToShow)
                     .ResultsAsync;
             }
             catch (Exception e)
             {
 
-                throw;
+                throw e;
             }
         }
 

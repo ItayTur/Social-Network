@@ -108,6 +108,30 @@ namespace SocialServer.Controllers
         }
 
 
+        [HttpGet]
+        [Route("api/Users/GetFollowers")]
+        /// <summary>
+        /// Gets the followers of the user associated with Id extracted from the token.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public async Task<IHttpActionResult> GetFollowers()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var users = await _usersManager.GetFollowers(token);
+                return Ok(users);
+            }
+            catch (Exception e)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
         /// <summary>
         /// Creats follow relation.
         /// </summary>

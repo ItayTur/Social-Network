@@ -70,5 +70,14 @@ namespace Common.Interfaces
         /// <param name="httpRequest"></param>
         /// <returns></returns>
         Task DeleteBlock(string token, HttpRequest httpRequest);
+
+
+        /// <summary>
+        /// Gets the followers of the user associated with Id extracted from the token.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserWithRelationsDto>> GetFollowers(string token);
     }
 }

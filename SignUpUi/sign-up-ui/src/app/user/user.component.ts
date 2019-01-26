@@ -8,6 +8,7 @@ import { SnackBarService } from '../core/snack-bar.service';
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss']
 })
+
 export class UserComponent implements OnInit {
   @Input() userWithRelations:UserWithRelations = new UserWithRelations();
   constructor(private usersService: UsersService, private snackBarService: SnackBarService) { }
@@ -39,6 +40,13 @@ export class UserComponent implements OnInit {
       },
       err => this.snackBarService.openSnackBar(err, "", 5000)
     );
+  }
+
+  deleteBlock() {
+    const formData: FormData = new FormData();
+    formData.append("BlockedId", this.userWithRelations.User.Id);
+    this.usersService.deleteBlock(formData).subscribe(success => this.userWithRelations.IsBlock=false,
+      err => this.snackBarService.openSnackBar(err,"",5000));
   }
 
 }

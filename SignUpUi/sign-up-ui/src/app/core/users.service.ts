@@ -32,4 +32,9 @@ export class UsersService {
     return this.httpClient.post(this.usersBaseUrl+'/CreateBlock', formData, {withCredentials: true})
     .pipe(catchError(this.errHandler.handleError));
   }
+
+  deleteBlock (formData: FormData): Observable<any> {
+    return this.httpClient.post(this.usersBaseUrl+'/DeleteBlock', formData, { withCredentials: true })
+    .pipe(catchError(this.errHandler.handleError));
+  }
 }

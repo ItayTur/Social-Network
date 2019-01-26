@@ -112,6 +112,7 @@ namespace BL.Managers
         }
 
 
+
         /// <summary>
         /// Gets all the users except the user associated with the specified Id.
         /// </summary>
@@ -142,8 +143,7 @@ namespace BL.Managers
                 throw;
             }
         }
-
-
+        
 
         /// <summary>
         /// Gets the users that's being followed by the user
@@ -163,7 +163,7 @@ namespace BL.Managers
                 throw e;
             }
         }
-
+        
 
 
         /// <summary>
@@ -235,6 +235,7 @@ namespace BL.Managers
         }
 
 
+
         /// <summary>
         /// Creates follow relation between the users associated with the specified ids.
         /// </summary>
@@ -254,6 +255,7 @@ namespace BL.Managers
                 throw e;
             }
         }
+
 
 
         /// <summary>
@@ -279,6 +281,8 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Creates block relation between the users associated with the specified ids 
         /// extracted from the token and the httpRequest.
@@ -293,6 +297,29 @@ namespace BL.Managers
                 string blockerId = await _commonOperationsManager.VerifyToken(token);
                 string blockedId = httpRequest["BlockedId"];
                 await _usersRepository.CreateBlock(blockerId, blockedId);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+
+        /// <summary>
+        /// Deletes block relation between the users associated with the specified ids 
+        /// extracted from the token and the httpRequest.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        public async Task DeleteBlock(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string blockerId = await _commonOperationsManager.VerifyToken(token);
+                string blockedId = httpRequest["BlockedId"];
+                await _usersRepository.DeleteBlock(blockerId, blockedId);
             }
             catch (Exception e)
             {

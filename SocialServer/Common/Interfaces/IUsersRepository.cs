@@ -78,6 +78,7 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task DeleteFollow(string followerId, string followedById);
 
+        
         /// <summary>
         /// Creates block relation between the users associated with the specified ids.
         /// </summary>
@@ -85,5 +86,15 @@ namespace Common.Interfaces
         /// <param name="blockedId"></param>
         /// <returns></returns>
         Task CreateBlock(string blockerId, string blockedId);
+
+
+        /// <summary>
+        /// Deletes block relation between the users associated with 
+        /// the specified ids.
+        /// </summary>
+        /// <param name="blockerId"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        Task DeleteBlock(string blockerId, string blockedId);
     }
 }

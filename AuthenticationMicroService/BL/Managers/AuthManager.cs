@@ -55,6 +55,7 @@ namespace BL.Managers
             _blockHandlers.Add(RegistrationTypeEnum.UserNamePassword,BlockUserNamePasswordAuth);
         }
 
+       
         private async Task BlockFacebookAuth(string registrationKey)
         {
             try
@@ -108,7 +109,12 @@ namespace BL.Managers
             }
         }
 
-
+        /// <summary>
+        /// Gets the user associated with the speci
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
         private async Task<UserModel> GetUserById(string token, string blockedId)
         {
             try

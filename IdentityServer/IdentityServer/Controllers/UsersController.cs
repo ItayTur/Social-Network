@@ -148,7 +148,7 @@ namespace IdentityServer.Controllers
             {
                 string token = data["token"].ToObject<string>();
                 string userId = data["userId"].ToObject<string>();
-                UserModel user = await _usersManager.GetUserById(userId);
+                //UserModel user = await _usersManager.GetUserById(token ,userId);
 
                 return Ok(user);
             }

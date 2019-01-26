@@ -48,6 +48,7 @@
     <Compile Include="Dtos\AccessTokenDto.cs" />
     <Compile Include="Dtos\FacebookUserDto.cs" />
     <Compile Include="Dtos\RegistrationDto.cs" />
+    <Compile Include="Enums\RegistrationTypeEnum.cs" />
     <Compile Include="Exceptions\AddAuthToDbException.cs" />
     <Compile Include="Exceptions\AddUserToDbException.cs" />
     <Compile Include="Dtos\AuthDto.cs" />

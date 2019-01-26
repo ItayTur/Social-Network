@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dtos\TokenDto.cs" />
+    <Compile Include="Enums\RegistrationTypeEnum.cs" />
     <Compile Include="Interfaces\IUsersManager.cs" />
     <Compile Include="Interfaces\IUsersRepository.cs" />
     <Compile Include="Models\UserModel.cs" />

@@ -17,7 +17,7 @@ export class NotificationsService {
 
   getNotificationsAuth(): Observable<any> {
     return this.httpClient.get(this.notificationServerApi, { withCredentials: true })
-      .pipe(retry(3), catchError(this.erorrHandler.handleError));
+      .pipe(catchError(this.erorrHandler.handleError));
   }
   
 }

@@ -26,7 +26,6 @@ export class AuthenticateUserService {
     let auth: AuthModel = new AuthModel(email, password);
     return this.httpClient.post(this.authApi + "/Login", auth)
     .pipe(
-      retry(3),
       catchError(this.erorrHandler.handleError)
     );
   }
@@ -34,7 +33,6 @@ export class AuthenticateUserService {
   register(registrationInfo:RegistrationInfoModel):Observable<any> {
     return this.httpClient.post(this.authApi + "/Register", registrationInfo, httpOptions)
     .pipe(
-      retry(3),
       catchError(this.erorrHandler.handleError)
     );
   }

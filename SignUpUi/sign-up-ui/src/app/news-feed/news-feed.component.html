@@ -1,6 +1,18 @@
+<div class="row">
+  <div class="col-3">
+    <app-user-info></app-user-info>
+  </div>
+  <div class="col-6">
+    <app-posts></app-posts>
 
-<app-user-info></app-user-info>
-<app-posts></app-posts>
-<app-notifications></app-notifications>
-<app-users></app-users>
-<router-outlet></router-outlet>
+    <router-outlet></router-outlet>
+  </div>
+  <div class="col-3">
+    <app-notifications></app-notifications>
+  </div>
+</div>
+<div class="row">
+  <div class="col-3">
+    <app-users class="d-flex"></app-users>
+  </div>
+</div>

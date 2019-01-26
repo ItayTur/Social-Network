@@ -17,7 +17,6 @@ export class IdentityService {
   getDetails():Observable<any> {
     return this.httpClient.get(this.identityApi, { withCredentials: true })
     .pipe(
-      retry(3),
       catchError(this.erorrHandler.handleError)
     );
   }

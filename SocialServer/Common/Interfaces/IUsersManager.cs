@@ -1,9 +1,5 @@
 ﻿using Common.Dtos;
-using Common.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -17,6 +13,7 @@ namespace Common.Interfaces
         /// <param name="token"></param>
         Task Delete(string token);
 
+
         /// <summary>
         /// Addes user with the email specified.
         /// </summary>
@@ -24,6 +21,7 @@ namespace Common.Interfaces
         /// <param name="email"></param>
         /// <returns></returns>
         Task Add(string token, string email, string name);
+
 
         /// <summary>
         /// Gets all the users except the user associated with the specified Id.
@@ -33,6 +31,7 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task<IEnumerable<UserWithRelationsDto>> GetUsers(string token);
 
+
         /// <summary>
         /// Creates follow relation between the users associated with the specified ids.
         /// </summary>
@@ -40,6 +39,7 @@ namespace Common.Interfaces
         /// <param name="followedById"></param>
         /// <returns></returns>
         Task CreateFollow(string token, HttpRequest httpRequest);
+
 
         /// <summary>
         /// Deletes follow relation between the user associated with the id
@@ -60,5 +60,24 @@ namespace Common.Interfaces
         /// <param name="httpRequest"></param>
         /// <returns></returns>
         Task CreateBlock(string token, HttpRequest httpRequest);
+
+
+        /// <summary>
+        /// Deletes block relation between the users associated with the specified ids 
+        /// extracted from the token and the httpRequest.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        Task DeleteBlock(string token, HttpRequest httpRequest);
+
+
+        /// <summary>
+        /// Gets the followers of the user associated with Id extracted from the token.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        Task<IEnumerable<UserWithRelationsDto>> GetFollowers(string token);
     }
 }

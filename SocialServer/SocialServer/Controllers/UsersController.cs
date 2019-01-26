@@ -1,11 +1,6 @@
 ﻿using Common.Interfaces;
-using Common.Models;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -49,7 +44,7 @@ namespace SocialServer.Controllers
 
                 throw;
             }
-            
+
         }
 
 
@@ -88,8 +83,7 @@ namespace SocialServer.Controllers
             }
         }
 
-
-
+        
         [HttpGet]
         [Route("api/users/GetUsers")]
         /// <summary>
@@ -111,9 +105,37 @@ namespace SocialServer.Controllers
 
                 return InternalServerError();
             }
-        } 
+        }
 
 
+        [HttpGet]
+        [Route("api/Users/GetFollowers")]
+        /// <summary>
+        /// Gets the followers of the user associated with Id extracted from the token.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public async Task<IHttpActionResult> GetFollowers()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var users = await _usersManager.GetFollowers(token);
+                return Ok(users);
+            }
+            catch (Exception e)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        /// <summary>
+        /// Creats follow relation.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/Users/CreateFollow")]
         public async Task<IHttpActionResult> CreateFollow()
@@ -133,6 +155,10 @@ namespace SocialServer.Controllers
         }
 
 
+        /// <summary>
+        /// Deletes follow relation.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/Users/DeleteFollow")]
         public async Task<IHttpActionResult> DeleteFollow()
@@ -152,6 +178,10 @@ namespace SocialServer.Controllers
         }
 
 
+        /// <summary>
+        /// Creates block connection.
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [Route("api/Users/CreateBlock")]
         public async Task<IHttpActionResult> CreateBlock()
@@ -161,6 +191,29 @@ namespace SocialServer.Controllers
                 string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
                 var httpRequest = HttpContext.Current.Request;
                 await _usersManager.CreateBlock(token, httpRequest);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        /// <summary>
+        /// Deletes block relation.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/Users/DeleteBlock")]
+        public async Task<IHttpActionResult> DeleteBlock()
+        {
+            try
+            {
+                string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
+                var httpRequest = HttpContext.Current.Request;
+                await _usersManager.DeleteBlock(token, httpRequest);
                 return Ok();
             }
             catch (Exception)

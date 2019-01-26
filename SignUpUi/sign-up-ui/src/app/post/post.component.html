@@ -23,7 +23,7 @@
 
       <!-- Image -->
       <div *ngIf="post.ImgUrl" class="view rgba-white-slight waves-light" mdbWavesEffect>
-        <mdb-card-img src="https://mdbootstrap.com/img/Mockups/Lightbox/Thumbnail/img%20(67).jpg" alt="Card image cap"></mdb-card-img>
+        <mdb-card-img [src]="senitaizer.bypassSecurityTrustResourceUrl(post.ImgUrl)" alt="Card image cap"></mdb-card-img>
         <a>
           <div class="mask"></div>
         </a>

@@ -22,13 +22,12 @@ namespace Common.Interfaces
 
 
         /// <summary>
-        /// Gets all the users except the user associated with the specified Id.
+        /// Gets the followers of the user associated with the specified Id.
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="usersToShow"></param>
+        /// <param name=""></param>
         /// <returns></returns>
-        Task<IEnumerable<UserModel>> GetUsers(string userId, int usersToShow);
-
+        Task<IEnumerable<UserWithRelationsDto>> GetFollowers(string userId, int usersToShow);
 
         /// <summary>
         /// Gets the users that's being followed by the user associated with the specified Id.
@@ -78,6 +77,7 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task DeleteFollow(string followerId, string followedById);
 
+        
         /// <summary>
         /// Creates block relation between the users associated with the specified ids.
         /// </summary>
@@ -85,5 +85,15 @@ namespace Common.Interfaces
         /// <param name="blockedId"></param>
         /// <returns></returns>
         Task CreateBlock(string blockerId, string blockedId);
+
+
+        /// <summary>
+        /// Deletes block relation between the users associated with 
+        /// the specified ids.
+        /// </summary>
+        /// <param name="blockerId"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        Task DeleteBlock(string blockerId, string blockedId);
     }
 }

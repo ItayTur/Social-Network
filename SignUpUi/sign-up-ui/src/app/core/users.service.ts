@@ -18,6 +18,11 @@ export class UsersService {
     .pipe(catchError(this.errHandler.handleError));
   }
 
+  getFollowers(): Observable<any> {
+    return this.httpClient.get(this.usersBaseUrl+'/GetFollowers', { withCredentials: true })
+    .pipe(catchError(this.errHandler.handleError));
+  }
+
   createFollow(formData: FormData): Observable<any> {
     return this.httpClient.post(this.usersBaseUrl+"/CreateFollow", formData, {withCredentials: true})
     .pipe(catchError(this.errHandler.handleError));
@@ -30,6 +35,11 @@ export class UsersService {
 
   createBlock (formData: FormData): Observable<any> {
     return this.httpClient.post(this.usersBaseUrl+'/CreateBlock', formData, {withCredentials: true})
+    .pipe(catchError(this.errHandler.handleError));
+  }
+
+  deleteBlock (formData: FormData): Observable<any> {
+    return this.httpClient.post(this.usersBaseUrl+'/DeleteBlock', formData, { withCredentials: true })
     .pipe(catchError(this.errHandler.handleError));
   }
 }

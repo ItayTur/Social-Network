@@ -29,6 +29,7 @@ namespace IdentityServer.Controllers
             _usersManager = usersManager;
         }
 
+
         /// <summary>
         /// Gets the user associated with the token specified.
         /// </summary>
@@ -51,6 +52,7 @@ namespace IdentityServer.Controllers
                 return InternalServerError();
             }
         }
+
 
         /// <summary>
         /// Adds user to the DB.
@@ -76,6 +78,7 @@ namespace IdentityServer.Controllers
                 return InternalServerError();
             }
         }
+
 
         /// <summary>
         /// Retrieves an individual cookie from the cookies collection
@@ -129,6 +132,25 @@ namespace IdentityServer.Controllers
             {
                 string fullName = await _usersManager.GetFullName(token);
                 return Ok(fullName);
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.Route("api/Users/GetUserById")]
+        public async Task<IHttpActionResult>GetUserById(JObject data)
+        {
+            try
+            {
+                string token = data["token"].ToObject<string>();
+                string userId = data["userId"].ToObject<string>();
+                UserModel user = await _usersManager.GetUserById(userId);
+
+                return Ok(user);
             }
             catch (Exception)
             {

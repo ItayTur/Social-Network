@@ -340,6 +340,12 @@ namespace BL.Managers
             
         }
 
+
+        /// <summary>
+        /// Blockes user from entering the app.
+        /// </summary>
+        /// <param name="dataToSend"></param>
+        /// <returns></returns>
         private async Task BlockUser(JObject dataToSend)
         {
             try

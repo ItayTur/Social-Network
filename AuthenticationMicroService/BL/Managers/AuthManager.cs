@@ -1,5 +1,6 @@
 ﻿using BL.Helpers;
 using Common.Dtos;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Interfaces;
 using Common.Loggers;
@@ -7,6 +8,7 @@ using Common.Models;
 using Facebook;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Linq;
 using System.Net.Http;
@@ -17,8 +19,11 @@ namespace BL.Managers
 {
     public class AuthManager : IAuthManager
     {
+        private delegate Task BlockHandler(string registrationKey);
         private readonly IAuthRepository _authRepository;
+        private readonly IFacebookAuthRepository _facebookAuthRepository;
         private readonly ILoginTokenManager _loginTokenManager;
+        private readonly Dictionary<RegistrationTypeEnum, BlockHandler> _blockHandlers;
         private readonly string _socialUrl;
         private readonly string _identityUrl;
         private readonly string _notificationsUrl;
@@ -28,13 +33,56 @@ namespace BL.Managers
         /// </summary>
         /// <param name="authRepository"></param>
         /// <param name="loginTokenManager"></param>
-        public AuthManager(IAuthRepository authRepository, ILoginTokenManager loginTokenManager)
+        public AuthManager(IAuthRepository authRepository, ILoginTokenManager loginTokenManager, IFacebookAuthRepository facebookAuthRepository)
         {
+            _blockHandlers = new Dictionary<RegistrationTypeEnum, BlockHandler>();
+            InitializeBlockHandlers();
             _authRepository = authRepository;
+            _facebookAuthRepository = facebookAuthRepository;
             _loginTokenManager = loginTokenManager;
             _identityUrl = ConfigurationManager.AppSettings["IdentityUrl"];
             _socialUrl = ConfigurationManager.AppSettings["SocialUrl"];
             _notificationsUrl = ConfigurationManager.AppSettings["NotificationsUrl"];
+        }
+
+
+        /// <summary>
+        /// Initialize the block handlers dictionry.
+        /// </summary>
+        private void InitializeBlockHandlers()
+        {
+            _blockHandlers.Add(RegistrationTypeEnum.Facebook,BlockFacebookAuth);
+            _blockHandlers.Add(RegistrationTypeEnum.UserNamePassword,BlockUserNamePasswordAuth);
+        }
+
+        private async Task BlockFacebookAuth(string registrationKey)
+        {
+            try
+            {
+                FacebookAuthModel facebookAuth = _facebookAuthRepository.GetAuthByFacebookId(registrationKey);
+                facebookAuth.IsBLocked = true;
+                await _facebookAuthRepository.Update(facebookAuth);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        private async Task BlockUserNamePasswordAuth(string registrationKey)
+        {
+            try
+            {
+                AuthModel authModel = _authRepository.GetAuthByEmail(registrationKey);
+                authModel.IsBLocked = true;
+                await _authRepository.Update(authModel);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
 
 
@@ -49,11 +97,9 @@ namespace BL.Managers
             try
             {
                 await _loginTokenManager.VerifyAsync(token);
-                string userEmail = await GetUserEmailById(token, blockedId);
-                var blockedUser = _authRepository.GetAuthByEmail(userEmail);
-                blockedUser.IsBLocked = true;
-                await _authRepository.Update(blockedUser);
-
+                UserModel userToBlock = await GetUserById(token, blockedId);
+                Enum.TryParse(userToBlock.RegistrationType, out RegistrationTypeEnum registrationType);
+                await _blockHandlers[registrationType](userToBlock.RegistrationKey);
             }
             catch (Exception e)
             {
@@ -61,6 +107,35 @@ namespace BL.Managers
                 throw e;
             }
         }
+
+
+        private async Task<UserModel> GetUserById(string token, string blockedId)
+        {
+            try
+            {
+                JObject dataToSend = new JObject();
+                dataToSend.Add("token", token);
+                dataToSend.Add("userId", blockedId);
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var response = await httpClient.PostAsJsonAsync(_identityUrl + "/GetUserById", dataToSend);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return await response.Content.ReadAsAsync<UserModel>();
+                    }
+                    else
+                    {
+                        throw new Exception("couldn't connect to identity server");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
 
         /// <summary>
         /// Gets the email of the user associated with the specified id.
@@ -403,7 +478,9 @@ namespace BL.Managers
                         Email = registrationDto.Email,
                         Address = registrationDto.Address,
                         Job = registrationDto.Job,
-                        BirthDate = registrationDto.BirthDate                        
+                        BirthDate = registrationDto.BirthDate,
+                        RegistrationType = RegistrationTypeEnum.UserNamePassword.ToString(),
+                        RegistrationKey = registrationDto.Email
                     };
                     var data = new JObject();
                     data.Add("user", JToken.FromObject(user));

@@ -1,4 +1,5 @@
 ﻿using Common.Dtos;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Interfaces;
 using Common.Models;
@@ -225,6 +226,8 @@ namespace BL.Managers
                 using (HttpClient httpClient = new HttpClient())
                 {
                     UserModel user = GetUserFromFacebookData(facebookUser, userId);
+                    user.RegistrationKey = facebookUser.id;
+                    user.SetRegistrationType(RegistrationTypeEnum.Facebook);
                     var data = new JObject();
                     data.Add("user", JToken.FromObject(user));
                     data.Add("token", JToken.FromObject(appToken));

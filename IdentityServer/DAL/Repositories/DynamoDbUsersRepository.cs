@@ -103,29 +103,5 @@ namespace DAL.Repositories
                 }
             }
         }
-
-
-
-        /// <summary>
-        /// Gets the email of the user associated with the specified Id.
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public async Task<UserModel> GetUserById(string userId)
-        {
-            try
-            {
-                using (DynamoDbContext context = new DynamoDbContext())
-                {
-                    return await context.LoadAsync<UserModel>(userId);
-                } 
-            }
-            catch (Exception e)
-            {
-
-                throw e;
-            }
-        }
     }
 }

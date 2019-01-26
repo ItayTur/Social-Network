@@ -154,8 +154,22 @@ namespace BL.Managers
             try
             {
                 await VerfiyToken(token);
-                UserModel user = await _usersRepository.GetUserById(userId);
+                UserModel user = await _usersRepository.Get(userId);
                 return user.Email;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+        public async Task<UserModel> GetUserById(string token, string userId)
+        {
+            try
+            {
+                await VerfiyToken(token);
+                return await _usersRepository.Get(userId);
             }
             catch (Exception e)
             {

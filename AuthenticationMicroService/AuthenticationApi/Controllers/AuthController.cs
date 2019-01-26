@@ -47,6 +47,10 @@ namespace AuthenticationApi.Controllers
 
                 return BadRequest(e.Message);
             }
+            catch (UserBlockedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception e)
             {
                 return InternalServerError();

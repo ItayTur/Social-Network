@@ -105,7 +105,6 @@ namespace BL.Managers
             {
                 VerifyNotificationData(notificationMessageDto);
                 string userId = await _commonOperationsManager.VerifyToken(notificationMessageDto.AppToken);
-                var auth = new NotificationsAuthDto() { Username = userId, Password = userId };
                 await _notificationsHelper.SendMessageToUser(notificationMessageDto.Message, notificationMessageDto.UserId);
             }
             catch (ArgumentNullException)

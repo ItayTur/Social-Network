@@ -80,7 +80,21 @@ namespace BL.Managers
                 var userId = await _commonOperationsManager.VerifyToken(token).ConfigureAwait(false);
                 post.Id = GenerateId();
                 post.WriterName = await GetFullName(token);
-                return await _postsRepository.Add(userId, post, tags);
+                var addedPost =  await _postsRepository.Add(userId, post, tags);
+                tags?.ForEach(async (tag)=>{
+                    try
+                    {
+                        string myUsername = await GetFullName(token);
+                        await _commonOperationsManager.SendNotification(tag.Id, $"You were taged in a post by {myUsername}", token);
+                    }
+                    catch (Exception e)
+                    {
+
+                        //Log/Handle notification was not sent. Does not affect general state of like operation.
+                    }
+                });
+                
+                return addedPost;
             }
             catch (Exception e)
             {

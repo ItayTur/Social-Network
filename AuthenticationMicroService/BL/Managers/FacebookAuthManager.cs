@@ -1,15 +1,13 @@
 ﻿using Common.Dtos;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Interfaces;
 using Common.Models;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BL.Managers
@@ -52,7 +50,7 @@ namespace BL.Managers
                     {
                         var facebookUserDto = await response.Content.ReadAsAsync<FacebookUserDto>();
                         var facebookId = facebookUserDto.id;
-                        string appToken;
+                        string appToken = "";
                         if (_facebookAuthRepository.IsFacebookIdFree(facebookId))
                         {
                             var userId = GenerateUserId();
@@ -61,8 +59,7 @@ namespace BL.Managers
                         }
                         else
                         {
-                            var facebookAuth = _facebookAuthRepository.GetAuthByFacebookId(facebookId);
-                            appToken = await _loginTokenManager.Add(facebookAuth.UserId, LoginTokenModel.LoginTypes.Facebook);
+                            appToken = await FacebookLogin(facebookId);
                         }
 
                         return appToken;
@@ -77,10 +74,32 @@ namespace BL.Managers
 
                     throw e;
                 }
-                
+
             }
         }
-               
+
+        private async Task<string> FacebookLogin(string facebookId)
+        {
+            try
+            {
+                var facebookAuth = _facebookAuthRepository.GetAuthByFacebookId(facebookId);
+                if (!facebookAuth.IsBLocked)
+                {
+                    return await _loginTokenManager.Add(facebookAuth.UserId, LoginTokenModel.LoginTypes.Facebook);
+                }
+                else
+                {
+                    throw new UserBlockedException("user is blocked");
+                }
+
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
         /// <summary>
         /// Gets the user details associated with the specified facebook token.
         /// </summary>
@@ -140,7 +159,7 @@ namespace BL.Managers
             {
                 Task removeUserTaskawait = RemoveIdentity(appToken);
                 Task removeAuthTaskawait = RemoveFBAuth(facebookUserDto.id);
-                Task removeUserToGraphTask = RemoveGraphNode(appToken); 
+                Task removeUserToGraphTask = RemoveGraphNode(appToken);
                 Task removeUserToNotificationTask = RemoveNotificationsAuth(appToken);
 
                 await Task.WhenAll(removeUserTaskawait, removeAuthTaskawait, removeUserToGraphTask, removeUserToNotificationTask);
@@ -160,13 +179,13 @@ namespace BL.Managers
         {
             try
             {
-                using(HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient())
                 {
                     var dataToSend = new JObject();
                     dataToSend.Add("token", JToken.FromObject(appToken));
                     dataToSend.Add("email", JToken.FromObject(facebookUserDto.email));
                     dataToSend.Add("name", JToken.FromObject(facebookUserDto.name));
-                    var response = await httpClient.PostAsJsonAsync(_socialUrl+"Users/AddUser",dataToSend);
+                    var response = await httpClient.PostAsJsonAsync(_socialUrl + "Users/AddUser", dataToSend);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Couldn't connect to social server");
@@ -181,7 +200,7 @@ namespace BL.Managers
             {
                 throw new AddUserToGraphException(e.Message);
             }
-            
+
         }
 
         /// <summary>
@@ -195,8 +214,8 @@ namespace BL.Managers
             try
             {
                 using (HttpClient httpClient = new HttpClient())
-                {                    
-                    var response = await httpClient.PostAsJsonAsync(_notificationsUrl + "Notifications/Register", new AccessTokenDto() { Token = appToken});
+                {
+                    var response = await httpClient.PostAsJsonAsync(_notificationsUrl + "Notifications/Register", new AccessTokenDto() { Token = appToken });
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("Couldn't connect to notifications server");
@@ -225,6 +244,8 @@ namespace BL.Managers
                 using (HttpClient httpClient = new HttpClient())
                 {
                     UserModel user = GetUserFromFacebookData(facebookUser, userId);
+                    user.RegistrationKey = facebookUser.id;
+                    user.SetRegistrationType(RegistrationTypeEnum.Facebook);
                     var data = new JObject();
                     data.Add("user", JToken.FromObject(user));
                     data.Add("token", JToken.FromObject(appToken));
@@ -259,7 +280,7 @@ namespace BL.Managers
                 Email = facebookUser.email
             };
         }
-        
+
 
         /// <summary>
         /// Removes the user associated with the specified id from the graph DB.
@@ -284,7 +305,7 @@ namespace BL.Managers
 
                 throw e;
             }
-           
+
         }
 
         /// <summary>
@@ -348,7 +369,7 @@ namespace BL.Managers
             }
         }
 
-        
+
 
         private string GenerateUserId()
         {

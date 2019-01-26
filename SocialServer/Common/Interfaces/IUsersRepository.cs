@@ -95,5 +95,14 @@ namespace Common.Interfaces
         /// <param name="blockedId"></param>
         /// <returns></returns>
         Task DeleteBlock(string blockerId, string blockedId);
+
+
+        /// <summary>
+        /// Gets the number of block relations created towards
+        /// the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<long> GetBlocksCount(string userId);
     }
 }

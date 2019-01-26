@@ -19,8 +19,7 @@ namespace Common.Interfaces
        
 
         bool ChangePassword(string accessToken, string currentPassword, string oldPassword);
-
-        void BlockUser(string email);
+        
 
         /// <summary>
         /// Registers and logs in the user by email and password
@@ -29,5 +28,13 @@ namespace Common.Interfaces
         /// <param name="password"></param>
         /// <returns></returns>
         Task<string> RegisterUserAndLogin(RegistrationDto registrationDto);
+
+        /// <summary>
+        /// Activates the system block on the user associated with the specified Id.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="blockedId"></param>
+        /// <returns></returns>
+        Task BlockUser(string token, string blockedId);
     }
 }

@@ -5,6 +5,7 @@ using Neo4jClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DAL.Repositories
@@ -277,6 +278,33 @@ namespace DAL.Repositories
             {
 
                 throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the number of block relations created towards
+        /// the user associated with the specified Id.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<long> GetBlocksCount(string userId)
+        {
+            try
+            {
+                var counts = await _graphClient.Cypher
+                    .Match("()-[b:BLOCK]->(user:User)")
+                    .Where((UserModel user) => user.Id == userId)
+                    .Return(b => b.Count())
+                    .ResultsAsync;
+
+                return counts.Single();
+                
+            }
+            catch (Exception e)
+            {
+
+                throw e;
             }
         }
     }

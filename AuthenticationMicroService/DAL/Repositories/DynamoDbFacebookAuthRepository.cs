@@ -45,5 +45,21 @@ namespace DAL.Repositories
                 return auth == null;
             }
         }
+
+        public async Task Update(FacebookAuthModel facebookAuth)
+        {
+            try
+            {
+                using (DynamoDbContext dbContext = new DynamoDbContext())
+                {
+                    await dbContext.SaveAsync(facebookAuth);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
     }
 }

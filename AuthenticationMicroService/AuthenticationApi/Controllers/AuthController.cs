@@ -1,5 +1,7 @@
 ﻿using Common.Dtos;
+using Common.Exceptions;
 using Common.Interfaces;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Data.Linq;
 using System.Security.Authentication;
@@ -29,6 +31,8 @@ namespace AuthenticationApi.Controllers
             _facebookAuthManager = facebookAuthManager;
         }
 
+
+
         [HttpPost]
         [Route("api/Auth/FacebookSignIn")]
         public async Task<IHttpActionResult> FacebookSignIn([FromBody]AccessTokenDto accessToken)
@@ -42,6 +46,10 @@ namespace AuthenticationApi.Controllers
             {
 
                 return BadRequest(e.Message);
+            }
+            catch (UserBlockedException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception e)
             {
@@ -75,6 +83,8 @@ namespace AuthenticationApi.Controllers
             }
         }
 
+
+
         [HttpPost]
         [Route("api/Auth/Login")]
         public async Task<IHttpActionResult> LoginUsernamePassword([FromBody] AuthDto authDto)
@@ -93,11 +103,17 @@ namespace AuthenticationApi.Controllers
             {
                 return BadRequest("Incorrect email address and / or password");
             }
+            catch (UserBlockedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception ex)
             {
                 return BadRequest("Internal server error");
             }
         }
+
+
 
         private bool DtoNotValid(AuthDto authDto)
         {
@@ -109,6 +125,8 @@ namespace AuthenticationApi.Controllers
             }
             return false;
         }
+
+
 
         private bool DtoNotValid(RegistrationDto registrationInfoDto)
         {
@@ -122,6 +140,8 @@ namespace AuthenticationApi.Controllers
             }
             return false;
         }
+
+
 
         [HttpPost]
         public async Task<IHttpActionResult> VerifyAuth([FromBody]AccessTokenDto accessToken)
@@ -143,5 +163,23 @@ namespace AuthenticationApi.Controllers
 
         }
 
+
+        [HttpPost]
+        [Route("api/Auth/BlockUser")]
+        public async Task<IHttpActionResult> BlockUser([FromBody] JObject data)
+        {
+            try
+            {
+                string token = data["token"].ToObject<string>();
+                string blockedId = data["blockedId"].ToObject<string>();
+                await _authManager.BlockUser(token, blockedId);
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
     }
 }

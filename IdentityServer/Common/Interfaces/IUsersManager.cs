@@ -37,5 +37,22 @@ namespace Common.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<string> GetFullName(string token);
+
+
+        /// <summary>
+        /// Gets the email of the user associated with the specified Id.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<string> GetUserEmailById(string token, string userId);
+
+        /// <summary>
+        /// Get the user associated with the specified Id.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<UserModel> GetUserById(string token, string userId);
     }
 }

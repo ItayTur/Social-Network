@@ -1,4 +1,5 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
+using Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace Common.Models
         public string LastName { get; set; }
         public string Address { get; set; }
         public string Job { get; set; }
+        public string RegistrationType { get; set; }
+        public string RegistrationKey { get; set; }
         public DateTime BirthDate { get; set; }
     }
 }

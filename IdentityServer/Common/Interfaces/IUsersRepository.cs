@@ -35,5 +35,6 @@ namespace Common.Interfaces
         /// <returns></returns>
         Task<string> GetFullName(string id);
 
+        
     }
 }

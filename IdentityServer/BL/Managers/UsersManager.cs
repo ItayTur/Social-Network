@@ -141,5 +141,52 @@ namespace BL.Managers
                 throw;
             }
         }
+
+
+        /// <summary>
+        /// Gets the email of the user associated with the specified Id.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<string> GetUserEmailById(string token, string userId)
+        {
+            try
+            {
+                await VerfiyToken(token);
+                UserModel user = await _usersRepository.Get(userId);
+                return user.Email;
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+        }
+
+       
+
+        /// <summary>
+        /// Get the user associated with the specified Id.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<UserModel> GetUserById(string token, string userId)
+        {
+            try
+            {
+                await VerfiyToken(token);
+                return await _usersRepository.Get(userId);
+            }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
+            catch (Exception e)
+            {
+                throw new Exception();
+            }
+        }
     }
 }

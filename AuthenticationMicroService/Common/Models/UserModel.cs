@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,5 +16,12 @@ namespace Common.Models
         public string Address { get; set; }
         public string Job { get; set; }
         public DateTime BirthDate { get; set; }
+        public string RegistrationType { get; set; }
+        public string RegistrationKey { get; set; }
+
+        public void SetRegistrationType(RegistrationTypeEnum registrationType)
+        {
+            RegistrationType = registrationType.ToString();
+        }
     }
 }

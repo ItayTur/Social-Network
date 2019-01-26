@@ -19,6 +19,7 @@ namespace BL.Managers
 
         private readonly IUsersRepository _usersRepository;
 
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -27,6 +28,8 @@ namespace BL.Managers
         {
             _usersRepository = usersRepository;
         }
+
+
 
         /// <summary>
         /// Gets a user by Id
@@ -51,16 +54,18 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>
-        public async Task Add(UserModel user, string token)
+        public async Task AddOrUpdate(UserModel user, string token)
         {
             try
             {
                 await VerfiyToken(token);
-                await _usersRepository.Add(user);
+                await _usersRepository.AddOrUpdate(user);
             }
             catch(AuthenticationException)
             {
@@ -72,6 +77,10 @@ namespace BL.Managers
                 throw new Exception();
             }
         }
+
+
+        
+        
 
 
         /// <summary>
@@ -103,6 +112,8 @@ namespace BL.Managers
             }
         }
 
+
+
         /// <summary>
         /// Deletes the user associated with the specified id.
         /// </summary>
@@ -121,6 +132,8 @@ namespace BL.Managers
                 throw e;
             }
         }
+
+
 
         /// <summary>
         /// Gets the full name of the user
@@ -141,6 +154,7 @@ namespace BL.Managers
                 throw;
             }
         }
+
 
 
         /// <summary>

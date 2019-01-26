@@ -21,7 +21,7 @@ namespace Common.Interfaces
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>
-        Task Add(UserModel user, string token);
+        Task AddOrUpdate(UserModel user, string token);
 
         /// <summary>
         /// Deletes the user associated with the specified id.

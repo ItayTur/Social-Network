@@ -55,7 +55,7 @@ namespace IdentityServer.Controllers
 
 
         /// <summary>
-        /// Adds user to the DB.
+        /// Adds or update user if already exicts in the Db.
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -65,7 +65,7 @@ namespace IdentityServer.Controllers
             {
                 UserModel user = data["user"].ToObject<UserModel>();
                 string token = data["token"].ToObject<string>();
-                await _usersManager.Add(user, token);
+                await _usersManager.AddOrUpdate(user, token);
                 return Ok();
             }
             catch (AuthenticationException)

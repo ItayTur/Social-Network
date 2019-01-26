@@ -2,6 +2,7 @@
 using Common.Models;
 using System;
 using System.Collections.Generic;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -36,6 +37,10 @@ namespace SocialServer.Controllers
                 return Ok(postToReturn);
 
             }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
+            }
             catch (Exception e)
             {
                 return InternalServerError();
@@ -51,6 +56,10 @@ namespace SocialServer.Controllers
                 string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
                 IEnumerable<UserModel> tagsFound = await _postsManager.SearchTag(text, token);
                 return Ok(tagsFound);
+            }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
             }
             catch (ArgumentException e)
             {
@@ -74,6 +83,10 @@ namespace SocialServer.Controllers
                 var posts = await _postsManager.GetPosts(token);
                 return Ok(posts);
             }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
+            }
             catch (Exception)
             {
 
@@ -93,6 +106,10 @@ namespace SocialServer.Controllers
                 await _postsManager.LikePost(token, httpRequest);
                 return Ok();
 
+            }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
             }
             catch (Exception)
             {
@@ -114,6 +131,10 @@ namespace SocialServer.Controllers
                 return Ok(isPostLiked);
 
             }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
+            }
             catch (Exception e)
             {
 
@@ -133,6 +154,10 @@ namespace SocialServer.Controllers
                 await _postsManager.UnLikePost(token, httpRequest);
                 return Ok();
 
+            }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
             }
             catch (Exception)
             {
@@ -158,6 +183,10 @@ namespace SocialServer.Controllers
                 var commentAdded = await _postsManager.AddComment(httpRequest, token, picPath);
                 return Ok(commentAdded);
             }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
+            }
             catch (Exception)
             {
 
@@ -174,6 +203,10 @@ namespace SocialServer.Controllers
                 string token = _commonOperationsManager.GetCookieValue(Request, "authToken");
                 var comments = await _postsManager.GetCommentsOfPost(postId, token);
                 return Ok(comments);
+            }
+            catch (AuthenticationException ea)
+            {
+                return BadRequest("Authentication failed");
             }
             catch (Exception)
             {

@@ -8,6 +8,7 @@ import { AuthenticateUserService } from "./authenticate-user.service";
 import { SnackBarService } from "./snack-bar.service";
 import { PostAddingService } from "./post-adding.service";
 import { PostsService } from "./posts.service";
+import { AppRoutingModule } from '../app-routing.module';
 
 @NgModule({
   declarations: [],
@@ -15,6 +16,7 @@ import { PostsService } from "./posts.service";
     BrowserModule,
     CommonModule,
     HttpClientModule,
+    AppRoutingModule
   ],
   providers: [FacebookLoginService, AuthenticateUserService, SnackBarService, PostAddingService, PostsService]
 })

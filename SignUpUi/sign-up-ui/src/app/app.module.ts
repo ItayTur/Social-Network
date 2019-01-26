@@ -58,9 +58,9 @@ import { UserComponent } from './user/user.component';
     CoreModule,
     HttpClientModule,
     ReactiveFormsModule,
-    MatSnackBarModule,
-    AppRoutingModule,
-    TagInputModule
+    MatSnackBarModule,    
+    TagInputModule,
+    AppRoutingModule
   ],
   providers: [CookieService],
   bootstrap: [AppComponent],

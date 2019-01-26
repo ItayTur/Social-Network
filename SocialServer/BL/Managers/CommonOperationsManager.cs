@@ -77,6 +77,10 @@ namespace BL.Managers
                     }
                 }
             }
+            catch (AuthenticationException ea)
+            {
+                throw new AuthenticationException("Token is not valid", ea);
+            }
             catch (Exception e)
             {
 

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorHandlingService {
 
-  constructor() { }
+  constructor(private cookieService: CookieService, private router: Router) { }
 
   handleError(error: any) {
     let errorMessage: string;
@@ -21,7 +23,11 @@ export class ErrorHandlingService {
       console.error(
         `Backend returned code ${error.status}, ` +
         `body was: ${error.error}`);
-        if (error.message === "Internal server error" || error.status === 500) {
+        if (error.message === "Authentication failed" || error.status === 400) {
+          errorMessage = "Authentication failed. You will be redirected to login page.";
+          // this.cookieService.delete('authToken');
+          this.router.navigate(['/login']);
+        } else if (error.message === "Internal server error" || error.status === 500) {
           errorMessage = "Oops, something went wrong. Please try again later";
         } else if ( error.status ===0 ) {
           errorMessage = "A network error has occurd.";

@@ -4,6 +4,7 @@ import { PostsService } from "../core/posts.service";
 import { SnackBarService } from "../core/snack-bar.service";
 import { CommentWithTags } from "../comment/comment-with-tags.model";
 import { IdentityService } from "../core/identity.service";
+import { DomSanitizer } from '@angular/platform-browser';
 import { UserModel } from "../core/user.model";
 import { TagsComponent } from "../tags/tags.component";
 
@@ -16,7 +17,8 @@ export class PostComponent implements OnInit {
   constructor(
     private postsService: PostsService,
     private snackBarService: SnackBarService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private senitaizer: DomSanitizer
   ) {}
 
   @Input()
@@ -33,6 +35,7 @@ export class PostComponent implements OnInit {
   addComment() {
     this.isCommentClicked = !this.isCommentClicked;
   }
+
 
   onCommentAdded(commentDto) {
     const commentWithTags = new CommentWithTags();

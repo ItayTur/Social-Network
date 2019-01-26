@@ -5,8 +5,6 @@ using Neo4jClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DAL.Repositories
@@ -70,7 +68,7 @@ namespace DAL.Repositories
 
                 throw e;
             }
-            
+
         }
 
 
@@ -110,7 +108,7 @@ namespace DAL.Repositories
             {
                 return await _graphClient.Cypher.Match("(u1:User)-[r:FOLLOW]->(u2:User)")
                     .Where((UserModel u1) => u1.Id == userId)
-                    .Return((u2,r) => new UserWithRelationsDto { User=u2.As<UserModel>(), IsFollow = r!=null})
+                    .Return((u2, r) => new UserWithRelationsDto { User = u2.As<UserModel>(), IsFollow = r != null })
                     .Limit(usersToShow)
                     .ResultsAsync;
 
@@ -164,11 +162,11 @@ namespace DAL.Repositories
             {
                 return await _graphClient.Cypher.Match("(u1:User)-[r:BLOCK]->(u2:User)")
                     .Where((UserModel u1) => u1.Id == userId)
-                    .Return((u2,r) => new UserWithRelationsDto { User = u2.As<UserModel>(), IsBlock = r!=null })
+                    .Return((u2, r) => new UserWithRelationsDto { User = u2.As<UserModel>(), IsBlock = r != null })
                     .Limit(usersToShow)
                     .ResultsAsync;
 
-               
+
             }
             catch (Exception e)
             {
@@ -201,6 +199,8 @@ namespace DAL.Repositories
             }
         }
 
+
+
         /// <summary>
         /// Deletes follow relation between the users associated with the specified ids.
         /// </summary>
@@ -224,6 +224,8 @@ namespace DAL.Repositories
             }
         }
 
+
+
         /// <summary>
         /// Creates block relation between the users associated with the specified ids.
         /// </summary>
@@ -238,8 +240,8 @@ namespace DAL.Repositories
                     .Match("(blocker:User), (blocked:User)")
                     .Where((UserModel blocker) => blocker.Id == blockerId)
                     .AndWhere((UserModel blocked) => blocked.Id == blockedId)
-                    .OptionalMatch("(blocker)-[r:FOLLOW]->(blocked)")
-                    .Create("(blocker)-[:BLOCK]->(blocked)")
+                    .OptionalMatch("(blocker)-[r:FOLLOW]-(blocked)")
+                    .Merge("(blocker)-[:BLOCK]->(blocked)")
                     .Delete("r")
                     .ExecuteWithoutResultsAsync();
             }

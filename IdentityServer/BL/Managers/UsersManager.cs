@@ -164,6 +164,14 @@ namespace BL.Managers
             }
         }
 
+       
+
+        /// <summary>
+        /// Get the user associated with the specified Id.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<UserModel> GetUserById(string token, string userId)
         {
             try
@@ -171,10 +179,13 @@ namespace BL.Managers
                 await VerfiyToken(token);
                 return await _usersRepository.Get(userId);
             }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
             catch (Exception e)
             {
-
-                throw e;
+                throw new Exception();
             }
         }
     }

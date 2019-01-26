@@ -55,7 +55,11 @@ namespace BL.Managers
             _blockHandlers.Add(RegistrationTypeEnum.UserNamePassword,BlockUserNamePasswordAuth);
         }
 
-       
+       /// <summary>
+       /// Blockes users registerd with facebook.
+       /// </summary>
+       /// <param name="registrationKey"></param>
+       /// <returns></returns>
         private async Task BlockFacebookAuth(string registrationKey)
         {
             try
@@ -71,6 +75,12 @@ namespace BL.Managers
             }
         }
 
+
+        /// <summary>
+        /// Blockes users registerd with username and password.
+        /// </summary>
+        /// <param name="registrationKey"></param>
+        /// <returns></returns>
         private async Task BlockUserNamePasswordAuth(string registrationKey)
         {
             try

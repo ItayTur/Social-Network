@@ -426,6 +426,29 @@ namespace DAL.Repositories
                 throw;
             }
         }
-        
+
+
+        /// <summary>
+        /// Gets the user of the post
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        public async Task<UserModel> GetPostUser(string postId)
+        {
+            try
+            {             
+                var users = await _graphClient.Cypher.Match("(user:User)-[:POST]->(post:Post)")
+                .Where((PostModel post) => post.Id == postId)
+                .Return(user => user.As<UserModel>())
+                .ResultsAsync;
+
+                return users.Single<UserModel>();
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
     }
 }

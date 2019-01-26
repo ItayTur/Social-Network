@@ -93,5 +93,48 @@ namespace BL.Managers
                 throw new Exception(e.Message);
             }
         }
+
+        /// <summary>
+        /// Sends a message to a user.
+        /// </summary>
+        /// <param name="notificationMessageDto"></param>
+        /// <returns></returns>
+        public async Task SendMessageToUser(NotificationMessageDto notificationMessageDto)
+        {
+            try
+            {
+                VerifyNotificationData(notificationMessageDto);
+                string userId = await _commonOperationsManager.VerifyToken(notificationMessageDto.AppToken);
+                var auth = new NotificationsAuthDto() { Username = userId, Password = userId };
+                await _notificationsHelper.SendMessageToUser(notificationMessageDto.Message, notificationMessageDto.UserId);
+            }
+            catch (ArgumentNullException)
+            {
+                throw new ArgumentNullException();
+            }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception();
+            }
+        }
+
+        /// <summary>
+        /// Verifies the token and email specified.
+        /// </summary>
+        private void VerifyNotificationData(NotificationMessageDto notificationMessageDto)
+        {
+            if (notificationMessageDto == null 
+                || string.IsNullOrWhiteSpace(notificationMessageDto.AppToken) 
+                || string.IsNullOrWhiteSpace(notificationMessageDto.Message) 
+                || string.IsNullOrWhiteSpace(notificationMessageDto.UserId))
+            {
+                throw new ArgumentNullException();
+            }
+        }
     }
 }

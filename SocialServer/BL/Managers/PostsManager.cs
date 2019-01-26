@@ -21,7 +21,7 @@ namespace BL.Managers
         private readonly IStorageManager _storageManager;
         private readonly ICommonOperationsManager _commonOperationsManager;
         private readonly string _authBaseUrl;
-        private readonly string _identityBaseUrl;
+        private readonly string _identityBaseUrl;        
 
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace BL.Managers
             _storageManager = storageManager;
             _commonOperationsManager = commonOperationsManager;
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
-            _identityBaseUrl = ConfigurationManager.AppSettings["IdentityBaseUrl"];
+            _identityBaseUrl = ConfigurationManager.AppSettings["IdentityBaseUrl"];            
         }
 
 
@@ -390,6 +390,17 @@ namespace BL.Managers
                 string userId = await _commonOperationsManager.VerifyToken(token);
                 string postId = httpRequest["PostId"];
                 await _postsRepository.LikePost(postId, userId);
+                try
+                {
+                    var postUser = await _postsRepository.GetPostUser(postId);
+                    string myUsername = await GetFullName(token);
+                    await _commonOperationsManager.SendNotification(postUser.Id, $"One of your posts was liked by {myUsername}", token);
+                }
+                catch (Exception e)
+                {
+
+                    //Log/Handle notification was not sent. Does not affect general state of like operation.
+                }
 
             }
             catch (Exception e)
@@ -461,7 +472,19 @@ namespace BL.Managers
                 List<TagDto> tags = GetTags(httpRequest);
                 CommentModel comment = CreateComment(httpRequest["Content"]);
                 comment.ImgUrl = await GetImageUrl(httpRequest.Files["Pic"], path);
-                return await _postsRepository.AddComment(userId, postId, comment, tags);
+                var addedComment = await _postsRepository.AddComment(userId, postId, comment, tags);
+                try
+                {
+                    var postUser = await _postsRepository.GetPostUser(postId);
+                    string myUsername = await GetFullName(token);
+                    await _commonOperationsManager.SendNotification(postUser.Id, $"{myUsername} commented on one of your posts", token);
+                }
+                catch (Exception e)
+                {
+
+                    //Log/Handle notification was not sent. Does not affect general state of like operation.
+                }
+                return addedComment;
             }
             catch (Exception e)
             {

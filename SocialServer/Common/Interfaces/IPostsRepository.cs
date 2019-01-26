@@ -104,7 +104,6 @@ namespace Common.Interfaces
         Task<bool> IsPostLikedBy(string userId, string postId);
 
 
-
         /// <summary>
         /// Deletes like connection between the post associated with the specified post id
         /// and the user associated with the specified user id 
@@ -130,5 +129,13 @@ namespace Common.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<CommentAndTaggedUsersDto>> GetCommentsOfPost(string postId, int commentsToShow);
+
+
+        /// <summary>
+        /// Gets the user of the post
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        Task<UserModel> GetPostUser(string postId);
     }
 }

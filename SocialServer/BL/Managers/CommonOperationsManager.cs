@@ -1,4 +1,5 @@
 ﻿using Common;
+using Common.Dtos;
 using Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace BL.Managers
     public class CommonOperationsManager : ICommonOperationsManager
     {
         private readonly string _authBaseUrl;
+        private readonly string _notificationsBaseUrl;
 
         /// <summary>
         /// Constructor.
@@ -22,6 +24,7 @@ namespace BL.Managers
         public CommonOperationsManager()
         {
             _authBaseUrl = ConfigurationManager.AppSettings["AuthBaseUrl"];
+            _notificationsBaseUrl = ConfigurationManager.AppSettings["NotificationsUrl"];
         }
 
 
@@ -107,6 +110,35 @@ namespace BL.Managers
             }
 
             return num;
+        }
+
+
+        /// <summary>
+        /// Sends a notification to a specific user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public async Task SendNotification(string userId, string message, string appToken)
+        {
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    var notificationDto = new NotificationMessageDto() { UserId = userId, Message = message, AppToken = appToken };
+
+                    var response = await httpClient.PostAsJsonAsync(_notificationsBaseUrl + "Notifications/SendMessage", notificationDto).ConfigureAwait(false);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new ApplicationException("Notification was not sent");
+                    }                    
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception(e.Message);
+            }
         }
     }
 }

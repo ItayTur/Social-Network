@@ -22,7 +22,6 @@ export class PostsComponent implements OnInit {
   }
 
   onPostAdded(addedPost) {
-    debugger;
     this.posts.unshift(addedPost);
   }
 

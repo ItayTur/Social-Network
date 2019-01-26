@@ -21,4 +21,9 @@ export class IdentityService {
       catchError(this.erorrHandler.handleError)
     );
   }
+
+  updateUser(formData: FormData): Observable<any> {
+    return this.httpClient.post(this.identityApi, formData, { withCredentials: true})
+    .pipe(catchError(this.erorrHandler.handleError));
+  }
 }

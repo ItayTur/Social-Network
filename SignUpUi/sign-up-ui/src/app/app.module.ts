@@ -29,6 +29,7 @@ import { AddCommentComponent } from './add-comment/add-comment.component';
 import { TagsComponent } from './tags/tags.component';
 import { UsersComponent } from './users/users.component';
 import { UserComponent } from './user/user.component';
+import { UserUpdateComponent } from './user-update/user-update.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { UserComponent } from './user/user.component';
     AddCommentComponent,
     TagsComponent,
     UsersComponent,
-    UserComponent
+    UserComponent,
+    UserUpdateComponent
 
   ],
   imports: [

@@ -2,15 +2,11 @@
 using Common.Interfaces;
 using Common.Models;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Linq;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Authentication;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
+using System.Web;
 
 namespace BL.Managers
 {
@@ -60,14 +56,14 @@ namespace BL.Managers
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>
-        public async Task AddOrUpdate(UserModel user, string token)
+        public async Task Add(UserModel user, string token)
         {
             try
             {
                 await VerfiyToken(token);
                 await _usersRepository.AddOrUpdate(user);
             }
-            catch(AuthenticationException)
+            catch (AuthenticationException)
             {
                 throw new AuthenticationException();
             }
@@ -80,20 +76,17 @@ namespace BL.Managers
 
 
         
-        
-
-
         /// <summary>
         /// Verifies the token validity.
         /// </summary>
         /// <param name="token"></param>
         private async Task<string> VerfiyToken(string token)
         {
-            using(HttpClient httpClient = new HttpClient())
+            using (HttpClient httpClient = new HttpClient())
             {
                 try
                 {
-                    var authUrl = ConfigurationManager.AppSettings["AuthBaseUrl"] +"Auth";
+                    var authUrl = ConfigurationManager.AppSettings["AuthBaseUrl"] + "Auth";
                     var tokentDto = new TokenDto(token);
                     var response = await httpClient.PostAsJsonAsync(authUrl, tokentDto);
                     if (!response.IsSuccessStatusCode)
@@ -108,7 +101,7 @@ namespace BL.Managers
 
                     throw e;
                 }
-                
+
             }
         }
 
@@ -178,7 +171,7 @@ namespace BL.Managers
             }
         }
 
-       
+
 
         /// <summary>
         /// Get the user associated with the specified Id.
@@ -201,6 +194,54 @@ namespace BL.Managers
             {
                 throw new Exception();
             }
+        }
+
+
+        /// <summary>
+        /// Updates the user associated with the Id extracted from the token.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        public async Task<UserModel> Update(string token, HttpRequest httpRequest)
+        {
+            try
+            {
+                string userId = await VerfiyToken(token);
+                UserModel userToUpdate = GetUser(userId, httpRequest);
+                await _usersRepository.AddOrUpdate(userToUpdate);
+                return userToUpdate;
+
+            }
+            catch (AuthenticationException)
+            {
+                throw new AuthenticationException();
+            }
+            catch (Exception e)
+            {
+
+                throw new Exception();
+            }
+        }
+
+
+        /// <summary>
+        /// Gets user instance from thr http request specified.
+        /// </summary>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        private UserModel GetUser(string userId, HttpRequest httpRequest)
+        {
+            return new UserModel
+            {
+                Id = userId,
+                Address = httpRequest["Address"],
+                BirthDate = DateTime.Parse(httpRequest["BirthDate"]),
+                Email = httpRequest["Email"],
+                FirstName = httpRequest["FirstName"],
+                LastName = httpRequest["LastName"],
+                Job = httpRequest["Job"]
+            };
         }
     }
 }

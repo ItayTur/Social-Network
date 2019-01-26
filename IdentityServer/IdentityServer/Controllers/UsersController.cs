@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using FromBodyAttribute = System.Web.Http.FromBodyAttribute;
 
@@ -55,7 +56,7 @@ namespace IdentityServer.Controllers
 
 
         /// <summary>
-        /// Adds or update user if already exicts in the Db.
+        /// Adds user to the Db.
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -65,12 +66,33 @@ namespace IdentityServer.Controllers
             {
                 UserModel user = data["user"].ToObject<UserModel>();
                 string token = data["token"].ToObject<string>();
-                await _usersManager.AddOrUpdate(user, token);
+                await _usersManager.Add(user, token);
                 return Ok();
             }
             catch (AuthenticationException)
             {
                 return BadRequest("Authentication was not approved");
+            }
+            catch (Exception)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+
+        /// <summary>
+        /// Updates user in the Db.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IHttpActionResult> Put()
+        {
+            try
+            {
+                string token = GetCookie(Request, "authToken");
+                HttpRequest httpRequest = HttpContext.Current.Request;
+                UserModel userUpdated = await _usersManager.Update(token, httpRequest);
+                return Ok(userUpdated);
             }
             catch (Exception)
             {

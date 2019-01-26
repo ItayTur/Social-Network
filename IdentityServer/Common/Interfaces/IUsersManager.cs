@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Common.Interfaces
 {
@@ -21,7 +22,7 @@ namespace Common.Interfaces
         /// Adds new user record to the db.
         /// </summary>
         /// <param name="user"></param>
-        Task AddOrUpdate(UserModel user, string token);
+        Task Add(UserModel user, string token);
 
         /// <summary>
         /// Deletes the user associated with the specified id.
@@ -54,5 +55,8 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<UserModel> GetUserById(string token, string userId);
+
+
+        Task<UserModel> Update(string token, HttpRequest httpRequest);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Common.Dtos;
+using Common.Exceptions;
 using Common.Interfaces;
 using Newtonsoft.Json.Linq;
 using System;
@@ -29,6 +30,8 @@ namespace AuthenticationApi.Controllers
             _loginTokenManager = loginTokenManager;
             _facebookAuthManager = facebookAuthManager;
         }
+
+
 
         [HttpPost]
         [Route("api/Auth/FacebookSignIn")]
@@ -76,6 +79,8 @@ namespace AuthenticationApi.Controllers
             }
         }
 
+
+
         [HttpPost]
         [Route("api/Auth/Login")]
         public async Task<IHttpActionResult> LoginUsernamePassword([FromBody] AuthDto authDto)
@@ -94,11 +99,17 @@ namespace AuthenticationApi.Controllers
             {
                 return BadRequest("Incorrect email address and / or password");
             }
+            catch (UserBlockedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception ex)
             {
                 return BadRequest("Internal server error");
             }
         }
+
+
 
         private bool DtoNotValid(AuthDto authDto)
         {
@@ -110,6 +121,8 @@ namespace AuthenticationApi.Controllers
             }
             return false;
         }
+
+
 
         private bool DtoNotValid(RegistrationDto registrationInfoDto)
         {
@@ -123,6 +136,8 @@ namespace AuthenticationApi.Controllers
             }
             return false;
         }
+
+
 
         [HttpPost]
         public async Task<IHttpActionResult> VerifyAuth([FromBody]AccessTokenDto accessToken)

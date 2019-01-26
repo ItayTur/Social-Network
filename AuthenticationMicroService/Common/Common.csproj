@@ -54,6 +54,7 @@
     <Compile Include="Dtos\AuthDto.cs" />
     <Compile Include="Exceptions\AddUserToGraphException.cs" />
     <Compile Include="Exceptions\AddUserToXMPPDbException.cs" />
+    <Compile Include="Exceptions\UserBlockedException.cs" />
     <Compile Include="Interfaces\Helpers\ILogsRepository.cs" />
     <Compile Include="Interfaces\IAuthManager.cs" />
     <Compile Include="Interfaces\IAuthRepository.cs" />

@@ -215,12 +215,16 @@ namespace BL.Managers
             try
             {
                 var auth = _authRepository.GetAuthByEmail(email);
-                VerifyAuthPassword(auth, password);
-                return await _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
+                if (!auth.IsBLocked)
+                {
+                    VerifyAuthPassword(auth, password);
+                    return await _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
+                }
+                throw new UserBlockedException("user is blocked");
+                
             }
             catch (Exception ex)
             {
-                LoggerFactory.GetInstance().AllLogger().Log(ex.Message);
                 throw ex;
             }
         }

@@ -6,6 +6,8 @@ export class UserModel {
     address: string;
     job: string;
     birthDate: Date;
+    registrationKey: string;
+    registrationType: string;
 
     constructor(id:string, email: string, firstName: string, lastName: string, address: string, job: string, birthDate:Date) {
       this.id = id;

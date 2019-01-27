@@ -36,4 +36,9 @@ export class AuthenticateUserService {
       catchError(this.erorrHandler.handleError)
     );
   }
+
+  resetPassword(formData: FormData): Observable<any> {
+    return this.httpClient.post(this.authApi+"/ResetPassword", formData, {withCredentials:true})
+    .pipe(catchError(this.erorrHandler.handleError));
+  }
 }

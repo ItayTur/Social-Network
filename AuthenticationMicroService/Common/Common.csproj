@@ -37,6 +37,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -54,6 +55,7 @@
     <Compile Include="Dtos\AuthDto.cs" />
     <Compile Include="Exceptions\AddUserToGraphException.cs" />
     <Compile Include="Exceptions\AddUserToXMPPDbException.cs" />
+    <Compile Include="Exceptions\PasswordException.cs" />
     <Compile Include="Exceptions\UserBlockedException.cs" />
     <Compile Include="Interfaces\Helpers\ILogsRepository.cs" />
     <Compile Include="Interfaces\IAuthManager.cs" />

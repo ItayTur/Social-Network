@@ -30,6 +30,7 @@ import { TagsComponent } from './tags/tags.component';
 import { UsersComponent } from './users/users.component';
 import { UserComponent } from './user/user.component';
 import { UserUpdateComponent } from './user-update/user-update.component';
+import { PasswordResetComponent } from './password-reset/password-reset.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { UserUpdateComponent } from './user-update/user-update.component';
     TagsComponent,
     UsersComponent,
     UserComponent,
-    UserUpdateComponent
+    UserUpdateComponent,
+    PasswordResetComponent
 
   ],
   imports: [

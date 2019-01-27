@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Data.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BL.Managers
 {
@@ -166,14 +167,14 @@ namespace BL.Managers
         /// <param name="token"></param>
         /// <param name="blockedId"></param>
         /// <returns></returns>
-        private async Task<string> GetUserEmailById(string token, string blockedId)
+        private async Task<string> GetUserEmailById(string token, string userId)
         {
             try
             {
                 string emailToReturn = "";
                 JObject dataToSend = new JObject();
                 dataToSend.Add("token", token);
-                dataToSend.Add("userId", blockedId);
+                dataToSend.Add("userId", userId);
                 using (HttpClient httpClient = new HttpClient())
                 {
                     var response = await httpClient.PostAsJsonAsync(_identityUrl + "/GetUserEmailById", dataToSend);
@@ -199,15 +200,30 @@ namespace BL.Managers
 
 
         /// <summary>
-        /// Changes the password in case of user forget.
+        /// Changes the user password.
         /// </summary>
         /// <param name="accessToken"></param>
         /// <param name="currentPassword"></param>
         /// <param name="oldPassword"></param>
-        /// <returns>If the password did changes, false otherwise.</returns>
-        public bool ChangePassword(string accessToken, string currentPassword, string oldPassword)
+        /// <returns></returns>
+        public async Task ResetPassword(string token, HttpRequest httpRequest)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string userId = await _loginTokenManager.VerifyAsync(token);
+                string userEmail = await GetUserEmailById(token, userId);
+                AuthModel authModel = _authRepository.GetAuthByEmail(userEmail);
+                string oldPassword = httpRequest["OldPassword"];
+                string newPassword = httpRequest["NewPassword"];
+                VerifyAuthPassword(authModel, oldPassword);
+                authModel.Password = SecurePasswordHasher.Hash(newPassword);
+                await _authRepository.Update(authModel);
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
         }
         
 
@@ -553,7 +569,7 @@ namespace BL.Managers
         {
             if (auth == null || !SecurePasswordHasher.Verify(password, auth.Password))
             {
-                throw new ArgumentException();
+                throw new PasswordException();
             }
         }
 

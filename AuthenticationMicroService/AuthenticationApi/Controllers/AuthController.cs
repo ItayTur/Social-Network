@@ -4,8 +4,12 @@ using Common.Interfaces;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Data.Linq;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 
@@ -180,6 +184,44 @@ namespace AuthenticationApi.Controllers
 
                 return InternalServerError();
             }
+        }
+
+
+        [HttpPost]
+        [Route("api/Auth/ResetPassword")]
+        public async Task<IHttpActionResult> ResetPassword()
+        {
+            try
+            {
+                string token = GetCookieValue(Request, "authToken");
+                var httpRequest = HttpContext.Current.Request;
+                await _authManager.ResetPassword(token, httpRequest);
+                return Ok();
+            }
+            catch(PasswordException e)
+            {
+                return BadRequest("Old password is wrong");
+            }
+            catch (Exception e)
+            {
+
+                return InternalServerError();
+            }
+        }
+
+        /// <summary>
+        /// Gets the value of the cookie name specified.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cookieName"></param>
+        /// <returns></returns>
+        public string GetCookieValue(HttpRequestMessage request, string cookieName)
+        {
+            CookieHeaderValue cookie = request.Headers.GetCookies(cookieName).FirstOrDefault();
+            if (cookie != null)
+                return cookie[cookieName].Value;
+
+            throw new AuthenticationException();
         }
     }
 }

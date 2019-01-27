@@ -68,7 +68,6 @@ export class UserUpdateComponent implements OnInit {
   }
 
   updateUser() {
-    debugger;
     const formData: FormData = this.getUserFormData();
     this.identityService
       .updateUser(formData)

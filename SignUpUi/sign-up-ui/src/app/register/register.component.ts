@@ -32,6 +32,29 @@ export class RegisterComponent implements OnInit {
 
   get input() { return this.registerForm.get('email'); }
 
+  get firstname() {
+    return this.registerForm.get("firstName");
+  }
+  get password() {
+    return this.registerForm.get("password");
+  }
+
+  get lastname() {
+    return this.registerForm.get("lastName");
+  }
+  get email() {
+    return this.registerForm.get("email");
+  }
+  get address() {
+    return this.registerForm.get("address");
+  }
+  get birthdate() {
+    return this.registerForm.get("birthdate");
+  }
+  get job() {
+    return this.registerForm.get("job");
+  }
+
   onSubmit() {
     debugger;
     let registrationInfo = new RegistrationInfoModel(

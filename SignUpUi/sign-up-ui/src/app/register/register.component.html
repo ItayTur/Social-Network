@@ -23,7 +23,7 @@
           <!--Form-->
           <mdb-card class="wow fadeInRight" data-wow-delay="0.3s">
             <mdb-card-body>
-              <form  [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
                 <!--Header-->
                 <div class="text-center">
                   <h3 class="white-text">
@@ -35,17 +35,22 @@
                   <div class="col">
                     <div class="md-form">
                       <i class="fa fa-user prefix white-text active"></i>
-                      <input type="text" id="form1" class="text-white form-control" mdbInput mdbValidate formControlName="firstName">
+                      <input type="text" id="form1" class="text-white form-control" mdbInput mdbValidate
+                        formControlName="firstName">
                       <label for="form1" class="text-white">Your first name</label>
-                      <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">This is a required field.</mdb-error>
+                      <mdb-error *ngIf="firstname.invalid && (firstname.dirty || firstname.touched)">Input
+                        invalid</mdb-error>
+                      <mdb-success *ngIf="firstname.valid && (firstname.dirty || firstname.touched)">Input
+                        valid</mdb-success>
                     </div>
                   </div>
                   <div class="col">
                     <div class="md-form">
                       <i class="fa fa-user prefix white-text active"></i>
-                      <input type="text" id="form2" class="text-white form-control" mdbInput mdbValidate formControlName="lastName">
+                      <input type="text" id="form2" class="text-white form-control" mdbInput mdbValidate
+                        formControlName="lastName">
                       <label for="form2" class="text-white">Your last name</label>
-                      <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">This is a required field.</mdb-error>
+                      <mdb-error *ngIf="lastname.invalid && (lastname.dirty || lastname.touched)">This is a required field.</mdb-error>
                     </div>
                   </div>
                 </div>
@@ -53,12 +58,14 @@
                   <i class="fa fa-envelope prefix white-text active"></i>
                   <input type="email" id="form3" class="text-white form-control" mdbInput mdbValidate formControlName="email">
                   <label for="form3" class="text-white">Your email</label>
-                  <mdb-error *ngIf="input.invalid && (input.dirty || input.touched)">Your email is required.</mdb-error>
+                  <mdb-error *ngIf="email.invalid && (email.dirty || email.touched)">Your email is required.</mdb-error>
                 </div>
-               <div class="md-form">
+                <div class="md-form">
                   <i class="fa fa-lock prefix text-white active"></i>
-                  <input type="password" id="form4" class="text-white form-control" mdbInput mdbValidate formControlName="password">
+                  <input type="password" id="form4" class="text-white form-control" mdbInput mdbValidate
+                    formControlName="password" required>
                   <label for="form4" class="text-white">Your password</label>
+                  <mdb-error *ngIf="password.invalid && (password.dirty || password.touched)">Password is required.</mdb-error>
                 </div>
                 <div class="md-form">
                   <i class="fa fa-map-marker prefix white-text active"></i>

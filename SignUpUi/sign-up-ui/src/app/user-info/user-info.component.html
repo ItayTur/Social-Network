@@ -2,7 +2,7 @@
   <mdb-card-body class="z-depth-2">
 
     <!--Header-->
-    <div *ngIf="!isUpdateShow" class="text-center">
+    <div *ngIf="!isUpdateShow " class="text-center">
       <div class="text-center">
         <h3 class="dark-grey-text">
           <strong>User Info</strong>
@@ -29,9 +29,9 @@
             <p class="mb-0">{{user.job}}</p>
           </li>
           <li *ngIf="user.birthDate">
-              <i class="fa fa-birthday-cake fa-2x blue-text"></i>
-              <p class="mb-0">{{user.birthDate | date}}</p>
-            </li>
+            <i class="fa fa-birthday-cake fa-2x blue-text"></i>
+            <p class="mb-0">{{user.birthDate | date}}</p>
+          </li>
         </ul>
 
       </div>
@@ -40,5 +40,10 @@
       <app-user-update (update)="onUpdate($event)" [user]="user"></app-user-update>
     </div>
     <button class="btn btn-info btn-block" [innerHTML]="isUpdateShow? 'cancel' : 'update'" (click)="showUpdate()">Update</button>
+    <div class="text-center" *ngIf="isPasswordResetShow">
+      <app-password-reset></app-password-reset>
+    </div>
+    <button *ngIf="isPasswordUser" class="btn btn-info btn-block" [innerHTML]="isPasswordResetShow? 'cancel' : 'Reset Password'" (click)="showPasswordReset()">Reset
+      Password</button>
   </mdb-card-body>
 </mdb-card>

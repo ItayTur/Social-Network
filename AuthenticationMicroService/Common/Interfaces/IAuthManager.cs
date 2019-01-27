@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Common.Interfaces
 {
@@ -17,14 +18,6 @@ namespace Common.Interfaces
         /// <returns>Access token</returns>
         Task<string> LoginUser(string email, string password);
        
-        /// <summary>
-        /// Changes the user password.
-        /// </summary>
-        /// <param name="accessToken"></param>
-        /// <param name="currentPassword"></param>
-        /// <param name="oldPassword"></param>
-        /// <returns></returns>
-        Task ChangePassword(string token, string currentPassword, string oldPassword);
         
 
         /// <summary>
@@ -42,5 +35,13 @@ namespace Common.Interfaces
         /// <param name="blockedId"></param>
         /// <returns></returns>
         Task BlockUser(string token, string blockedId);
+
+        /// <summary>
+        /// Restes the users password.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        Task ResetPassword(string token, HttpRequest httpRequest);
     }
 }

@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Data.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BL.Managers
 {
@@ -205,15 +206,17 @@ namespace BL.Managers
         /// <param name="currentPassword"></param>
         /// <param name="oldPassword"></param>
         /// <returns></returns>
-        public async Task ChangePassword(string token, string oldPassword, string newPassowrd)
+        public async Task ResetPassword(string token, HttpRequest httpRequest)
         {
             try
             {
                 string userId = await _loginTokenManager.VerifyAsync(token);
                 string userEmail = await GetUserEmailById(token, userId);
                 AuthModel authModel = _authRepository.GetAuthByEmail(userEmail);
+                string oldPassword = httpRequest["OldPassword"];
+                string newPassword = httpRequest["NewPassword"];
                 VerifyAuthPassword(authModel, oldPassword);
-                authModel.Password = newPassowrd;
+                authModel.Password = SecurePasswordHasher.Hash(newPassword);
                 await _authRepository.Update(authModel);
             }
             catch (Exception e)
@@ -566,7 +569,7 @@ namespace BL.Managers
         {
             if (auth == null || !SecurePasswordHasher.Verify(password, auth.Password))
             {
-                throw new ArgumentException();
+                throw new PasswordException();
             }
         }
 

@@ -23,7 +23,7 @@ export class IdentityService {
   }
 
   updateUser(formData: FormData): Observable<any> {
-    return this.httpClient.post(this.identityApi, formData, { withCredentials: true})
+    return this.httpClient.put(this.identityApi, formData, { withCredentials: true})
     .pipe(catchError(this.erorrHandler.handleError));
   }
 }

@@ -14,11 +14,11 @@ export class UserUpdateComponent implements OnInit {
 
   // @Input() user: UserModel;
   user: UserModel = new UserModel(
-    "Id",
-    "itay_ru@walla.com",
-    "itay",
-    "tur",
-    "fdsa 5",
+    "user3",
+    "user3_ru@walla.com",
+    "moshe",
+    "shami",
+    "sela 5",
     "developer",
     new Date()
   );
@@ -68,6 +68,7 @@ export class UserUpdateComponent implements OnInit {
   }
 
   updateUser() {
+    debugger;
     const formData: FormData = this.getUserFormData();
     this.identityService
       .updateUser(formData)
@@ -79,12 +80,12 @@ export class UserUpdateComponent implements OnInit {
 
   private getUserFormData(): FormData {
     const formData: FormData = new FormData();
-    formData.append("Address", this.user.address);
-    formData.append("BirthDate", JSON.stringify(this.user.birthDate));
-    formData.append("Email", this.user.email);
-    formData.append("FirstName", this.user.firstName);
-    formData.append("LastName", this.user.lastName);
-    formData.append("Job", this.user.job);
+    formData.append("Address", this.addressInput.value);
+    formData.append("BirthDate", this.datepickerInput.value);
+    formData.append("Email", this.emailInput.value);
+    formData.append("FirstName", this.firstNameInput.value);
+    formData.append("LastName", this.lastNameInput.value);
+    formData.append("Job", this.jobInput.value);
     return formData;
   }
 }

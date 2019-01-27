@@ -25,7 +25,7 @@
 
   <!-- Email -->
   <div class="md-form">
-    <input  mdbInput mdbValidate formControlName="emailInput" type="email" name="email" id="emailId" class="form-control" >
+    <input mdbInput mdbValidate formControlName="emailInput" type="email" name="email" id="emailId" class="form-control" >
     <label for="emailId">E-mail</label>
     <mdb-error *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">Please enter a valid email
       </mdb-error>
@@ -41,12 +41,10 @@
   </div>
 
   <!-- Birth-date -->
-
-      <mat-form-field>
-          <input matInput [matDatepicker]="picker" placeholder="Choose a date">
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
+      <div class="md-form">
+        <label for="birthDate">Birth-data</label>
+        <input type="date" id="birthDate" name="birthDate" formControlName="datepickerInput">
+      </div>
 
 
   <!-- Job -->

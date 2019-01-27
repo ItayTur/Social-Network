@@ -1,62 +1,63 @@
-<form class="text-center border border-light p-5">
+<form #postForm="ngForm" [formGroup]="userForm" class="text-center border border-light p-5">
 
-  <p class="h4 mb-4">Sign up</p>
+  <p class="h4 mb-4">User update</p>
 
   <div class="form-row mb-4">
-    <div class="col">
+    <div class="col md-form">
+
       <!-- First name -->
-      <input type="text" name="firstName" [(ngModel)]="user.firstName" id="defaultRegisterFormFirstName" class="form-control"
-        placeholder="First name" required>
+      <input [(ngModel)]="user.firstName" mdbInput mdbValidate formControlName="firstNameInput" type="text" id="firstNameId" class="form-control" required>
+      <label for="firstNameId">First name</label>
+      <mdb-error *ngIf="firstNameInput.invalid && (firstNameInput.dirty || firstNameInput.touched)">Input invalid</mdb-error>
+      <mdb-success *ngIf="firstNameInput.valid && (firstNameInput.dirty || firstNameInput.touched)">Input valid</mdb-success>
     </div>
-    <div class="col">
+    <div class="col md-form">
+
       <!-- Last name -->
-      <input type="text" name="lastName" [(ngModel)]="user.lastName" id="defaultRegisterFormLastName" class="form-control"
-        placeholder="Last name" required>
+      <input [(ngModel)]="user.lastName" mdbInput mdbValidate formControlName="lastNameInput" type="text" name="lastName"
+        id="lastNameId" class="form-control" required>
+        <label for="lastNameId">Last name</label>
+      <mdb-error *ngIf="lastNameInput.invalid && (lastNameInput.dirty || lastNameInput.touched)">Input invalid</mdb-error>
+      <mdb-success *ngIf="lastNameInput.valid && (lastNameInput.dirty || lastNameInput.touched)">Input valid</mdb-success>
     </div>
   </div>
 
-  <!-- E-mail -->
-  <input type="email" name="email" [(ngModel)]="user.email" [disabled]="IsUsernamePasswordUser" id="defaultRegisterFormEmail" class="form-control mb-4"
-    placeholder="E-mail">
+
+  <!-- Email -->
+  <div class="md-form">
+    <input [(ngModel)]="user.email" mdbInput mdbValidate formControlName="emailInput" type="email" name="email" id="emailId" class="form-control" >
+    <label for="emailId">E-mail</label>
+    <mdb-error *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">Please enter a valid email
+      </mdb-error>
+  </div>
 
   <!-- Address -->
-  <input type="text" name="address" [(ngModel)]="user.address" id="defaultRegisterFormLastName" class="form-control"
-    placeholder="Address">
+  <div class="md-form">
+    <input [(ngModel)]="user.address" mdbInput mdbValidate formControlName="addressInput" type="text" name="address" id="addressId"
+      class="form-control">
+    <label for="addressId">Address</label>
+    <mdb-error *ngIf="addressInput.invalid && (addressInput.dirty || addressInput.touched)">Input invalid</mdb-error>
+    <mdb-success *ngIf="addressInput.valid && (addressInput.dirty || addressInput.touched)">Input valid</mdb-success>
+  </div>
 
   <!-- Birth-date -->
-  <input [matDatepicker]="myDatepicker" [(ngModel)]="user.birthDate">
-  <mat-datepicker #myDatepicker></mat-datepicker>
+
+      <mat-form-field>
+          <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
 
   <!-- Job -->
-  <input type="text" name="job" [(ngModel)]="user.job" id="defaultRegisterFormLastName" class="form-control"
-    placeholder="job">
+  <div class="md-form" >
+      <mdb-date-picker name="mydate" #datePicker [placeholder]="'Selected date'" [locale]="'de'" [(ngModel)]="user.birthDate"></mdb-date-picker>
+    </div>
 
 
   <!-- Sign up button -->
-  <button mdbBtn color="info" block="true" class="my-4" type="submit">Sign in</button>
+  <button [disabled]="!postForm.valid" (click)="updateUser()" mdbBtn color="info" block="true" class="my-4" type="submit">Sign in</button>
 
-  <!-- Social register -->
-  <p>or sign up with:</p>
 
-  <a type="button" class="light-blue-text mx-2">
-    <mdb-icon fab icon="facebook"></mdb-icon>
-  </a>
-  <a type="button" class="light-blue-text mx-2">
-    <mdb-icon fab icon="twitter"></mdb-icon>
-  </a>
-  <a type="button" class="light-blue-text mx-2">
-    <mdb-icon fab icon="linkedin"></mdb-icon>
-  </a>
-  <a type="button" class="light-blue-text mx-2">
-    <mdb-icon fab icon="heart"></mdb-icon>
-  </a>
-
-  <hr>
-
-  <!-- Terms of service -->
-  <p>By clicking
-    <em>Sign up</em> you agree to our
-    <a href="" target="_blank">terms of service</a> and
-    <a href="" target="_blank">terms of service</a>. </p>
 
 </form>

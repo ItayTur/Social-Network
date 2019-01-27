@@ -5,14 +5,12 @@ using Common.Exceptions;
 using Common.Interfaces;
 using Common.Loggers;
 using Common.Models;
-using Facebook;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace BL.Managers
@@ -27,6 +25,8 @@ namespace BL.Managers
         private readonly string _socialUrl;
         private readonly string _identityUrl;
         private readonly string _notificationsUrl;
+
+
 
         /// <summary>
         /// Constructor.
@@ -51,15 +51,17 @@ namespace BL.Managers
         /// </summary>
         private void InitializeBlockHandlers()
         {
-            _blockHandlers.Add(RegistrationTypeEnum.Facebook,BlockFacebookAuth);
-            _blockHandlers.Add(RegistrationTypeEnum.UserNamePassword,BlockUserNamePasswordAuth);
+            _blockHandlers.Add(RegistrationTypeEnum.Facebook, BlockFacebookAuth);
+            _blockHandlers.Add(RegistrationTypeEnum.UserNamePassword, BlockUserNamePasswordAuth);
         }
 
-       /// <summary>
-       /// Blockes users registerd with facebook.
-       /// </summary>
-       /// <param name="registrationKey"></param>
-       /// <returns></returns>
+
+
+        /// <summary>
+        /// Blockes users registerd with facebook.
+        /// </summary>
+        /// <param name="registrationKey"></param>
+        /// <returns></returns>
         private async Task BlockFacebookAuth(string registrationKey)
         {
             try
@@ -74,6 +76,7 @@ namespace BL.Managers
                 throw;
             }
         }
+
 
 
         /// <summary>
@@ -97,6 +100,7 @@ namespace BL.Managers
         }
 
 
+
         /// <summary>
         /// Activates the system block on the user associated with the specified Id.
         /// </summary>
@@ -118,6 +122,8 @@ namespace BL.Managers
                 throw e;
             }
         }
+
+
 
         /// <summary>
         /// Gets the user associated with the speci
@@ -151,6 +157,7 @@ namespace BL.Managers
                 throw e;
             }
         }
+
 
 
         /// <summary>
@@ -190,6 +197,7 @@ namespace BL.Managers
         }
 
 
+
         /// <summary>
         /// Changes the password in case of user forget.
         /// </summary>
@@ -201,9 +209,9 @@ namespace BL.Managers
         {
             throw new NotImplementedException();
         }
-                 
-
         
+
+
         /// <summary>
         /// Logins the user associated with the specified email and password.
         /// </summary>
@@ -221,7 +229,7 @@ namespace BL.Managers
                     return await _loginTokenManager.Add(auth.UserId, LoginTokenModel.LoginTypes.UserPassword);
                 }
                 throw new UserBlockedException("user is blocked");
-                
+
             }
             catch (Exception ex)
             {
@@ -274,7 +282,7 @@ namespace BL.Managers
                 Task addUserTask = AddUserToUsersDb(appToken, registrationDto, userId);
                 Task addAuthTask = AddUserToAuthDb(registrationDto.Email, SecurePasswordHasher.Hash(registrationDto.Password), userId);
 
-                Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email, registrationDto.FirstName+ " "+registrationDto.LastName);
+                Task addUserNodeTask = AddUserToGraphDb(appToken, registrationDto.Email, registrationDto.FirstName + " " + registrationDto.LastName);
                 Task addUserToNotificationTask = AddUserToNotificationsDb(appToken);
 
                 await Task.WhenAll(addUserTask, addAuthTask, addUserNodeTask, addUserToNotificationTask);
@@ -520,8 +528,7 @@ namespace BL.Managers
 
         }
 
-
-
+        
 
         /// <summary>
         /// Verfies the email occupation. Throws an exception other wise.
@@ -535,9 +542,8 @@ namespace BL.Managers
             }
         }
 
+               
 
-
-        
         /// <summary>
         /// Verfies the auth password. Throws an exception if not valid.
         /// </summary>
@@ -550,6 +556,7 @@ namespace BL.Managers
                 throw new ArgumentException();
             }
         }
+
 
 
         /// <summary>

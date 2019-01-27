@@ -36,10 +36,10 @@ namespace DAL.Repositories
 
 
         /// <summary>
-        /// Adds new user record to the db.
+        /// Adds user or update user if the user already exict in the db.
         /// </summary>
         /// <param name="user"></param>
-        public async Task Add(UserModel user)
+        public async Task AddOrUpdate(UserModel user)
         {
             using(DynamoDbContext context = new DynamoDbContext())
             {

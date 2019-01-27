@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Common.Interfaces
 {
@@ -54,5 +55,8 @@ namespace Common.Interfaces
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<UserModel> GetUserById(string token, string userId);
+
+
+        Task<UserModel> Update(string token, HttpRequest httpRequest);
     }
 }

@@ -18,7 +18,7 @@ export class PostComponent implements OnInit {
     private postsService: PostsService,
     private snackBarService: SnackBarService,
     private identityService: IdentityService,
-    private senitaizer: DomSanitizer
+    public senitaizer: DomSanitizer
   ) {}
 
   @Input()

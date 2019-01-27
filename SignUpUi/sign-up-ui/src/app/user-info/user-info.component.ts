@@ -11,6 +11,17 @@ import { UserModel } from '../core/user.model';
 export class UserInfoComponent implements OnInit {
   user: UserModel = new UserModel("", "","","","","",null);
 
+  isUpdateShow = false;
+
+  showUpdate() {
+    this.isUpdateShow = !this.isUpdateShow;
+  }
+
+  onUpdate (user) {
+    this.isUpdateShow = false;
+    this.user = new UserModel(user.Id, user.Email, user.FirstName, user.LastName, user.Address, user.Job, user.BirthDate); // updatedUser;
+  }
+
   constructor(private identity: IdentityService, private snackBar: SnackBarService) { }
 
   ngOnInit() {

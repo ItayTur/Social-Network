@@ -1,0 +1,56 @@
+<form #postForm="ngForm" [formGroup]="userForm" class="text-center border border-light p-5">
+
+  <p class="h4 mb-4">User update</p>
+
+  <div class="form-row mb-4">
+    <div class="col md-form">
+
+      <!-- First name -->
+      <input  mdbInput mdbValidate formControlName="firstNameInput" type="text" id="firstNameId" class="form-control" required>
+      <label for="firstNameId">First name</label>
+      <mdb-error *ngIf="firstNameInput.invalid && (firstNameInput.dirty || firstNameInput.touched)">Input invalid</mdb-error>
+      <mdb-success *ngIf="firstNameInput.valid && (firstNameInput.dirty || firstNameInput.touched)">Input valid</mdb-success>
+    </div>
+    <div class="col md-form">
+
+      <!-- Last name -->
+      <input mdbInput mdbValidate formControlName="lastNameInput" type="text" name="lastName"
+        id="lastNameId" class="form-control" required>
+        <label for="lastNameId">Last name</label>
+      <mdb-error *ngIf="lastNameInput.invalid && (lastNameInput.dirty || lastNameInput.touched)">Input invalid</mdb-error>
+      <mdb-success *ngIf="lastNameInput.valid && (lastNameInput.dirty || lastNameInput.touched)">Input valid</mdb-success>
+    </div>
+  </div>
+
+
+  <!-- Address -->
+  <div class="md-form">
+    <input mdbInput mdbValidate formControlName="addressInput" type="text" name="address" id="addressId"
+      class="form-control">
+    <label for="addressId">Address</label>
+    <mdb-error *ngIf="addressInput.invalid && (addressInput.dirty || addressInput.touched)">Input invalid</mdb-error>
+    <mdb-success *ngIf="addressInput.valid && (addressInput.dirty || addressInput.touched)">Input valid</mdb-success>
+  </div>
+
+  <!-- Birth-date -->
+      <div class="md-form">
+        <input type="date" placeholder="Birth-date" id="birthDate" name="birthDate" formControlName="datepickerInput">
+      </div>
+
+
+  <!-- Job -->
+  <div class="md-form">
+      <input mdbInput mdbValidate formControlName="jobInput" type="text" name="address" id="jobId"
+        class="form-control">
+      <label for="jobId">Address</label>
+      <mdb-error *ngIf="jobInput.invalid && (jobInput.dirty || jobInput.touched)">Input invalid</mdb-error>
+      <mdb-success *ngIf="jobInput.valid && (jobInput.dirty || jobInput.touched)">Input valid</mdb-success>
+    </div>
+
+
+  <!-- Submit button -->
+  <button [disabled]="!postForm.valid" (click)="updateUser()" mdbBtn color="info" block="true" class="my-4" type="submit">Submit</button>
+
+
+
+</form>

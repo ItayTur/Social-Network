@@ -25,7 +25,7 @@ namespace BL.Helpers.XMPP
         private readonly string _userName;
         private readonly string _password;
 
-        private IChannel _channel;
+        private IChannel _channel = null;
 
         public event EventHandler<EventArgs<Message>> MessageAvailable;
 
@@ -50,6 +50,11 @@ namespace BL.Helpers.XMPP
                 HostnameResolver = new StaticNameResolver(IPAddress.Parse(_ipAddress), _port)
             };
 
+            _client.Password = _password;
+            _client.Username = _userName;
+
+            ConnectAppUser();
+
         }
 
         /// <summary>
@@ -58,11 +63,8 @@ namespace BL.Helpers.XMPP
         /// <param name="userName"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        private async Task Connect(string userName, string password)
-        {
-            _client.Username = userName;
-            _client.Password = password;
-            _client.RegistrationHandler = null;
+        private async Task ConnectAppUser()
+        {            
             _channel = await _client.ConnectAsync();
             await _client.SendAsync(new Presence(Show.Chat));
         }
@@ -75,11 +77,27 @@ namespace BL.Helpers.XMPP
         /// <returns></returns>
         public async Task Register(string userName, string password)
         {
-            _client.RegistrationHandler = new RegisterAccountHandler(_client);
-            _client.Username = userName;
-            _client.Password = password;
-            await _client.ConnectAsync();
-            await _client.DisconnectAsync();
+            XmppClient client;
+
+            var pipelineInitializerAction = new Action<IChannelPipeline>(pipeline =>
+            {
+                pipeline.AddFirst(new MyLoggingHandler());
+            });
+
+            client = new XmppClient(pipelineInitializerAction)
+            {
+                Tls = false,
+                XmppDomain = _domain,
+                Resource = "",
+                HostnameResolver = new StaticNameResolver(IPAddress.Parse(_ipAddress), _port)
+            };
+
+
+            client.RegistrationHandler = new RegisterAccountHandler(client);
+            client.Username = userName;
+            client.Password = password;
+            await client.ConnectAsync();
+            await client.DisconnectAsync();
         }
 
         /// <summary>
@@ -112,8 +130,7 @@ namespace BL.Helpers.XMPP
         /// <param name="to"></param>
         /// <returns></returns>
         public async Task SendPrivateMessage(string message, string to)
-        {
-            await Connect(_userName, _password);
+        {           
             await _client.SendAsync(new Message(new Jid(to, _domain, null), message));
         }
 

@@ -32,12 +32,12 @@ export class UserUpdateComponent implements OnInit {
 
   ngOnInit() {
     this.userForm = new FormGroup({
-      firstNameInput: new FormControl(null, Validators.required),
-      lastNameInput: new FormControl(null, Validators.required),
-      emailInput: new FormControl(null, Validators.email),
-      addressInput: new FormControl(null),
-      jobInput: new FormControl(null),
-      datepickerInput: new FormControl(null)
+      firstNameInput: new FormControl(this.user.firstName, Validators.required),
+      lastNameInput: new FormControl(this.user.lastName, Validators.required),
+      emailInput: new FormControl(this.user.email, Validators.email),
+      addressInput: new FormControl(this.user.address),
+      jobInput: new FormControl(this.user.job),
+      datepickerInput: new FormControl(this.user.birthDate)
     });
 
     if (this.user.email) {

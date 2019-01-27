@@ -6,7 +6,7 @@
     <div class="col md-form">
 
       <!-- First name -->
-      <input [(ngModel)]="user.firstName" mdbInput mdbValidate formControlName="firstNameInput" type="text" id="firstNameId" class="form-control" required>
+      <input  mdbInput mdbValidate formControlName="firstNameInput" type="text" id="firstNameId" class="form-control" required>
       <label for="firstNameId">First name</label>
       <mdb-error *ngIf="firstNameInput.invalid && (firstNameInput.dirty || firstNameInput.touched)">Input invalid</mdb-error>
       <mdb-success *ngIf="firstNameInput.valid && (firstNameInput.dirty || firstNameInput.touched)">Input valid</mdb-success>
@@ -14,7 +14,7 @@
     <div class="col md-form">
 
       <!-- Last name -->
-      <input [(ngModel)]="user.lastName" mdbInput mdbValidate formControlName="lastNameInput" type="text" name="lastName"
+      <input mdbInput mdbValidate formControlName="lastNameInput" type="text" name="lastName"
         id="lastNameId" class="form-control" required>
         <label for="lastNameId">Last name</label>
       <mdb-error *ngIf="lastNameInput.invalid && (lastNameInput.dirty || lastNameInput.touched)">Input invalid</mdb-error>
@@ -25,7 +25,7 @@
 
   <!-- Email -->
   <div class="md-form">
-    <input [(ngModel)]="user.email" mdbInput mdbValidate formControlName="emailInput" type="email" name="email" id="emailId" class="form-control" >
+    <input  mdbInput mdbValidate formControlName="emailInput" type="email" name="email" id="emailId" class="form-control" >
     <label for="emailId">E-mail</label>
     <mdb-error *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched)">Please enter a valid email
       </mdb-error>
@@ -33,7 +33,7 @@
 
   <!-- Address -->
   <div class="md-form">
-    <input [(ngModel)]="user.address" mdbInput mdbValidate formControlName="addressInput" type="text" name="address" id="addressId"
+    <input mdbInput mdbValidate formControlName="addressInput" type="text" name="address" id="addressId"
       class="form-control">
     <label for="addressId">Address</label>
     <mdb-error *ngIf="addressInput.invalid && (addressInput.dirty || addressInput.touched)">Input invalid</mdb-error>
@@ -50,8 +50,12 @@
 
 
   <!-- Job -->
-  <div class="md-form" >
-      <mdb-date-picker name="mydate" #datePicker [placeholder]="'Selected date'" [locale]="'de'" [(ngModel)]="user.birthDate"></mdb-date-picker>
+  <div class="md-form">
+      <input mdbInput mdbValidate formControlName="jobInput" type="text" name="address" id="jobId"
+        class="form-control">
+      <label for="jobId">Address</label>
+      <mdb-error *ngIf="jobInput.invalid && (jobInput.dirty || jobInput.touched)">Input invalid</mdb-error>
+      <mdb-success *ngIf="jobInput.valid && (jobInput.dirty || jobInput.touched)">Input valid</mdb-success>
     </div>
 
 

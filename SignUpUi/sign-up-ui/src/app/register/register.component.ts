@@ -20,12 +20,12 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.registerForm = new FormGroup({ firstName: new FormControl(null, Validators.required),
-                                        lastName: new FormControl(null, Validators.required),  
-                                        password: new FormControl(null, [Validators.required, Validators.minLength(3)]),  
-                                        address: new FormControl(null),  
-                                        job: new FormControl(null),  
-                                        birthdate: new FormControl(null),  
-                                        email: new FormControl(null, [Validators.required, Validators.email]) 
+                                        lastName: new FormControl(null, Validators.required),
+                                        password: new FormControl(null, [Validators.required, Validators.minLength(3)]),
+                                        address: new FormControl(null),
+                                        job: new FormControl(null),
+                                        birthdate: new FormControl(null),
+                                        email: new FormControl(null, [Validators.required, Validators.email])
                                       });
 
   }
@@ -33,13 +33,14 @@ export class RegisterComponent implements OnInit {
   get input() { return this.registerForm.get('email'); }
 
   onSubmit() {
+    debugger;
     let registrationInfo = new RegistrationInfoModel(
-                    this.registerForm.get('password').value, 
-                    this.registerForm.get('email').value, 
-                    this.registerForm.get('firstName').value, 
-                    this.registerForm.get('lastName').value, 
-                    this.registerForm.get('address').value, 
-                    this.registerForm.get('job').value, 
+                    this.registerForm.get('password').value,
+                    this.registerForm.get('email').value,
+                    this.registerForm.get('firstName').value,
+                    this.registerForm.get('lastName').value,
+                    this.registerForm.get('address').value,
+                    this.registerForm.get('job').value,
                     this.registerForm.get('birthdate').value);
     this.auth.register(registrationInfo)
       .subscribe(appToken => {

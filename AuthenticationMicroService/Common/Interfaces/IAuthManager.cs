@@ -17,8 +17,14 @@ namespace Common.Interfaces
         /// <returns>Access token</returns>
         Task<string> LoginUser(string email, string password);
        
-
-        bool ChangePassword(string accessToken, string currentPassword, string oldPassword);
+        /// <summary>
+        /// Changes the user password.
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="currentPassword"></param>
+        /// <param name="oldPassword"></param>
+        /// <returns></returns>
+        Task ChangePassword(string token, string currentPassword, string oldPassword);
         
 
         /// <summary>

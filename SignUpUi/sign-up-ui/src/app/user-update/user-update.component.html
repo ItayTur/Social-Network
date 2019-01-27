@@ -34,8 +34,7 @@
 
   <!-- Birth-date -->
       <div class="md-form">
-        <label for="birthDate">Birth-data</label>
-        <input type="date" id="birthDate" name="birthDate" formControlName="datepickerInput">
+        <input type="date" placeholder="Birth-date" id="birthDate" name="birthDate" formControlName="datepickerInput">
       </div>
 
 
@@ -49,8 +48,8 @@
     </div>
 
 
-  <!-- Sign up button -->
-  <button [disabled]="!postForm.valid" (click)="updateUser()" mdbBtn color="info" block="true" class="my-4" type="submit">Sign in</button>
+  <!-- Submit button -->
+  <button [disabled]="!postForm.valid" (click)="updateUser()" mdbBtn color="info" block="true" class="my-4" type="submit">Submit</button>
 
 
 

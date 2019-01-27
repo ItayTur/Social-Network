@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { IdentityService } from "../core/identity.service";
 import { SnackBarService } from "../core/snack-bar.service";
 import { UserModel } from "../core/user.model";
@@ -12,16 +12,8 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 })
 export class UserUpdateComponent implements OnInit {
 
-  // @Input() user: UserModel;
-  user: UserModel = new UserModel(
-    "user3",
-    "user3_ru@walla.com",
-    "moshe",
-    "shami",
-    "sela 5",
-    "developer",
-    new Date()
-  );
+  @Input() user: UserModel;
+  @Output() update: EventEmitter<any> = new EventEmitter();
   IsUsernamePasswordUser: boolean;
   userForm: FormGroup;
 
@@ -72,7 +64,10 @@ export class UserUpdateComponent implements OnInit {
     this.identityService
       .updateUser(formData)
       .subscribe(
-        success => this.snackBarService.openSnackBar("user updated", "", 5000),
+        success => {
+          this.snackBarService.openSnackBar("user updated", "", 5000);
+          this.update.emit(success);
+        },
         err => this.snackBarService.openSnackBar(err, "", 5000)
       );
   }

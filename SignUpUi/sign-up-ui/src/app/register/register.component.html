@@ -72,11 +72,10 @@
                 </div>
                 <div class="md-form">
                   <i class="fa fa-birthday-cake prefix white-text active"></i>
-                  <input type="text" id="form7" class="text-white form-control" mdbInput formControlName="birthdate">
-                  <label for="form7" class="text-white">Your birthdate</label>
+                  <input type="date" id="form7" class="text-white form-control" mdbInput formControlName="birthdate">
                 </div>
                 <div class="text-center mt-4">
-                  <button mdbBtn color="indigo" mdbWavesEffect type="submit" [disabled]="!registerForm.valid">Sign up</button>                  
+                  <button mdbBtn color="indigo" mdbWavesEffect type="submit" [disabled]="!registerForm.valid">Sign up</button>
                 </div>
               </form>
             </mdb-card-body>

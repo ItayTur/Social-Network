@@ -23,7 +23,7 @@ Angular 7, mdb-angular, visual studio 2017, Asp.Net, Neo4j graph database, Dynam
 
 ## Authors
 
-* **Joni Gershberg** - (https://github.com/super0me)
+* **Joni Gershberg** - (https://github.com/jgershberg)
 * **Itay Tur** - (https://github.com/ItayTur)
 
 ## Acknowledgments

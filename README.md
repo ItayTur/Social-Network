@@ -1,7 +1,7 @@
 # Social-Network
 Social-Network project. allowing users to post, comment, like, tag, follow, unfollow and block other users. 
 micro-services project build with ASP.Net servers and Angular 7 client. 
-The work was divided by features. Each one took one feature and developed it from the end to end.
+The work was divided by features. Each one took one feature and developed it from end to end.
 
 
 ### Prerequisites
